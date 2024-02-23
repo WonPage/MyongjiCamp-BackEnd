@@ -1,7 +1,8 @@
 package com.won.myongjiCamp.config;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetailService;
-import lombok.RequiredArgsConstructor;
+import com.won.myongjiCamp.handler.CustomAuthenticationFailureHandler;
+import com.won.myongjiCamp.handler.CustomAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +16,13 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration // IoC
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
+
+    @Autowired
+    private CustomAuthenticationSuccessHandler successHandler;
+
+    @Autowired
+    private CustomAuthenticationFailureHandler failureHandler;
 
     @Autowired
     private PrincipalDetailService principalDetailService;
@@ -35,7 +41,6 @@ public class SecurityConfig {
         auth.userDetailsService(principalDetailService).passwordEncoder(encode());
     }
 
-    //spring security 6.1.0 부터는 체이닝 사용 x 람다식을 통해 함수형으로 설정 지향
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -49,7 +54,9 @@ public class SecurityConfig {
                 .and()
                     .formLogin()
 //                    .loginPage("/loginForm")
-                    .loginProcessingUrl("/api/login");
+                    .loginProcessingUrl("/api/login")
+                    .successHandler(successHandler)
+                    .failureHandler(failureHandler);
 
         return http.build();
     }
