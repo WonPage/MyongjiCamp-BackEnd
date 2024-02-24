@@ -40,5 +40,10 @@ logging:
     root: INFO
     com.example.myapp: DEBUG
 
+jwt:
+  expiration_time: 86400000 #1일
+  secret: ${JWT_SECRET}
+
+
 
 
