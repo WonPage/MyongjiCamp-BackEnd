@@ -44,6 +44,7 @@ public class MemberService {
                 .profileIcon(icon)
                 .build();
         memberRepository.save(member);
+        redisTemplate.delete("email_request_count:" + email);
         return member.getId();
     }
 
