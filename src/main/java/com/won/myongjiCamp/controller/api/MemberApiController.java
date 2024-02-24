@@ -32,6 +32,7 @@ public class MemberApiController {
         return new ResponseDto(HttpStatus.OK.value(), data);
     }
 
+    //이메일 전송
     @PostMapping("/api/email")
     public ResponseDto sendEmail(@RequestBody EmailSendDto emailDto) {
 

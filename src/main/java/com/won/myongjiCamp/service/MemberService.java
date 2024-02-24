@@ -58,8 +58,8 @@ public class MemberService {
     //이메일 전송
     public void send(String email, String subject, String text, int code) {
         long count = getEmailRequestCount(email);
-        if (count >= 5) {
-            throw new RuntimeException("24시간 동안 이메일 요청을 5번 이상 할 수 없습니다.");
+        if (count == 5) {
+            throw new RuntimeException("이메일 인증 요청 5번 초과로 24시간 동안 이메일 인증 요청을 할 수 없습니다.");
         }
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
@@ -78,14 +78,17 @@ public class MemberService {
 
     //redis에 인증코드 저장
     public void saveVerificationCode(String email, String code) {
-        redisTemplate.opsForValue().set(email, code, 1, TimeUnit.MINUTES); //1분 타임아웃
+        redisTemplate.opsForValue().set(email, code, 2, TimeUnit.MINUTES); //2분 타임아웃
     }
 
     //이메일 요청 카운트 증가
     public void increaseEmailRequestCount(String email) {
         String key = "email_request_count:" + email;
-        redisTemplate.opsForValue().increment(key);
-        redisTemplate.expire(key, 24, TimeUnit.HOURS);
+        long count = redisTemplate.opsForValue().increment(key);
+
+        if (count == 5) {
+            redisTemplate.expire(key, 24, TimeUnit.HOURS);
+        }
     }
 
     //이메일 요청 카운트 가져오기
