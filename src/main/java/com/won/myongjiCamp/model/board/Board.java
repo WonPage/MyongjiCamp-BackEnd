@@ -27,6 +27,5 @@ public abstract class Board {
     private Member member;
 
     private Integer scrapCount=0; //스크랩 수
-
 }
 

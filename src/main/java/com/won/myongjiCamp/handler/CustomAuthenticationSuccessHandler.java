@@ -40,10 +40,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         response.getWriter().println(new ObjectMapper().writeValueAsString(
                 new ResponseDto<>(response.getStatus(), data)));
-//        response.setStatus(HttpStatus.OK.value());
-//        response.setContentType("application/json;charset=UTF-8");
-//        response.getWriter().println(new ObjectMapper().writeValueAsString(
-//                new ResponseDto<>(response.getStatus(), "로그인 성공")));
     }
 }
 

@@ -6,7 +6,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 @Data
-public class CreateMemberRequestDto {
+public class CreateMemberDto {
 
     @NotEmpty
     @Length(max = 30)

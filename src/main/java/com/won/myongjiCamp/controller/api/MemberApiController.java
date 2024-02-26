@@ -1,8 +1,7 @@
 package com.won.myongjiCamp.controller.api;
 
-import com.won.myongjiCamp.dto.CreateMemberRequestDto;
-import com.won.myongjiCamp.dto.EmailSendDto;
-import com.won.myongjiCamp.dto.EmailVerificationDto;
+import com.won.myongjiCamp.dto.CreateMemberDto;
+import com.won.myongjiCamp.dto.EmailDto;
 import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.service.MemberService;
 import jakarta.validation.Valid;
@@ -25,7 +24,7 @@ public class MemberApiController {
     private final StringRedisTemplate redisTemplate;
 
     @PostMapping("/api/members")
-    public ResponseDto saveMember(@RequestBody @Valid CreateMemberRequestDto request) {
+    public ResponseDto saveMember(@RequestBody @Valid CreateMemberDto request) {
         Long id = memberService.join(request.getEmail(),request.getPassword(), request.getNickname(),request.getProfileIcon());
         Map<String, Long> data = new HashMap<>();
         data.put("id", id);
@@ -34,7 +33,7 @@ public class MemberApiController {
 
     //이메일 전송
     @PostMapping("/api/email")
-    public ResponseDto sendEmail(@RequestBody EmailSendDto emailDto) {
+    public ResponseDto sendEmail(@RequestBody EmailDto emailDto) {
 
         String subject = "회원가입 인증 메일입니다.";
         Random random = new Random();
@@ -46,9 +45,9 @@ public class MemberApiController {
 
     //이메일 인증
     @PostMapping("/api/email/verify")
-    public ResponseDto verifyEmail(@RequestBody EmailVerificationDto emailVerificationDto) {
-        String email = emailVerificationDto.getEmail();
-        String code = emailVerificationDto.getCode(); //사용자가 입력한 코드
+    public ResponseDto verifyEmail(@RequestBody EmailDto emailDto) {
+        String email = emailDto.getEmail();
+        String code = emailDto.getCode(); //사용자가 입력한 코드
         String savedCode = memberService.getVerificationCode(email); //redis에 저장된 코드
         memberService.verificationEmail(code, savedCode);
         return new ResponseDto(HttpStatus.OK.value(), "이메일 인증 성공");
