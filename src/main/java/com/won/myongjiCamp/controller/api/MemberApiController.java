@@ -1,7 +1,7 @@
 package com.won.myongjiCamp.controller.api;
 
-import com.won.myongjiCamp.dto.CreateMemberDto;
-import com.won.myongjiCamp.dto.EmailDto;
+import com.won.myongjiCamp.dto.request.CreateMemberDto;
+import com.won.myongjiCamp.dto.request.EmailDto;
 import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.service.MemberService;
 import jakarta.validation.Valid;
