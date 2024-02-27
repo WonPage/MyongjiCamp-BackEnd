@@ -4,9 +4,9 @@ import com.won.myongjiCamp.model.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.CurrentTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @DiscriminatorColumn(name = "board_type")
 public abstract class Board {
 
-//    @Column(name="board_id")
+    @Column(name="board_id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,12 +37,12 @@ public abstract class Board {
 //    private Integer scrapCount=0; //스크랩 수
 
     @Column(name = "created_date")
-    @CreatedDate
-    private LocalDateTime createDate;
+    @CreationTimestamp
+    private LocalDateTime createDate = LocalDateTime.now();
 
     @Column(name = "modified_date")
-    @LastModifiedDate
-    private LocalDateTime modifiedDate;
+    @UpdateTimestamp
+    private LocalDateTime modifiedDate = LocalDateTime.now();
 
 
 }

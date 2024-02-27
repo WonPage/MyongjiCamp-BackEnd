@@ -44,7 +44,6 @@ public class BoardApiController {
     public ResponseDto<String> deleteRecruit(@PathVariable long id){
         recruitService.delete(id);
         return new ResponseDto<String>(HttpStatus.OK.value(), "게시글이 삭제되었습니다.");
-
     }
 
 
