@@ -2,13 +2,23 @@ package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import com.won.myongjiCamp.dto.ResponseDto;
-import com.won.myongjiCamp.dto.ResumeDto;
+import com.won.myongjiCamp.dto.request.ResumeDto;
+import com.won.myongjiCamp.exception.MemberNoMatchException;
+import com.won.myongjiCamp.model.Resume;
 import com.won.myongjiCamp.service.ResumeService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,4 +52,45 @@ public class ResumeApiController {
         resumeService.delete(id);
         return new ResponseDto<String>(HttpStatus.OK.value(), "이력서 삭제 완료");
     }
+    //이력서 전체 조회
+    @GetMapping("/api/auth/resume")
+        public Result ListResume(@AuthenticationPrincipal PrincipalDetail principal) {
+        Map<String, Object> map = new HashMap<>();
+        List<Resume> findResume = resumeService.resumeAll(principal.getMember());
+        List<ResumeResponseDto> collect = findResume.stream()
+                .map(m -> new ResumeResponseDto(m.getTitle(), m.getCreateDate(), m.getId()))
+                .collect(Collectors.toList());
+        return new Result(collect);
+    }
+    //이력서 상세보기
+    @GetMapping("/api/auth/resume/{id}")
+    public Result ListResume(@PathVariable long id, @AuthenticationPrincipal PrincipalDetail principal) throws MemberNoMatchException {
+        Map<String, Object> map = new HashMap<>();
+        Resume resume = resumeService.resumeDetail(id, principal.getMember());
+        ResumeResponseDto response =  new ResumeResponseDto(resume.getTitle(), resume.getContent(), resume.getUrl(), resume.getCreateDate(), resume.getId());
+        return new Result(response);
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private T data;
+    }
+    @Data
+    @AllArgsConstructor
+    static class ResumeResponseDto {
+        private String title;
+        private String content;
+        private String url;
+        private Timestamp createDate;
+        private Long id;
+
+        public ResumeResponseDto(String title, Timestamp createDate, Long id) {
+            this.title = title;
+            this.createDate = createDate;
+            this.id = id;
+        }
+    }
+
+
 }
