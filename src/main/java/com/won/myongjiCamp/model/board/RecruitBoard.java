@@ -23,6 +23,6 @@ public class RecruitBoard extends Board {
     @Column(nullable = false)
     private String expectedDuration; //예상 기간
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<RoleAssignment> roleAssignments; //모집 하는 분야(태그 검색 위해 필요, 몇명 구하는지는 RoleAssignment테이블에 따로 저장됨)
 }
