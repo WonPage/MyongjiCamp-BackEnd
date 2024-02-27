@@ -6,14 +6,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional(readOnly = true)
+/*@Transactional(readOnly = true)
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor*/
 public class RoleApiController {
-    private final RoleRepository roleRepository;
+//    private final RoleRepository roleRepository;
 
-/*    @Transactional
-    public void write*/
+
 
 
 }

@@ -27,9 +27,8 @@ public class BoardApiController {
     }*/
     @PostMapping("/api/auth/recruit")
     public ResponseDto<String> createRecruit(@RequestBody @Valid RecruitDto recruitDto){
-        Member member = memberRepository.findById(2L)
+        Member member = memberRepository.findById(1L)
                 .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-
         recruitService.create(recruitDto,member);
         return new ResponseDto<String>(HttpStatus.OK.value(),"게시글 작성 완료");
     }

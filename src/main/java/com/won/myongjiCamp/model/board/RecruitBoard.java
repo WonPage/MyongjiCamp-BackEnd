@@ -28,8 +28,8 @@ public class RecruitBoard extends Board {
     @Column(nullable = false)
     private String expectedDuration; //예상 기간
 
-    @OneToMany(mappedBy = "RecruitBoard",orphanRemoval = true) //RecruitBoard가 연관관계의 주인이 아니다.
     // OneToMany에서는 many가 주인
+    @OneToMany(mappedBy = "board",cascade = CascadeType.ALL,orphanRemoval = true) //RecruitBoard가 연관관계의 주인이 아니다.
     private List<RoleAssignment> roles = new ArrayList<>();
 
 

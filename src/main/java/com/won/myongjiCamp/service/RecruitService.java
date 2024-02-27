@@ -21,7 +21,6 @@ public class RecruitService {
     private final RecruitRepository recruitRepository;
 
     // 게시글 작성
-//    authentic?
     @Transactional
     public void create(RecruitDto recruitDto, Member member){
 
