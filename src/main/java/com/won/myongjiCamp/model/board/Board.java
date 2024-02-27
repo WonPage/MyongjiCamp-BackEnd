@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 @DiscriminatorColumn(name = "board_type")
 public abstract class Board {
 
-    @Column(name="board_id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

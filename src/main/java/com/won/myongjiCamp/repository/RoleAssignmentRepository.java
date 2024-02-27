@@ -9,4 +9,6 @@ import java.util.Optional;
 
 public interface RoleAssignmentRepository extends JpaRepository<RoleAssignment, Long> {
     Optional<RoleAssignment> findByBoardAndRole(Board board, Role role);
+
+    void deleteByBoardAndRole(Board board, Role role);
 }

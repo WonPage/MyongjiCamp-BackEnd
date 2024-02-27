@@ -33,7 +33,6 @@ public class RecruitDto {
     @NotEmpty
     private String expectedDuration; //예상 기간
 
-//    @NotEmpty
-//    private List<RoleAssignment> roleAssignments;
-//    private Map<String,Map<String, Integer>> role ; //역할, 지원가능 인원, 지원 최대 인원
+    @NotEmpty
+    private List<RoleAssignmentDto> roleAssignments;
 }
