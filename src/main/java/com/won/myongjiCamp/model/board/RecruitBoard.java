@@ -1,10 +1,8 @@
 package com.won.myongjiCamp.model.board;
 
-//import com.won.myongjiCamp.model.board.role.RoleEntity;
 import com.won.myongjiCamp.model.board.role.RoleAssignment;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,15 +10,13 @@ import java.util.List;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+@Builder
 @Entity
 @DiscriminatorValue("Recruit")
 public class RecruitBoard extends Board {
 
-
-//    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private RecruitStatus status ;  // 모집중, 모집 완료 상태 구분 , 처음 모집 중
+    private RecruitStatus status;  // 모집중, 모집 완료 상태 구분
 
     @Column(nullable = false)
     private String preferredLocation; //활동 지역

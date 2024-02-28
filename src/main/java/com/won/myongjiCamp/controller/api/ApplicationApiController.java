@@ -5,8 +5,6 @@ import com.won.myongjiCamp.service.ApplicationService;
 import com.won.myongjiCamp.dto.request.ApplicationDto;
 import com.won.myongjiCamp.dto.ResponseDto;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
