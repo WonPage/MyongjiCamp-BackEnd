@@ -3,7 +3,6 @@ package com.won.myongjiCamp.model;
 import com.won.myongjiCamp.model.board.Board;
 import jakarta.persistence.*;
 import lombok.*;
-import org.apache.catalina.User;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
