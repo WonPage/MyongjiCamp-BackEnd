@@ -4,9 +4,6 @@ import com.won.myongjiCamp.model.board.RecruitBoard;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,7 +18,6 @@ public class RoleAssignment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board")
     private RecruitBoard board;
-
 
     @Enumerated(EnumType.STRING) //엔티티의 필드가 열거형일 때 사용
     @Column(name = "role", nullable = false)

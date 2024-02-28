@@ -25,6 +25,7 @@ public class BoardApiController {
         recruitService.create(recruitDto,principal.getMember());
         return new ResponseDto<String>(HttpStatus.OK.value(),"게시글 작성 완료");
     }*/
+    //테스트 코드
     @PostMapping("/api/auth/recruit")
     public ResponseDto<String> createRecruit(@RequestBody @Valid RecruitDto recruitDto){
         Member member = memberRepository.findById(1L)

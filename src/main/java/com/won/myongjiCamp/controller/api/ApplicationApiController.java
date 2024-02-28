@@ -1,6 +1,8 @@
 package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
+import com.won.myongjiCamp.model.Member;
+import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.service.ApplicationService;
 import com.won.myongjiCamp.dto.request.ApplicationDto;
 import com.won.myongjiCamp.dto.ResponseDto;
@@ -8,25 +10,41 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class ApplicationApiController {
 
     private final ApplicationService applicationService;
+    private final MemberRepository memberRepository;
 
-    //지원 (id = board id)
+//    //지원 (id = board id)
+//    @PostMapping("/api/auth/apply/{id}")
+//    public ResponseDto apply(@RequestBody @Valid ApplicationDto request, @PathVariable Long id, @AuthenticationPrincipal PrincipalDetail principal) {
+//        applicationService.apply(request, id, principal.getMember());
+//        return new ResponseDto(HttpStatus.OK.value(), "지원이 완료되었습니다.");
+//    }
+    //지원 (id = board id) 테스트 코드
     @PostMapping("/api/auth/apply/{id}")
-    public ResponseDto apply(@RequestBody @Valid ApplicationDto request, @PathVariable Long id, @AuthenticationPrincipal PrincipalDetail principal) {
-        applicationService.apply(request, id, principal.getMember());
+    public ResponseDto apply(@RequestBody @Valid ApplicationDto request, @PathVariable Long id) {
+        Member member = memberRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+        applicationService.apply(request, id, member);
         return new ResponseDto(HttpStatus.OK.value(), "지원이 완료되었습니다.");
     }
-    //지원 취소 (id = board id)
+//    //지원 취소 (id = board id)
+//    @DeleteMapping("/api/auth/apply/{id}")
+//    public ResponseDto cancel(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetail principal) {
+//        applicationService.cancel(id, principal.getMember());
+//        return new ResponseDto(HttpStatus.OK.value(), "지원이 취소되었습니다.");
+//    }
+    //지원 취소 (id = board id) 테스트 코드
     @DeleteMapping("/api/auth/apply/{id}")
-    public ResponseDto cancel(@RequestBody @Valid ApplicationDto request, @PathVariable Long id, @AuthenticationPrincipal PrincipalDetail principal) {
-        applicationService.cancel(request, id, principal.getMember());
+    public ResponseDto cancel(@PathVariable Long id) {
+        Member member = memberRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+        applicationService.cancel(id, member);
         return new ResponseDto(HttpStatus.OK.value(), "지원이 취소되었습니다.");
     }
     //first 지원 수락 or 거절 (id = application id) -> applicationstatus 수정
