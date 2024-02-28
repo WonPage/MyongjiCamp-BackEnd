@@ -13,6 +13,7 @@ import com.won.myongjiCamp.model.board.role.Role;
 import com.won.myongjiCamp.model.board.role.RoleAssignment;
 import com.won.myongjiCamp.repository.ApplicationRepository;
 import com.won.myongjiCamp.repository.BoardRepository;
+import com.won.myongjiCamp.repository.RecruitRepository;
 import com.won.myongjiCamp.repository.RoleAssignmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class ApplicationService {
     private final BoardRepository boardRepository;
     private final ApplicationRepository applicationRepository;
     private final RoleAssignmentRepository roleAssignmentRepository;
-    private final RecruitService recruitService;
+    private final RecruitRepository recruitRepository;
 
     @Transactional
     public void apply(ApplicationDto request, Long id, Member member) {
@@ -73,10 +74,9 @@ public class ApplicationService {
     public void firstResult(ApplicationDto request, Long id) {
         Application application = applicationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 지원이 존재하지 않습니다."));
-        RoleAssignment roleAssignment = roleAssignmentRepository.findByBoardAndRole(application.getBoard(), Role.valueOf(request.getRole()))
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 모집분야가 존재하지 않습니다."));
-        extracted(roleAssignment);
         application.setFirstStatus(valueOf(request.getFirstStatus()));
+        application.setResultContent(request.getResultContent());
+        application.setResultUrl(request.getResultUrl());
         if (application.getFirstStatus() == ACCEPTED) {
             application.setFinalStatus(PENDING);
         }
@@ -85,34 +85,42 @@ public class ApplicationService {
     //final 지원 수락 or 거절
     @Transactional
     public void finalResult(ApplicationDto request, Long id) {
+        //application리포지토리에서 해당 지원 찾기
         Application application = applicationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 지원이 존재하지 않습니다."));
-        application.setFinalStatus(ApplicationFinalStatus.valueOf(request.getFinalStatus()));
-        RoleAssignment roleAssignment = roleAssignmentRepository.findByBoardAndRole(application.getBoard(), Role.valueOf(request.getRole()))
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 모집분야가 존재하지 않습니다."));
-        extracted(roleAssignment);
-        // 모든 모집 인원이 차면? -> 모집완료 상태로 변환
+        //board찾아오기
         Long boardId = application.getBoard().getId();
-        RecruitBoard board = (RecruitBoard) boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 글이 존재하지 않습니다."));
-        List<RoleAssignment> role = roleAssignmentRepository.findByBoard(board);
-        AtomicBoolean state = new AtomicBoolean(true);
-        role.stream().forEach(r -> {
-            if (r.getAppliedNumber() != r.getRequiredNumber()) {
-                state.set(false);
-            }
-        });
-        if (!state.get()) {
-            board.setStatus(RecruitStatus.RECRUIT_COMPLETE);
-        }
-    }
+        RecruitBoard board = recruitRepository.findById(boardId).orElseThrow((() -> new IllegalArgumentException("해당하는 글이 존재하지 않습니다.")));
+        //roleAssignment에서 지원자가 지원하는 분야와 해당 글에 해당하는 roleAssignment 객체 가져오기
+        RoleAssignment roleAssignment = roleAssignmentRepository.findByBoardAndRole(board, application.getRole())
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 모집분야가 존재하지 않습니다."));
 
-    private void extracted(RoleAssignment roleAssignment) {
         // if 이미 해당 지원 분야가 꽉차면 있으면 예외 터지게
         int appliedNumber = roleAssignment.getAppliedNumber();
         int requiredNumber = roleAssignment.getRequiredNumber();
         if (appliedNumber >= requiredNumber) {
             throw new IllegalStateException("해당 분야의 모집이 마감되었습니다.");
+        }
+        //최종 수락인지 거절인지 dto로 받아와서 담기
+        ApplicationFinalStatus applicationFinalStatus = ApplicationFinalStatus.valueOf(request.getFinalStatus());
+        application.setFinalStatus(applicationFinalStatus);
+        if(applicationFinalStatus.equals(ApplicationFinalStatus.ACCEPTED)){
+            roleAssignment.setAppliedNumber(appliedNumber + 1);
+            //해당 role이 다 찬다면
+            if(roleAssignment.getRequiredNumber() == roleAssignment.getAppliedNumber()){
+                roleAssignment.setFull(true);
+            }
+            // 지금 수락한다면 ? -> 모든 모집 인원이 차면? -> 모집완료 상태로 변환
+            List<RoleAssignment> role = roleAssignmentRepository.findByBoard(board);
+            AtomicBoolean state = new AtomicBoolean(true);
+            role.stream().forEach(r -> {
+                if (r.getAppliedNumber() != r.getRequiredNumber()) {
+                    state.set(false);
+                }
+            });
+            if (!state.get()) {
+                board.setStatus(RecruitStatus.RECRUIT_COMPLETE);
+            }
         }
     }
 }

@@ -29,4 +29,7 @@ public class RoleAssignment {
     @Column(name = "appliedNumber", nullable = false)
     private int appliedNumber; // 모집된 인원
 
+    @Column(name = "isFull",nullable = false)
+    private boolean isFull; // 다 찾는지
+
 }

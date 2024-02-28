@@ -39,6 +39,10 @@ public class Application {
     @Column(nullable = false)
     private Role role;
 
+    private String ResultContent;
+
+    private String ResultUrl;
+
     @Enumerated(EnumType.STRING)
     private ApplicationStatus firstStatus; // 글쓴이의 승인 / 거절
 
