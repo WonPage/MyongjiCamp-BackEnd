@@ -19,15 +19,9 @@ public class RoleAssignment {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id")
+    @JoinColumn(name = "board")
     private RecruitBoard board;
 
-/*
-    public void changeBoard(RecruitBoard board){
-        this.board = board;
-        board.getRoles().add(this);
-    }
-*/
 
     @Enumerated(EnumType.STRING) //엔티티의 필드가 열거형일 때 사용
     @Column(name = "role", nullable = false)
