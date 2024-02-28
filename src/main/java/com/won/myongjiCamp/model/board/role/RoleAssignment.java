@@ -4,6 +4,9 @@ import com.won.myongjiCamp.model.board.RecruitBoard;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,13 +22,21 @@ public class RoleAssignment {
     @JoinColumn(name = "board_id")
     private RecruitBoard board;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+/*
+    public void changeBoard(RecruitBoard board){
+        this.board = board;
+        board.getRoles().add(this);
+    }
+*/
+
+    @Enumerated(EnumType.STRING) //엔티티의 필드가 열거형일 때 사용
+    @Column(name = "role", nullable = false)
     private Role role;
 
-    @Column(nullable = false)
+    @Column(name = "requiredNumber", nullable = false)
     private int requiredNumber; // 모집 하는 인원
 
-    @Column(nullable = false)
+    @Column(name = "appliedNumber", nullable = false)
     private int appliedNumber; // 모집된 인원
+
 }
