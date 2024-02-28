@@ -4,9 +4,6 @@ import com.won.myongjiCamp.model.board.RecruitBoard;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,5 +29,8 @@ public class RoleAssignment {
 
     @Column(name = "appliedNumber", nullable = false)
     private int appliedNumber; // 모집된 인원
+
+    @Column(name = "isFull",nullable = false)
+    private boolean isFull; // 다 찾는지
 
 }

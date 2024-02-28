@@ -1,7 +1,4 @@
 package com.won.myongjiCamp.service;
 
-public class RoleService {
-
-
-
+public class CommentService {
 }
