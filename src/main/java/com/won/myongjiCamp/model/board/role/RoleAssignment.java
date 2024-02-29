@@ -19,7 +19,6 @@ public class RoleAssignment {
     @JoinColumn(name = "board")
     private RecruitBoard board;
 
-
     @Enumerated(EnumType.STRING) //엔티티의 필드가 열거형일 때 사용
     @Column(name = "role", nullable = false)
     private Role role;

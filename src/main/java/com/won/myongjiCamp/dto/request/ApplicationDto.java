@@ -14,4 +14,8 @@ public class ApplicationDto {
     private String firstStatus;
 
     private String finalStatus;
+
+    private String resultContent;
+
+    private String resultUrl;
 }

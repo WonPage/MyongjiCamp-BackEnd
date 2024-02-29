@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class Member {
     private String nickname;
 
     @CreationTimestamp
-    private LocalDateTime createDate;
+    private Timestamp createDate;
 
     @OneToMany(mappedBy = "member")
     private List<Resume> resumes = new ArrayList<>();
