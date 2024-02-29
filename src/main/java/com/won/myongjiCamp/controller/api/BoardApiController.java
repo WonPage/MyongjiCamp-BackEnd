@@ -10,6 +10,7 @@ import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.RecruitBoard;
 import com.won.myongjiCamp.model.board.RecruitStatus;
 import com.won.myongjiCamp.repository.MemberRepository;
+import com.won.myongjiCamp.service.BoardService;
 import com.won.myongjiCamp.service.RecruitService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 @RestController
@@ -29,6 +31,8 @@ public class BoardApiController {
     private final RecruitService recruitService;
 
     private final MemberRepository memberRepository;
+
+    private final BoardService boardService;
     // 게시글 작성
 /*
     @PostMapping("/api/auth/recruit")
@@ -70,6 +74,13 @@ public class BoardApiController {
 
     }*/
 
+//    //글 조회
+//    @GetMapping("/api/board")
+//    public Result findAll(Pageable pageable) {
+//        boardService.findAll();
+//        return new Result(collect);
+//    }
+
 
     //get할 때는 그냥 Dto로 해주는 것보다는 Result에 담아서 주는 것이 좋다.
     @Data
@@ -80,7 +91,7 @@ public class BoardApiController {
 
     @Data
     @AllArgsConstructor
-    static class RecruitResPonseDto {
+    static class RecruitResponseDto {
         private String title;
         private String content;
         private Integer scrapCount;
@@ -90,6 +101,19 @@ public class BoardApiController {
         private List<RoleAssignmentDto> roleAssignments; //역할
         private List<CommentIdDto> comments; // 댓글
 
+
+    }
+
+    //글 조회용
+    @Data
+    @AllArgsConstructor
+    static class BoardListResponseDto {
+        private Integer scrapCount;
+        private RecruitStatus status; //모집 중 or 모집 완료*/
+        private String preferredLocation; //활동 지역
+        private String expectedDuration; //예상 기간
+        private List<RoleAssignmentDto> roleAssignments; //역할
+        private List<CommentIdDto> comments; // 댓글
 
     }
 
