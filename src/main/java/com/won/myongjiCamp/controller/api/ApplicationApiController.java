@@ -21,7 +21,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -141,7 +140,7 @@ public class ApplicationApiController {
         private ApplicationStatus firstStatus; // 처음 요청 상태
         private ApplicationFinalStatus finalStatus; // 최종 요청 상태
         private Timestamp applyCreateDate; //지원한 시간
-        private LocalDateTime boardCreateDate; //글 작성 시간
+        private Timestamp boardCreateDate; //글 작성 시간
         private Role role;
         private Integer icon;
         private String nickname;
@@ -150,7 +149,7 @@ public class ApplicationApiController {
 
 
         //모집자 입장에서의 지원 확인 (지원현황)
-        public ApplicationResponseDto(Long boardId, Long memberId, Long num, String boardTitle, LocalDateTime boardCreateDate) {
+        public ApplicationResponseDto(Long boardId, Long memberId, Long num, String boardTitle, Timestamp boardCreateDate) {
             this.boardId = boardId;
             this.memberId = memberId;
             this.num = num;

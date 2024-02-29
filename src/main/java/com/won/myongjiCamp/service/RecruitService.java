@@ -3,11 +3,13 @@ package com.won.myongjiCamp.service;
 import com.won.myongjiCamp.dto.RecruitDto;
 import com.won.myongjiCamp.dto.RoleAssignmentDto;
 import com.won.myongjiCamp.model.Member;
+import com.won.myongjiCamp.model.application.Application;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.RecruitBoard;
 import com.won.myongjiCamp.model.board.RecruitStatus;
 import com.won.myongjiCamp.model.board.role.Role;
 import com.won.myongjiCamp.model.board.role.RoleAssignment;
+import com.won.myongjiCamp.repository.ApplicationRepository;
 import com.won.myongjiCamp.repository.RecruitRepository;
 import com.won.myongjiCamp.repository.RoleAssignmentRepository;
 import jakarta.persistence.Id;
@@ -28,6 +30,7 @@ import java.util.Optional;
 public class RecruitService {
     private final RecruitRepository recruitRepository;
     private final RoleAssignmentRepository roleAssignmentRepository;
+    private final ApplicationRepository applicationRepository;
 
     // 게시글 작성
     @Transactional
@@ -148,6 +151,14 @@ public class RecruitService {
     public RecruitBoard recruitDetail(Long id) {
         RecruitBoard recruitBoard = recruitRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+
+        // Board를 참조하는 Application들을 찾음
+        List<Application> applications = applicationRepository.findByBoard(recruitBoard);
+
+        // 참조하는 Application들의 board 필드를 null로 설정
+        for (Application application : applications) {
+            application.setBoard(null);
+        }
 
         return recruitBoard;
 
