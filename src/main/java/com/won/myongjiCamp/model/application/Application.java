@@ -6,6 +6,8 @@ import com.won.myongjiCamp.model.board.role.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.sql.Timestamp;
 
@@ -27,6 +29,7 @@ public class Application {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private Board board;
 
     @Column(nullable = false)

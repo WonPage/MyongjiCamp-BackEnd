@@ -1,5 +1,7 @@
 package com.won.myongjiCamp.service;
 
+import com.won.myongjiCamp.config.auth.PrincipalDetail;
+import com.won.myongjiCamp.controller.api.ApplicationApiController;
 import com.won.myongjiCamp.dto.request.ApplicationDto;
 import com.won.myongjiCamp.exception.AlreadyProcessException;
 import com.won.myongjiCamp.model.Member;
@@ -15,17 +17,22 @@ import com.won.myongjiCamp.repository.ApplicationRepository;
 import com.won.myongjiCamp.repository.BoardRepository;
 import com.won.myongjiCamp.repository.RecruitRepository;
 import com.won.myongjiCamp.repository.RoleAssignmentRepository;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import static com.won.myongjiCamp.model.application.ApplicationFinalStatus.PENDING;
 import static com.won.myongjiCamp.model.application.ApplicationStatus.*;
+import static org.apache.coyote.http11.Constants.a;
 
 @Transactional(readOnly = true)
 @Service
@@ -123,4 +130,36 @@ public class ApplicationService {
             }
         }
     }
+
+    public List<RecruitBoard> listOfWriter(Member writer) {
+        List<RecruitBoard> boards = recruitRepository.findByMember(writer);
+        return boards;
+    }
+
+    public List<Application> listOfApplicant(Member applicant) {
+        List<Application> applications = applicationRepository.findByApplicant(applicant);
+        return applications;
+    }
+
+    public Application detailApplication(Long id) {
+        Application application = applicationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 지원서가 존재하지 않습니다."));
+        return application;
+    }
+
+    public List<Application> listApplication(Long id) {
+        RecruitBoard recruitBoard = recruitRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 글이 존재하지 않습니다."));
+
+        List<Application> applications = applicationRepository.findByBoard(recruitBoard);
+        return applications;
+    }
+
+    public Application resultMessage(Long id) {
+        Application application = applicationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 지원이 존재하지 않습니다."));
+        return application;
+
+    }
 }
+
