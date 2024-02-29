@@ -18,57 +18,65 @@ import java.util.List;
 public class CommentService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+
     // 댓글 작성
     @Transactional
     public void create(CommentDto commentDto, Member member, Long id){
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-        if(commentDto.getCDepth() == 0){ //부모 댓글
+        if(commentDto.getCdepth() == 0){ //부모 댓글
             Comment comment = Comment.builder()
                     .board(board)
                     .content(commentDto.getContent())
                     .writer(member)
-                    .cDepth(0)
+                    .cdepth(0)
                     .isDelete(false)
                     .children(commentDto.getChildren())
                     .build();
             commentRepository.save(comment);
         }
         else{ // 대댓글
-            Comment comment = commentRepository.findById(id)
+            Comment parentComment = commentRepository.findById(commentDto.getParentId())
+//            Comment parentComment = commentRepository.findByComment(commentDto)
                     .orElseThrow(()->new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
-
+            Comment childComment = Comment.builder()
+                    .board(board)
+                    .parent(parentComment)
+                    .content(commentDto.getContent())
+                    .writer(member)
+                    .cdepth(1)
+                    .isDelete(false)
+                    .build();
+            commentRepository.save(childComment);
         }
 
-    // 대댓글이면 댓글 child에 값 추가
     }
 
-/*    // 댓글 조회
-    public List<Comment> commentAll(Board board){
-        // 정렬 어떻게 하냐..
-        return commentRepository.findByBoard(board);
-    }*/
 
     // 댓글 삭제
     @Transactional
-    public void delete(CommentDto commentDto, Member member, Long id){
-/*        Board board = boardRepository.findById(commentDto.getBoardId())
-                .orElseThrow(()->new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));*/
+    public void delete(Long id){
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(()->new IllegalArgumentException("해당 댓글이 존재 하지 않습니다."));
-        // 부모 댓글임
-        // 1. 자식 댓글이 없음 -> 그냥 삭제
-        // 2. 자식 댓글이 있음 -> 내용만 삭제 ("삭제된 내용입니다.")
-/*        if(comment.getCDepth() == 0 && ){
-        }*/
 
-
-        //자식 댓글임
-        // 그냥 삭제
-
-
-
+        if(comment.getCdepth() == 0){ // 부모 댓글
+            if(comment.getChildren().size()==0) { // 자식 x
+                commentRepository.delete(comment);
+            }
+            else{ // 자식 o
+                comment.setDelete(true);
+            }
+        }
+        else{ // 자식 댓글
+            commentRepository.delete(comment);
+        }
     }
+
+    // 댓글 조회
+    public List<Comment> commentAll(Board board){
+        return commentRepository.findByBoard(board);
+    }
+
 
 
 }

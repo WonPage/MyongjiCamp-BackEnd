@@ -4,6 +4,7 @@ import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import com.won.myongjiCamp.dto.RecruitDto;
 import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.model.Member;
+import com.won.myongjiCamp.model.board.RecruitBoard;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.service.RecruitService;
 import jakarta.validation.Valid;
@@ -55,9 +56,14 @@ public class BoardApiController {
         return new ResponseDto<String>(HttpStatus.OK.value(), "게시글이 삭제되었습니다.");
     }
 
+
     // 게시글 상세 읽기
-/*    @GetMapping("/api/auth/recruit/{id}")
-    public */
+/*
+    @GetMapping("/api/auth/recruit/{id}")
+    public Result ListBoard(@AuthenticationPrincipal PrincipalDetail principalDetail,@PathVariable Long id){
+        RecruitBoard recruitBoard = recruitService.recruitDetail(id);
+    }
+*/
 
     //get할 때는 그냥 Dto로 해주는 것보다는 Result에 담아서 주는 것이 좋다.
     @Data

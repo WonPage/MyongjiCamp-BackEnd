@@ -45,7 +45,7 @@ public class Comment {
 
     @Column(name = "c_dept",nullable = false)
 //    @ColumnDefault("0")
-    private int cDepth; //commentDept, 0이 기본값, 0이면 부모 댓글, 1이면 대댓글
+    private int cdepth; //commentDept, 0이 기본값, 0이면 부모 댓글, 1이면 대댓글
 
 
     //???
@@ -54,8 +54,10 @@ public class Comment {
     private Comment parent;
 
 
-    @Column(name = "c_parentId") //기본 값 0
-    private Long cParentId; //대댓글일 경우 모댓글의 ci값 저장해 누구의 대댓글인지 확인 가능
+    //댓글일 경우 이 값은 자신의 id, 대댓글이면 부모의 id
+/*    @Column(name = "c_parentId")
+    private Long cParentId; //대댓글일 경우 모댓글의 ci값 저장해 누구의 대댓글인지 확인 가능*/
+
 
 
 
