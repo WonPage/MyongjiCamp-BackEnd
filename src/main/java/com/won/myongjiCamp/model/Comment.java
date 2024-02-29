@@ -38,10 +38,6 @@ public class Comment {
     @CreationTimestamp
     private Timestamp createDate;
 
-    @Column(name = "modified_date",nullable = false)
-    @UpdateTimestamp
-    private Timestamp modifiedDate ;
-
 
     @Column(name = "c_dept",nullable = false)
 //    @ColumnDefault("0")

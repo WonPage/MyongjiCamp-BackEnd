@@ -1,5 +1,6 @@
 package com.won.myongjiCamp.dto;
 
+import com.won.myongjiCamp.dto.request.CommentIdDto;
 import com.won.myongjiCamp.model.Comment;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.Board;
@@ -29,7 +30,7 @@ public class CommentDto {
 
     private Long parentId;
 
-    private List<Comment> children = new ArrayList<>();
+    private List<CommentIdDto> children = new ArrayList<>();
 
 
 }

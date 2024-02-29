@@ -3,8 +3,12 @@ package com.won.myongjiCamp.controller.api;
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import com.won.myongjiCamp.dto.RecruitDto;
 import com.won.myongjiCamp.dto.ResponseDto;
+import com.won.myongjiCamp.dto.RoleAssignmentDto;
+import com.won.myongjiCamp.dto.request.CommentIdDto;
+import com.won.myongjiCamp.model.Comment;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.RecruitBoard;
+import com.won.myongjiCamp.model.board.RecruitStatus;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.service.RecruitService;
 import jakarta.validation.Valid;
@@ -58,12 +62,14 @@ public class BoardApiController {
 
 
     // 게시글 상세 읽기
-/*
-    @GetMapping("/api/auth/recruit/{id}")
+
+/*    @GetMapping("/api/auth/recruit/{id}")
     public Result ListBoard(@AuthenticationPrincipal PrincipalDetail principalDetail,@PathVariable Long id){
         RecruitBoard recruitBoard = recruitService.recruitDetail(id);
-    }
-*/
+
+
+    }*/
+
 
     //get할 때는 그냥 Dto로 해주는 것보다는 Result에 담아서 주는 것이 좋다.
     @Data
@@ -72,11 +78,19 @@ public class BoardApiController {
         private T data;
     }
 
-/*    @Data
+    @Data
     @AllArgsConstructor
     static class RecruitResPonseDto {
         private String title;
         private String content;
-    }*/
+        private Integer scrapCount;
+        private RecruitStatus status; //모집 중 or 모집 완료*/
+        private String preferredLocation; //활동 지역
+        private String expectedDuration; //예상 기간
+        private List<RoleAssignmentDto> roleAssignments; //역할
+        private List<CommentIdDto> comments; // 댓글
+
+
+    }
 
 }

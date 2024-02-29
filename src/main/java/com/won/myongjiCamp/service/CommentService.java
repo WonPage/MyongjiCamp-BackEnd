@@ -31,7 +31,7 @@ public class CommentService {
                     .writer(member)
                     .cdepth(0)
                     .isDelete(false)
-                    .children(commentDto.getChildren())
+//                    .children(commentDto.getChildren())
                     .build();
             commentRepository.save(comment);
         }
@@ -46,6 +46,7 @@ public class CommentService {
                     .writer(member)
                     .cdepth(1)
                     .isDelete(false)
+
                     .build();
             commentRepository.save(childComment);
         }

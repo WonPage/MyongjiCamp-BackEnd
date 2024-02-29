@@ -13,13 +13,13 @@ import com.won.myongjiCamp.repository.ApplicationRepository;
 import com.won.myongjiCamp.repository.RecruitRepository;
 import com.won.myongjiCamp.repository.RoleAssignmentRepository;
 import jakarta.persistence.Id;
-import jdk.jfr.Timestamp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.stylesheets.LinkStyle;
 
 //import java.sql.Timestamp;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -86,6 +86,7 @@ public class RecruitService {
         recruitBoard.setContent(recruitDto.getContent());
         recruitBoard.setPreferredLocation(recruitDto.getPreferredLocation());
         recruitBoard.setExpectedDuration(recruitDto.getExpectedDuration());
+        recruitBoard.setModifiedDate(new Timestamp(System.currentTimeMillis()));
 
         for(RoleAssignmentDto roleAssignmentDto : recruitDto.getRoleAssignments()) {
             RoleAssignment roleAssignment = roleAssignmentRepository.findByBoardAndRole(recruitBoard, Role.valueOf(roleAssignmentDto.getRole())).orElse(null);
@@ -97,7 +98,7 @@ public class RecruitService {
                 roleAssignment.setRequiredNumber(roleAssignmentDto.getRequiredNumber());
 
                 // 구한 사람 수 == 구하는 사람 수 일 경우, RoleAssignment의 isFull값을 변경하기 위해 if문 사용
-                if(roleAssignmentDto.getAppliedNumber().equals(roleAssignmentDto.getRequiredNumber())){
+                if(roleAssignmentDto.getRequiredNumber().equals(roleAssignmentDto.getAppliedNumber())){
                    roleAssignment.setFull(true);
                 }
                else{ // 역할들 중 하나라도 구한 사람 수 != 구하는 사람 수 일 경우, RecruitStatus.RECRUIT_ONGOING이도록
@@ -134,6 +135,9 @@ public class RecruitService {
         // 모든 역할들이 구한 사람 수 == 구하는 사람 수이다.
         if(allFull = true){
             recruitBoard.setStatus(RecruitStatus.RECRUIT_COMPLETE);
+        }
+        else{
+            recruitBoard.setStatus(RecruitStatus.RECRUIT_ONGOING);
         }
 
 
