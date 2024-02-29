@@ -7,6 +7,7 @@ import lombok.Data;
 public class RoleAssignmentDto {
 
     private String role;
+
     private Integer requiredNumber;
 
     private Integer appliedNumber;

@@ -75,8 +75,6 @@ public class RecruitService {
     // 게시글 수정
     @Transactional
     public void update(RecruitDto recruitDto, Long id){
-//        ArrayList<Boolean> arr = new ArrayList<>();
-
 
         Boolean allFull = true;
         RecruitBoard recruitBoard = recruitRepository.findById(id)
@@ -151,6 +149,7 @@ public class RecruitService {
         RecruitBoard recruitBoard = recruitRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
         return recruitBoard;
+
     }
 
 

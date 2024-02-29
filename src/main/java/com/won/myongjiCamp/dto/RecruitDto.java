@@ -9,7 +9,6 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.List;
-import java.util.Map;
 
 @Data
 public class RecruitDto {

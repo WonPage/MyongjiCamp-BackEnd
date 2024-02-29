@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.CurrentTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Getter @Setter
@@ -37,11 +38,11 @@ public abstract class Board {
 
     @Column(name = "created_date")
     @CreationTimestamp
-    private LocalDateTime createDate = LocalDateTime.now();
+    private Timestamp createDate;
 
     @Column(name = "modified_date")
     @UpdateTimestamp
-    private LocalDateTime modifiedDate = LocalDateTime.now();
+    private Timestamp modifiedDate;
 
 
 }

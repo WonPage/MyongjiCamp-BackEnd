@@ -1,5 +1,6 @@
 package com.won.myongjiCamp.model.board;
 
+import com.won.myongjiCamp.model.Comment;
 import com.won.myongjiCamp.model.board.role.RoleAssignment;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,6 +28,9 @@ public class RecruitBoard extends Board {
     // OneToMany에서는 many가 주인
     @OneToMany(mappedBy = "board",cascade = CascadeType.ALL,orphanRemoval = true) //RecruitBoard가 연관관계의 주인이 아니다.
     private List<RoleAssignment> roles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
 
 }
