@@ -12,6 +12,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -22,11 +26,11 @@ public class BoardService {
     public Page<Board> searchBoards(BoardSearchDto requestDto) {
 
         String property = "modifiedDate";
-
+        String decodedKeyword = URLDecoder.decode(requestDto.getKeyword(), StandardCharsets.UTF_8);
         Pageable pageable = PageRequest.of(requestDto.getPageNum(), 8, Sort.by(requestDto.getDirection(), property));
 
         Specification<Board> spec = Specification.where(BoardSpecification.withRoles(requestDto.getRoles()))
-                .and(BoardSpecification.withTitleOrContent(requestDto.getKeyword()))
+                .and(BoardSpecification.withTitleOrContent(decodedKeyword))
                 .and(BoardSpecification.withStatus(requestDto.getStatus()))
                 .and(BoardSpecification.withBoardType(requestDto.getBoardType()));
 
