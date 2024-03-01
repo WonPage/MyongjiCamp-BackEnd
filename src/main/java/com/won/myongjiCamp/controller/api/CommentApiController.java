@@ -41,20 +41,20 @@ public class CommentApiController {
     private final CommentRepository commentRepository;
 
     //댓글 작성
-    @PostMapping("/api/auth/recruit/{id}/comment")
+/*    @PostMapping("/api/auth/recruit/{id}/comment")
     public ResponseDto<String> createComment(@RequestBody @Valid CommentDto commentDto, @AuthenticationPrincipal PrincipalDetail principal, @PathVariable Long id){
         commentService.create(commentDto,principal.getMember(),id);
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성 완료");
-    }
+    }*/
 
     //댓글 작성 테스트용
-/*    @PostMapping("/api/auth/recruit/{id}/comment")
+    @PostMapping("/api/auth/recruit/{id}/comment")
     public ResponseDto<String> createComment(@RequestBody @Valid CommentDto commentDto, @PathVariable Long id) {
         Member member = memberRepository.findById(1L)
                 .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
         commentService.create(commentDto, member, id);
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성 완료");
-    }*/
+    }
 
     //댓글 삭제
     @DeleteMapping("/api/auth/recruit/{board_id}/comment/{comment_id}")
@@ -79,12 +79,12 @@ public class CommentApiController {
 
         Board board = recruitRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-        if (principalDetail == null) {
+ /*       if (principalDetail == null) {
             return new Result<>(Collections.emptyList()); // 로그인하지 않은 경우 빈 리스트 반환
-        }
+        }*/
         List<CommentResponseDto> result = new ArrayList<>();
         Map<Long, CommentResponseDto> map = new HashMap<>();
-        List<Comment> commentList = commentService.commentAll(id);
+        List<Comment> commentList = commentService.commentAll(board.getId());
 
         commentList.stream().forEach(c->{
             CommentResponseDto rDto = convertCommentToDto(c);
@@ -119,9 +119,6 @@ public class CommentApiController {
                 new ArrayList<>()
         );
 
-
-
-        //바뀜
     }
 }
 

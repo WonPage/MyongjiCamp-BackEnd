@@ -143,16 +143,6 @@ public class RecruitService {
 
 
     }
-
-    // 게시글 삭제
-    @Transactional
-    public void delete(Long id){
-        RecruitBoard recruitBoard = recruitRepository.findById(id)
-                .orElseThrow(()->new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-        recruitRepository.delete(recruitBoard);
-    }
-
-    //게시글 상세 조회
     public RecruitBoard recruitDetail(Long id) {
         RecruitBoard recruitBoard = recruitRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
@@ -168,6 +158,26 @@ public class RecruitService {
         return recruitBoard;
 
     }
+
+    // 게시글 삭제
+    @Transactional
+    public void delete(Long id){
+        RecruitBoard recruitBoard = recruitRepository.findById(id)
+                .orElseThrow(()->new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+        recruitRepository.delete(recruitBoard);
+    }
+
+    //게시글 상세 조회
+    public RecruitBoard recruitDetail(long id) {
+        RecruitBoard recruitBoard = recruitRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+     /*   1. 제목과 내용은 로그인 필요 x
+        2. 역할과 댓글은 로그인 필요*/
+        return recruitBoard;
+
+    }
+
+
 
 
 }

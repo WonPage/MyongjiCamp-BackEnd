@@ -85,7 +85,7 @@ public class CommentService {
     public List<Comment> commentAll(Long id) { //여기서 id는 Board id
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-        return commentRepository.findAll();
+        return commentRepository.findByBoard(board);
 
     }
 
