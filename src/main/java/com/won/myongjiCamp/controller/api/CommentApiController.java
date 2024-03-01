@@ -21,14 +21,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -43,20 +41,20 @@ public class CommentApiController {
     private final CommentRepository commentRepository;
 
     //댓글 작성
-/*    @PostMapping("/api/auth/recruit/{id}/comment")
+    @PostMapping("/api/auth/recruit/{id}/comment")
     public ResponseDto<String> createComment(@RequestBody @Valid CommentDto commentDto, @AuthenticationPrincipal PrincipalDetail principal, @PathVariable Long id){
         commentService.create(commentDto,principal.getMember(),id);
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성 완료");
-    }*/
+    }
 
     //댓글 작성 테스트용
-    @PostMapping("/api/auth/recruit/{id}/comment")
+/*    @PostMapping("/api/auth/recruit/{id}/comment")
     public ResponseDto<String> createComment(@RequestBody @Valid CommentDto commentDto, @PathVariable Long id) {
         Member member = memberRepository.findById(1L)
                 .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
         commentService.create(commentDto, member, id);
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성 완료");
-    }
+    }*/
 
     //댓글 삭제
     @DeleteMapping("/api/auth/recruit/{board_id}/comment/{comment_id}")
@@ -77,11 +75,13 @@ public class CommentApiController {
 
     //댓글 전체 조회
     @GetMapping("/api/auth/recruit/{board_id}/comment")
-    private Result CommentList(@PathVariable("board_id") Long id){
+    private Result CommentList(@PathVariable("board_id") Long id,@AuthenticationPrincipal PrincipalDetail principalDetail){
+
         Board board = recruitRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-
-
+        if (principalDetail == null) {
+            return new Result<>(Collections.emptyList()); // 로그인하지 않은 경우 빈 리스트 반환
+        }
         List<CommentResponseDto> result = new ArrayList<>();
         Map<Long, CommentResponseDto> map = new HashMap<>();
         List<Comment> commentList = commentService.commentAll(id);
@@ -110,23 +110,15 @@ public class CommentApiController {
 
     public CommentResponseDto convertCommentToDto(Comment comment){
         return new CommentResponseDto(
+                comment.getId(),
                 comment.getContent(),
                 comment.getCreateDate(),
                 comment.getWriter().getId(),
+                comment.getWriter().getNickname(), //String
+                comment.getWriter().getProfileIcon(), //Integer
                 new ArrayList<>()
         );
     }
-/*
-    public CommentResponseDto childrenToDto(Comment child){ // comment entity의 children을 comment -> CommentResponseDto
-        CommentResponseDto c = CommentResponseDto(child.getId());
-        c.setContent(child.getContent());
-        c.setCommentCreateDate(child.getCreateDate());
-        c.setWriterId(child.getWriter().getId());
-
-    }
-*/
-
-
 }
 
 
