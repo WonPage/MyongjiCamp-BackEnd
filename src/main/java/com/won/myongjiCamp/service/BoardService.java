@@ -25,7 +25,6 @@ public class BoardService {
 
         Pageable pageable = PageRequest.of(requestDto.getPageNum(), 8, Sort.by(requestDto.getDirection(), property));
 
-        System.out.println(requestDto);
         Specification<Board> spec = Specification.where(BoardSpecification.withRoles(requestDto.getRoles()))
                 .and(BoardSpecification.withTitleOrContent(requestDto.getKeyword()))
                 .and(BoardSpecification.withStatus(requestDto.getStatus()))

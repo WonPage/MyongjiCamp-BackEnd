@@ -124,7 +124,6 @@ public class BoardApiController {
         private int commentCount;
         private int scrapCount;
 
-        // Board를 받아서 BoardResponseDto를 생성하는 생성자
         public BoardListResponseDto(Board board) {
             this.boardId = board.getId();
             this.title = board.getTitle();
@@ -132,7 +131,6 @@ public class BoardApiController {
             this.commentCount = board.getCommentCount();
             this.scrapCount = board.getScrapCount();
 
-            // Board가 실제로는 RecruitBoard일 경우만 roles와 expectedDuration 처리
             if (board instanceof RecruitBoard recruitBoard) {
                 this.roles = recruitBoard.getRoles().stream()
                         .map(RoleAssignment::getRole)

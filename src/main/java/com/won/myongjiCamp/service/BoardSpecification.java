@@ -11,7 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.List;
 
 public class BoardSpecification {
-
+//역할(태그)로 검색
     public static Specification<Board> withRoles(List<String> roles) {
         return (root, query, cb) -> {
             if (roles == null || roles.isEmpty()) {
@@ -21,7 +21,7 @@ public class BoardSpecification {
             return join.get("role").in(roles);
         };
     }
-
+//제목이나 내용으로 검색
     public static Specification<Board> withTitleOrContent(String keyword) {
         return (root, query, cb) -> {
             if (keyword == null || keyword.isEmpty()) {
@@ -33,45 +33,39 @@ public class BoardSpecification {
             );
         };
     }
-
+//recruit 게시판 중 모집중(ongoing)인지, 모집완료(complete)인지
     public static Specification<Board> withStatus(String status) {
         return (root, query, cb) -> {
             if (status == null || status.isEmpty()) {
-                System.out.println("status가 null이야!");
                 return null;
             }
 
             if ("ongoing".equals(status)) {
-                System.out.println("status가 RECRUIT_ONGOING!");
                 return cb.equal(root.get("status"), RecruitStatus.RECRUIT_ONGOING);
             }
 
             if ("complete".equals(status)) {
-                System.out.println("status가 RECRUIT_COMPLETE!");
                 return cb.equal(root.get("status"), RecruitStatus.RECRUIT_COMPLETE);
             }
 
             return null;
         };
     }
-
+//recruit 게시판인지, complete 게시판인지
     public static Specification<Board> withBoardType(String boardType) {
         return (root, query, cb) -> {
             if (boardType == null || boardType.isEmpty()) {
                 return null;
             }
 
-            // boardType이 "recruit"일 경우 RecruitBoard만 검색
             if ("recruit".equals(boardType)) {
                 return cb.equal(root.type(), RecruitBoard.class);
             }
 
-            // boardType이 "recruit"일 경우 RecruitBoard만 검색
             if ("complete".equals(boardType)) {
                 return cb.equal(root.type(), CompleteBoard.class);
             }
 
-            // 그 외의 경우 null을 반환 (즉, 이 조건은 검색에 영향을 주지 않음)
             return null;
         };
     }
