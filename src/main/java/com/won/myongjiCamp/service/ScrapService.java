@@ -1,11 +1,20 @@
 package com.won.myongjiCamp.service;
 
+import com.won.myongjiCamp.dto.request.ScrapDto;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.Scrap;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.repository.BoardRepository;
+import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.repository.ScrapRepository;
+import com.won.myongjiCamp.specification.BoardSpecification;
+import com.won.myongjiCamp.specification.ScrapSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +25,7 @@ public class ScrapService  {
 
     private final ScrapRepository scrapRepository;
     private final BoardRepository boardRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public String scrap(Long id, Member member) {
@@ -41,5 +51,20 @@ public class ScrapService  {
             return data;
         }
 
+    }
+
+    public Page<Scrap> pullScraps(ScrapDto requestDto, Member member) {
+
+        Member findMember = memberRepository.findById(member.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+
+        String property = "modifiedDate";
+        Pageable pageable = PageRequest.of(requestDto.getPageNum(), 8, Sort.by(Sort.Direction.DESC, property));
+
+        Specification<Scrap> spec = Specification.where(ScrapSpecification.withStatus(requestDto.getStatus()))
+                .and(ScrapSpecification.withBoardType(requestDto.getBoardType()))
+                .and(ScrapSpecification.withMember(findMember));
+
+        return scrapRepository.findAll(spec, pageable);
     }
 }

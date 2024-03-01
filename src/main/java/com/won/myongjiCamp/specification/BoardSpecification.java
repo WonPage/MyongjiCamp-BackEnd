@@ -1,4 +1,4 @@
-package com.won.myongjiCamp.service;
+package com.won.myongjiCamp.specification;
 
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.CompleteBoard;
@@ -69,4 +69,5 @@ public class BoardSpecification {
             return null;
         };
     }
+
 }
