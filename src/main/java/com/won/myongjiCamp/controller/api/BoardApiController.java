@@ -5,11 +5,15 @@ import com.won.myongjiCamp.dto.CommentDto;
 import com.won.myongjiCamp.dto.RecruitDto;
 import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.dto.RoleAssignmentDto;
+import com.won.myongjiCamp.dto.request.BoardSearchDto;
 import com.won.myongjiCamp.dto.request.CommentIdDto;
 import com.won.myongjiCamp.model.Comment;
 import com.won.myongjiCamp.model.Member;
+import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.RecruitBoard;
 import com.won.myongjiCamp.model.board.RecruitStatus;
+import com.won.myongjiCamp.model.board.role.Role;
+import com.won.myongjiCamp.model.board.role.RoleAssignment;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.service.BoardService;
 import com.won.myongjiCamp.service.RecruitService;
@@ -17,13 +21,16 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.print.Pageable;
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -75,13 +82,15 @@ public class BoardApiController {
 
     }*/
 
-//    //글 조회
-//    @GetMapping("/api/board")
-//    public Result findAll(Pageable pageable) {
-//        boardService.findAll();
-//        return new Result(collect);
-//    }
-
+    //글 조회(검색)
+    @GetMapping("/api/board")
+    public Result findAll(@RequestBody @Valid BoardSearchDto requestDto) {
+        Page<Board> boards = boardService.searchBoards(requestDto);
+        List<BoardListResponseDto> collect = boards.stream()
+                .map(BoardListResponseDto::new)
+                .collect(Collectors.toList());
+        return new Result(collect);
+    }
 
     //get할 때는 그냥 Dto로 해주는 것보다는 Result에 담아서 주는 것이 좋다.
     @Data
@@ -105,17 +114,32 @@ public class BoardApiController {
 
     }
 
-    //글 조회용
     @Data
-    @AllArgsConstructor
-    static class BoardListResponseDto {
-        private Integer scrapCount;
-        private RecruitStatus status; //모집 중 or 모집 완료*/
-        private String preferredLocation; //활동 지역
-        private String expectedDuration; //예상 기간
-        private List<RoleAssignmentDto> roleAssignments; //역할
-        private List<CommentDto> comments; // 댓글
+    public class BoardListResponseDto {
+        private Long boardId;
+        private String title;
+        private Timestamp modifiedDate;
+        private List<Role> roles;
+        private String expectedDuration;
+        private int commentCount;
+        private int scrapCount;
 
+        // Board를 받아서 BoardResponseDto를 생성하는 생성자
+        public BoardListResponseDto(Board board) {
+            this.boardId = board.getId();
+            this.title = board.getTitle();
+            this.modifiedDate = board.getModifiedDate();
+            this.commentCount = board.getCommentCount();
+            this.scrapCount = board.getScrapCount();
+
+            // Board가 실제로는 RecruitBoard일 경우만 roles와 expectedDuration 처리
+            if (board instanceof RecruitBoard recruitBoard) {
+                this.roles = recruitBoard.getRoles().stream()
+                        .map(RoleAssignment::getRole)
+                        .collect(Collectors.toList());
+                this.expectedDuration = recruitBoard.getExpectedDuration();
+            }
+        }
     }
 
 }

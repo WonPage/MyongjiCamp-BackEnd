@@ -5,11 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.CurrentTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @Getter @Setter
 @SuperBuilder
@@ -34,7 +32,9 @@ public abstract class Board {
     @JoinColumn(name = "member_id")
     private Member member;
 
-//    private Integer scrapCount=0; //스크랩 수
+    private Integer scrapCount=0; //스크랩 수
+
+    private Integer commentCount=0; //댓글 수
 
     @Column(name = "created_date")
     @CreationTimestamp
@@ -43,7 +43,6 @@ public abstract class Board {
     @Column(name = "modified_date")
     @UpdateTimestamp
     private Timestamp modifiedDate;
-
 
 }
 
