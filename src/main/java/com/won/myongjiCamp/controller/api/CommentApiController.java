@@ -114,8 +114,8 @@ public class CommentApiController {
                 comment.getContent(),
                 comment.getCreateDate(),
                 comment.getWriter().getId(),
-                comment.getWriter().getNickname(), //String
-                comment.getWriter().getProfileIcon(), //Integer
+                comment.getWriter().getNickname(), 
+                comment.getWriter().getProfileIcon(),
                 new ArrayList<>()
         );
     }
