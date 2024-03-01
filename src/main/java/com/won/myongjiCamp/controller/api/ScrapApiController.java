@@ -1,23 +1,34 @@
 package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
+import com.won.myongjiCamp.dto.BoardListResponseDto;
 import com.won.myongjiCamp.dto.ResponseDto;
+import com.won.myongjiCamp.dto.request.ScrapDto;
 import com.won.myongjiCamp.model.Member;
+import com.won.myongjiCamp.model.board.Board;
+import com.won.myongjiCamp.model.board.CompleteBoard;
+import com.won.myongjiCamp.model.board.RecruitBoard;
+import com.won.myongjiCamp.model.board.role.Role;
+import com.won.myongjiCamp.model.board.role.RoleAssignment;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.service.ScrapService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class ScrapApiController {
 
     final private ScrapService scrapService;
@@ -36,24 +47,20 @@ public class ScrapApiController {
         String data = scrapService.scrap(id, member);
         return new ResponseDto<String>(HttpStatus.OK.value(), data);
     }
-//    @Data
-//    @AllArgsConstructor
-//    static class Result<T> {
-//        private T data;
-//    }
-//    @Data
-//    @AllArgsConstructor
-//    static class ResumeResponseDto {
-//        private String title;
-//        private String content;
-//        private String url;
-//        private Timestamp createDate;
-//        private Long id;
-//
-//        public ResumeResponseDto(String title, Timestamp createDate, Long id) {
-//            this.title = title;
-//            this.createDate = createDate;
-//            this.id = id;
-//        }
-//    }
+
+    //스크랩 가져오기
+    @GetMapping("/api/auth/scrap/{id}")
+    public Result pullScraps(@ModelAttribute @Valid ScrapDto requestDto, @AuthenticationPrincipal PrincipalDetail principal) {
+        log.info("Request param: {}", requestDto);
+        Page<Board> boards = scrapService.pullScraps(requestDto, principal.getMember());
+        List<BoardListResponseDto> collect = boards.stream()
+                .map(BoardListResponseDto::new)
+                .collect(Collectors.toList());
+        return new Result(collect);
+    }
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private T data;
+    }
 }

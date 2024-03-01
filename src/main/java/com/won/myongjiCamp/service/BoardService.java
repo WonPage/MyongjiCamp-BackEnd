@@ -3,6 +3,7 @@ package com.won.myongjiCamp.service;
 import com.won.myongjiCamp.dto.request.BoardSearchDto;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.repository.BoardRepository;
+import com.won.myongjiCamp.specification.BoardSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 @Service
