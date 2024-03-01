@@ -62,9 +62,12 @@ public class Comment {
 
 
     @OneToMany(mappedBy = "parent") // 대댓글 모음집
-    private List<Comment> children = new ArrayList<>(); //부모가 삭제되도 자식은 남아있음
+    private List<Comment> children = new ArrayList<>(); //부모가 삭제돼도 자식은 남아있음
 
 
+    public void addChild(Comment child){
+        children.add(child);
+    }
     //댓글인지 대댓글인지 구분을 깊이 0 또는 1로 해서 0이면 댓글 1이면 대댓글?
 
 }

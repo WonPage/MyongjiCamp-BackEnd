@@ -30,7 +30,7 @@ public class CommentDto {
 
     private Long parentId;
 
-    private List<CommentIdDto> children = new ArrayList<>();
+    private List<CommentDto> children = new ArrayList<>();
 
 
 }

@@ -102,6 +102,7 @@ public class RecruitService {
                    roleAssignment.setFull(true);
                 }
                else{ // 역할들 중 하나라도 구한 사람 수 != 구하는 사람 수 일 경우, RecruitStatus.RECRUIT_ONGOING이도록
+                   roleAssignment.setFull(false);
                    allFull = false; //모집 가능 인원이 다 차지 않은 구간이 있다.-> 상태 RECRUIT_ONGOING
                }
             }
@@ -133,7 +134,7 @@ public class RecruitService {
         }
 
         // 모든 역할들이 구한 사람 수 == 구하는 사람 수이다.
-        if(allFull = true){
+        if(allFull){
             recruitBoard.setStatus(RecruitStatus.RECRUIT_COMPLETE);
         }
         else{

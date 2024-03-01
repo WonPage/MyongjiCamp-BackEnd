@@ -1,6 +1,7 @@
 package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
+import com.won.myongjiCamp.dto.CommentDto;
 import com.won.myongjiCamp.dto.RecruitDto;
 import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.dto.RoleAssignmentDto;
@@ -99,7 +100,7 @@ public class BoardApiController {
         private String preferredLocation; //활동 지역
         private String expectedDuration; //예상 기간
         private List<RoleAssignmentDto> roleAssignments; //역할
-        private List<CommentIdDto> comments; // 댓글
+        private List<CommentDto> comments; // 댓글
 
 
     }
@@ -113,7 +114,7 @@ public class BoardApiController {
         private String preferredLocation; //활동 지역
         private String expectedDuration; //예상 기간
         private List<RoleAssignmentDto> roleAssignments; //역할
-        private List<CommentIdDto> comments; // 댓글
+        private List<CommentDto> comments; // 댓글
 
     }
 
