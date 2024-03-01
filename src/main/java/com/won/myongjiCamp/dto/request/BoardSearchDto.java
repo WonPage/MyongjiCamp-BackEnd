@@ -11,7 +11,8 @@ public class BoardSearchDto {
     private List<String> roles;
     private String keyword;
     private int pageNum;
-    private Sort.Direction direction = Sort.Direction.DESC;
+    private String direction;
+//    private Sort.Direction direction = Sort.Direction.DESC;
     private String boardType;
     private String status;
 }

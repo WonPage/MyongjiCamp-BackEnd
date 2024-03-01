@@ -1,6 +1,7 @@
 package com.won.myongjiCamp.model.board;
 
 import com.won.myongjiCamp.model.Member;
+import com.won.myongjiCamp.model.Scrap;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -8,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter @Setter
 @SuperBuilder
@@ -31,6 +34,9 @@ public abstract class Board {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @OneToMany(mappedBy = "board",cascade = CascadeType.ALL)
+    private List<Scrap> scraps = new ArrayList<>();
 
     private Integer scrapCount=0; //스크랩 수
 
