@@ -21,6 +21,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class BoardApiController {
 
     private final RecruitService recruitService;
@@ -85,6 +87,7 @@ public class BoardApiController {
     //글 조회(검색)
     @GetMapping("/api/board")
     public Result findAll(@RequestBody @Valid BoardSearchDto requestDto) {
+        log.info("Request Body: {}", requestDto);
         Page<Board> boards = boardService.searchBoards(requestDto);
         List<BoardListResponseDto> collect = boards.stream()
                 .map(BoardListResponseDto::new)
