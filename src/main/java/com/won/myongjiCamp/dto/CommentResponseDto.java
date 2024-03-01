@@ -23,12 +23,6 @@ class CommentResponseDto{ //댓글 조회할 때
     private Integer profileIcon;
 
 
-
-
-
-
-
-
     public CommentResponseDto(Long id,String content, Timestamp commentCreateDate, Long writerId,String nickname,Integer profileIcon,List<CommentResponseDto> children){
         // 내 id 필요?
         this.id=id;
@@ -38,7 +32,6 @@ class CommentResponseDto{ //댓글 조회할 때
         this.nickname = nickname;
         this.profileIcon = profileIcon;
         this.children = children;
-
 
     }
 

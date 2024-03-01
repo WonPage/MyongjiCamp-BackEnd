@@ -1,5 +1,6 @@
 package com.won.myongjiCamp.controller.api;
 
+import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import com.won.myongjiCamp.dto.CommentDto;
 import com.won.myongjiCamp.dto.RecruitDto;
 import com.won.myongjiCamp.dto.ResponseDto;
@@ -23,10 +24,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.print.Pageable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,12 +78,20 @@ public class BoardApiController {
 
     // 게시글 상세 읽기
 
-/*    @GetMapping("/api/auth/recruit/{id}")
-    public Result ListBoard(@AuthenticationPrincipal PrincipalDetail principalDetail,@PathVariable Long id){
+    @GetMapping("/api/auth/recruit/{id}")
+    public Result getRecruitDetail(@AuthenticationPrincipal PrincipalDetail principalDetail, @PathVariable Long id){
         RecruitBoard recruitBoard = recruitService.recruitDetail(id);
 
 
-    }*/
+        if(principalDetail == null){ // 로그인 x -> 내용, 제목, 닉네임, 아이콘 보임
+//            return ResponseEntity.ok(new Result(new NotDetailRecruitResponseDto(recruitBoard));
+            return new Result(new NotDetailRecruitResponseDto(recruitBoard));
+        }
+        else{
+            return new Result(new DetailRecruitResponseDto(recruitBoard));
+        }
+
+    }
 
     //글 조회(검색)
     @GetMapping("/api/board")
@@ -101,19 +113,77 @@ public class BoardApiController {
 
     @Data
     @AllArgsConstructor
-    static class RecruitResponseDto {
+    static class DetailRecruitResponseDto {
         private String title;
         private String content;
         private Integer scrapCount;
-        private RecruitStatus status; //모집 중 or 모집 완료*/
+        private RecruitStatus status; //모집 중 or 모집 완료
         private String preferredLocation; //활동 지역
         private String expectedDuration; //예상 기간
         private List<RoleAssignmentDto> roleAssignments; //역할
         private List<CommentDto> comments; // 댓글
+        private String nickname; // 글 쓴 사람 닉네임
+        private Integer profileIcon; // 글 쓴 사람 아이콘
+        private Timestamp modifiedDate;//수정한 날짜
+        private Timestamp createDate; //만든 날짜
 
+        public DetailRecruitResponseDto(RecruitBoard recruitBoard){
+            this.title = recruitBoard.getTitle();
+            this.content = recruitBoard.getContent();
+            this.status = recruitBoard.getStatus();
+            this.preferredLocation = recruitBoard.getPreferredLocation();
+            this.expectedDuration = recruitBoard.getExpectedDuration();
+            this.nickname = recruitBoard.getMember().getNickname();
+            this.profileIcon = recruitBoard.getMember().getProfileIcon();
+            this.modifiedDate = recruitBoard.getModifiedDate();
+            this.createDate = recruitBoard.getCreateDate();
+
+
+/*
+            this.roleAssignments = recruitBoard.getRoles().stream()
+                    .map(role->new RoleAssignmentDto(role))
+                    .collect(Collectors.toList());
+*/
+
+/*            this.comments = recruitBoard.getComments().stream()
+                    .map(comment->new CommentDto(comment))
+                    .collect(Collectors.toList());*/
+
+
+ /*           this.comments = recruitBoard.getComments() != null ?
+                    recruitBoard.getComments().stream()
+                            .map(comment->new Comment(comment))
+                            .collect(Collectors.toList()) :
+                    new ArrayList<>();*/
+        }
 
     }
+    @Data
+    @AllArgsConstructor
+    static class NotDetailRecruitResponseDto {
+        private String title;
+        private String content;
+        private Integer scrapCount;
+        private RecruitStatus status; //모집 중 or 모집 완료
+        private String preferredLocation; //활동 지역
+        private String expectedDuration; //예상 기간
+        private String nickname; // 글 쓴 사람 닉네임
+        private Integer profileIcon; // 글 쓴 사람 아이콘
+        private Timestamp modifiedDate;//수정한 날짜
+        private Timestamp createDate; //만든 날짜
+        public NotDetailRecruitResponseDto(RecruitBoard recruitBoard){
+            this.title = recruitBoard.getTitle();
+            this.content = recruitBoard.getContent();
+            this.status = recruitBoard.getStatus();
+            this.preferredLocation = recruitBoard.getPreferredLocation();
+            this.expectedDuration = recruitBoard.getExpectedDuration();
+            this.nickname = recruitBoard.getMember().getNickname();
+            this.profileIcon = recruitBoard.getMember().getProfileIcon();
+            this.modifiedDate = recruitBoard.getModifiedDate();
+            this.createDate = recruitBoard.getCreateDate();
+        }
 
+    }
     @Data
     public class BoardListResponseDto {
         private Long boardId;
