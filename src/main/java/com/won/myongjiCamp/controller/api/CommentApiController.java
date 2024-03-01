@@ -2,6 +2,7 @@ package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import com.won.myongjiCamp.dto.CommentDto;
+import com.won.myongjiCamp.dto.CommentResponseDto;
 import com.won.myongjiCamp.dto.RecruitDto;
 import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.model.Comment;
@@ -74,18 +75,30 @@ public class CommentApiController {
 
     //댓글 전체 조회
     @GetMapping("/api/auth/recruit/{board_id}/comment")
-    private Result CommentList(@PathVariable("board_id") Long id){
-        Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+    private Result CommentList(@PathVariable("board_id") Long id,@AuthenticationPrincipal PrincipalDetail principalDetail){
+
         Board board = recruitRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+        if (principalDetail == null) {
+            return new Result<>(Collections.emptyList()); // 로그인하지 않은 경우 빈 리스트 반환
+        }
+        List<CommentResponseDto> result = new ArrayList<>();
+        Map<Long, CommentResponseDto> map = new HashMap<>();
+        List<Comment> commentList = commentService.commentAll(id);
 
-        Map<String, Object> map = new HashMap<>();
-        List<Comment> findComment = commentService.commentAll(id);
-        List<CommentResponseDto> commentList = findComment.stream()
-                .map(m->new CommentResponseDto(m.getContent(),m.getCreateDate(),m.getWriter().getId()))
-                .collect(Collectors.toList());
-        return new Result(commentList);
+        commentList.stream().forEach(c->{
+            CommentResponseDto rDto = convertCommentToDto(c);
+            map.put(c.getId(), rDto);
+            if(c.getCdepth() == 1){// 댓글이 부모가 있으면
+                map.get(c.getParent().getId()).getChildren().add(rDto);
+            }
+            else{
+                result.add(rDto);
+            }
+
+        });
+
+        return new Result(result);
     }
 
     @Data
@@ -94,23 +107,18 @@ public class CommentApiController {
         private T data;
     }
 
-    @Data
-//    @AllArgsConstructor
-    static class CommentResponseDto{
-        private String content;
-        private Timestamp commentCreateDate; //댓글 작성 시간
-        private Long writerId;
-        private List<CommentDto> children;
 
-        public CommentResponseDto(String content, Timestamp commentCreateDate, Long writerId){
-            this.content = content;
-            this.commentCreateDate = commentCreateDate;
-            this.writerId = writerId;
-            this.children = children;
-        }
-
+    public CommentResponseDto convertCommentToDto(Comment comment){
+        return new CommentResponseDto(
+                comment.getId(),
+                comment.getContent(),
+                comment.getCreateDate(),
+                comment.getWriter().getId(),
+                comment.getWriter().getNickname(), 
+                comment.getWriter().getProfileIcon(),
+                new ArrayList<>()
+        );
     }
-
 }
 
 
