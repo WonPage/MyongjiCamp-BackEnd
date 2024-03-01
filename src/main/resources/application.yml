@@ -33,13 +33,10 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-         show_sql: true
-#        format_sql: true
-
-logging:
-  level:
-    root: INFO
-    com.example.myapp: DEBUG
+        # show_sql: true
+        format_sql: true
+logging.level:
+  org.hibernate.SQL: debug
 
 jwt:
   expiration_time: 86400000 #1일

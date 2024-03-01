@@ -95,8 +95,8 @@ public class BoardApiController {
 
     //글 조회(검색)
     @GetMapping("/api/board")
-    public Result findAll(@RequestBody @Valid BoardSearchDto requestDto) {
-        log.info("Request Body: {}", requestDto);
+    public Result findAll(@ModelAttribute @Valid BoardSearchDto requestDto) {
+        log.info("Request param: {}", requestDto);
         Page<Board> boards = boardService.searchBoards(requestDto);
         List<BoardListResponseDto> collect = boards.stream()
                 .map(BoardListResponseDto::new)

@@ -4,7 +4,6 @@ import com.won.myongjiCamp.model.board.Board;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.sql.Timestamp;
 
 @Builder

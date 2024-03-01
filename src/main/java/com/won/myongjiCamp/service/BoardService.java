@@ -25,9 +25,15 @@ public class BoardService {
 
     public Page<Board> searchBoards(BoardSearchDto requestDto) {
 
+        Sort.Direction direction;
+        if(requestDto.getDirection().equals("DESC")) {
+            direction = Sort.Direction.DESC;
+        } else{
+            direction = Sort.Direction.ASC;
+        }
         String property = "modifiedDate";
         String decodedKeyword = URLDecoder.decode(requestDto.getKeyword(), StandardCharsets.UTF_8);
-        Pageable pageable = PageRequest.of(requestDto.getPageNum(), 8, Sort.by(requestDto.getDirection(), property));
+        Pageable pageable = PageRequest.of(requestDto.getPageNum(), 8, Sort.by(direction, property));
 
         Specification<Board> spec = Specification.where(BoardSpecification.withRoles(requestDto.getRoles()))
                 .and(BoardSpecification.withTitleOrContent(decodedKeyword))
