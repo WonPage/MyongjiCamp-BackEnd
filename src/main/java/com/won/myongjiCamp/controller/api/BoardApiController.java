@@ -4,16 +4,12 @@ import com.won.myongjiCamp.dto.CommentDto;
 import com.won.myongjiCamp.dto.RecruitDto;
 import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.dto.RoleAssignmentDto;
-<<<<<<< HEAD
 import com.won.myongjiCamp.model.Member;
-=======
 import com.won.myongjiCamp.dto.request.BoardSearchDto;
-import com.won.myongjiCamp.dto.request.CommentIdDto;
 import com.won.myongjiCamp.model.Comment;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.RecruitBoard;
->>>>>>> 649074da5e7f4fbb4fc6378c12b2477a5a7397b8
 import com.won.myongjiCamp.model.board.RecruitStatus;
 import com.won.myongjiCamp.model.board.role.Role;
 import com.won.myongjiCamp.model.board.role.RoleAssignment;
