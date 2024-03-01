@@ -7,6 +7,7 @@ import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.repository.BoardRepository;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.repository.ScrapRepository;
+import com.won.myongjiCamp.specification.BoardSpecification;
 import com.won.myongjiCamp.specification.ScrapSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
