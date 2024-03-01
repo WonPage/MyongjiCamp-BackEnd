@@ -2,7 +2,6 @@ package com.won.myongjiCamp.specification;
 
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.Scrap;
-import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.CompleteBoard;
 import com.won.myongjiCamp.model.board.RecruitBoard;
 import com.won.myongjiCamp.model.board.RecruitStatus;
@@ -18,11 +17,11 @@ public class ScrapSpecification {
             }
 
             if ("ongoing".equals(status)) {
-                return cb.equal(root.get("status"), RecruitStatus.RECRUIT_ONGOING);
+                return cb.equal(root.get("board").get("status"), RecruitStatus.RECRUIT_ONGOING);
             }
 
             if ("complete".equals(status)) {
-                return cb.equal(root.get("status"), RecruitStatus.RECRUIT_COMPLETE);
+                return cb.equal(root.get("board").get("status"), RecruitStatus.RECRUIT_COMPLETE);
             }
 
             return null;
@@ -36,11 +35,11 @@ public class ScrapSpecification {
             }
 
             if ("recruit".equals(boardType)) {
-                return cb.equal(root.type(), RecruitBoard.class);
+                return cb.equal(root.get("board").type(), RecruitBoard.class);
             }
 
             if ("complete".equals(boardType)) {
-                return cb.equal(root.type(), CompleteBoard.class);
+                return cb.equal(root.get("board").type(), CompleteBoard.class);
             }
 
             return null;

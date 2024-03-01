@@ -1,7 +1,5 @@
 package com.won.myongjiCamp.specification;
 
-import com.won.myongjiCamp.model.Member;
-import com.won.myongjiCamp.model.Scrap;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.CompleteBoard;
 import com.won.myongjiCamp.model.board.RecruitBoard;

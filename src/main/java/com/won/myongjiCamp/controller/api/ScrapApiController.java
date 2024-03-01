@@ -5,11 +5,8 @@ import com.won.myongjiCamp.dto.BoardListResponseDto;
 import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.dto.request.ScrapDto;
 import com.won.myongjiCamp.model.Member;
+import com.won.myongjiCamp.model.Scrap;
 import com.won.myongjiCamp.model.board.Board;
-import com.won.myongjiCamp.model.board.CompleteBoard;
-import com.won.myongjiCamp.model.board.RecruitBoard;
-import com.won.myongjiCamp.model.board.role.Role;
-import com.won.myongjiCamp.model.board.role.RoleAssignment;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.service.ScrapService;
 import jakarta.validation.Valid;
@@ -22,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,12 +48,17 @@ public class ScrapApiController {
     @GetMapping("/api/auth/scrap/{id}")
     public Result pullScraps(@ModelAttribute @Valid ScrapDto requestDto, @AuthenticationPrincipal PrincipalDetail principal) {
         log.info("Request param: {}", requestDto);
-        Page<Board> boards = scrapService.pullScraps(requestDto, principal.getMember());
+        Page<Scrap> scraps = scrapService.pullScraps(requestDto, principal.getMember());
+        List<Board> boards = scraps.stream()
+                .map(Scrap::getBoard)
+                .collect(Collectors.toList());
+
         List<BoardListResponseDto> collect = boards.stream()
                 .map(BoardListResponseDto::new)
                 .collect(Collectors.toList());
         return new Result(collect);
     }
+
     @Data
     @AllArgsConstructor
     static class Result<T> {
