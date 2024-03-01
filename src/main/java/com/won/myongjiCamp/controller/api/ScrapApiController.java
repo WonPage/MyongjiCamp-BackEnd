@@ -2,12 +2,15 @@ package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import com.won.myongjiCamp.dto.BoardListResponseDto;
+import com.won.myongjiCamp.dto.CommentResponseDto;
 import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.dto.request.ScrapDto;
 import com.won.myongjiCamp.model.Member;
+import com.won.myongjiCamp.model.Scrap;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.CompleteBoard;
 import com.won.myongjiCamp.model.board.RecruitBoard;
+import com.won.myongjiCamp.model.board.RecruitStatus;
 import com.won.myongjiCamp.model.board.role.Role;
 import com.won.myongjiCamp.model.board.role.RoleAssignment;
 import com.won.myongjiCamp.repository.MemberRepository;
@@ -52,12 +55,20 @@ public class ScrapApiController {
     @GetMapping("/api/auth/scrap/{id}")
     public Result pullScraps(@ModelAttribute @Valid ScrapDto requestDto, @AuthenticationPrincipal PrincipalDetail principal) {
         log.info("Request param: {}", requestDto);
-        Page<Board> boards = scrapService.pullScraps(requestDto, principal.getMember());
+
+        Page<Scrap> scraps = scrapService.pullScraps(requestDto, principal.getMember());
+
+        List<Board> boards = scraps.stream()
+                .map(Scrap::getBoard)
+                .collect(Collectors.toList());
+
         List<BoardListResponseDto> collect = boards.stream()
                 .map(BoardListResponseDto::new)
                 .collect(Collectors.toList());
+
         return new Result(collect);
     }
+
     @Data
     @AllArgsConstructor
     static class Result<T> {
