@@ -1,7 +1,6 @@
 package com.won.myongjiCamp.service;
 
 import com.won.myongjiCamp.dto.CommentDto;
-import com.won.myongjiCamp.dto.request.CommentIdDto;
 import com.won.myongjiCamp.model.Comment;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.Board;
@@ -32,12 +31,10 @@ public class CommentService {
                     .writer(member)
                     .cdepth(0)
                     .isDelete(false)
-//                    .children(commentDto.getChildren())
                     .build();
             commentRepository.save(comment);
         } else { // 대댓글
             Comment parentComment = commentRepository.findById(commentDto.getParentId())
-//            Comment parentComment = commentRepository.findByComment(commentDto)
                     .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
             Comment childComment = Comment.builder()
                     .board(board)
@@ -49,8 +46,16 @@ public class CommentService {
                     .build();
             commentRepository.save(childComment);
 
-            parentComment.addChild(childComment);
-            CommentDto parentCommentDto ;
+
+            List<Comment> child = parentComment.getChildren();
+            child.add(childComment);
+            parentComment.setChildren(child);
+
+//            childComment childCo = childComment.builder()
+
+//            CommentDto parentCommentDto = new CommentDto();
+//            parentCommentDto.
+
 
 //            parentComment.setChildren();
 //            parentComment.getChildren().add(new CommentIdDto());
@@ -84,12 +89,5 @@ public class CommentService {
 
     }
 
-    //대댓글 조회 ai
-/*    public void commentCheck(Comment parentComment) {
-        List<Comment> childComments = commentRepository.findByParentId(parentComment);
-        for (Comment childComment : childComments) {
-            System.out.println(childComment.getContent());
-        }
 
-    }*/
 }

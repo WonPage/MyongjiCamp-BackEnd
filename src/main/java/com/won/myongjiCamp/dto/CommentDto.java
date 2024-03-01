@@ -1,13 +1,7 @@
 package com.won.myongjiCamp.dto;
 
-import com.won.myongjiCamp.dto.request.CommentIdDto;
-import com.won.myongjiCamp.model.Comment;
-import com.won.myongjiCamp.model.Member;
-import com.won.myongjiCamp.model.board.Board;
-import com.won.myongjiCamp.model.board.RecruitBoard;
-import jakarta.persistence.*;
+import com.won.myongjiCamp.repository.CommentRepository;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -30,7 +24,9 @@ public class CommentDto {
 
     private Long parentId;
 
-    private List<CommentDto> children = new ArrayList<>();
+    private List<CommentResponseDto> children = new ArrayList<>();
+
+
 
 
 }

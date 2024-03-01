@@ -1,8 +1,10 @@
 package com.won.myongjiCamp.model;
 
+import com.won.myongjiCamp.dto.CommentDto;
 import com.won.myongjiCamp.model.board.Board;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
@@ -65,10 +67,7 @@ public class Comment {
     private List<Comment> children = new ArrayList<>(); //부모가 삭제돼도 자식은 남아있음
 
 
-    public void addChild(Comment child){
-        children.add(child);
-    }
-    //댓글인지 대댓글인지 구분을 깊이 0 또는 1로 해서 0이면 댓글 1이면 대댓글?
+
 
 }
 

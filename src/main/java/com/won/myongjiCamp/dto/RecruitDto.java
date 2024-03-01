@@ -1,16 +1,10 @@
 package com.won.myongjiCamp.dto;
 
 
-import com.won.myongjiCamp.dto.request.CommentIdDto;
-import com.won.myongjiCamp.model.Comment;
-import com.won.myongjiCamp.model.Member;
-import com.won.myongjiCamp.model.board.RecruitStatus;
-import com.won.myongjiCamp.model.board.role.RoleAssignment;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -38,6 +32,5 @@ public class RecruitDto {
     @NotEmpty
     private List<RoleAssignmentDto> roleAssignments;
 
-    private List<CommentIdDto> comments;
 
 }
