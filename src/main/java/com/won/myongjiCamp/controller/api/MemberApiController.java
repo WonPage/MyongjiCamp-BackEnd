@@ -61,7 +61,7 @@ public class MemberApiController {
     }
 
     //refresh 토큰 인증 & access 재발급 (재발급할때 refresh도 갱신)
-    @PostMapping("/api/auth/refresh")
+    @PostMapping("/api/refresh")
     public ResponseDto refreshAndGetAuthenticationToken(HttpServletRequest request) throws Exception {
         String authToken = request.getHeader("Authorization");
         final String token = authToken.substring("Bearer ".length());
