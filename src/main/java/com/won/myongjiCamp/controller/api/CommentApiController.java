@@ -58,8 +58,8 @@ public class CommentApiController {
 
     //댓글 삭제
     @DeleteMapping("/api/auth/recruit/{board_id}/comment/{comment_id}")
-    public ResponseDto<String> deleteComment(@PathVariable("comment_id") Long comment_id){
-        commentService.delete(comment_id);
+    public ResponseDto<String> deleteComment(@PathVariable("board_id") Long board_id, @PathVariable("comment_id") Long comment_id){
+        commentService.delete(board_id, comment_id);
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글이 삭제되었습니다.");
     }
 
