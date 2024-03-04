@@ -77,14 +77,14 @@ public class CommentApiController {
     @GetMapping("/api/auth/recruit/{board_id}/comment")
     private Result CommentList(@PathVariable("board_id") Long id,@AuthenticationPrincipal PrincipalDetail principalDetail){
 
-        Board board = recruitRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+//        Board board = recruitRepository.findById(id)
+//                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
  /*       if (principalDetail == null) {
             return new Result<>(Collections.emptyList()); // 로그인하지 않은 경우 빈 리스트 반환
         }*/
         List<CommentResponseDto> result = new ArrayList<>();
         Map<Long, CommentResponseDto> map = new HashMap<>();
-        List<Comment> commentList = commentService.commentAll(board.getId());
+        List<Comment> commentList = commentService.commentAll(id);
 
         commentList.stream().forEach(c->{
             CommentResponseDto rDto = convertCommentToDto(c);

@@ -32,6 +32,8 @@ public class RecruitService {
     private final RoleAssignmentRepository roleAssignmentRepository;
     private final ApplicationRepository applicationRepository;
 
+
+
     // 게시글 작성
     @Transactional
     public void create(RecruitDto recruitDto, Member member){
@@ -52,7 +54,8 @@ public class RecruitService {
             if(roleAssignmentDto.getAppliedNumber().equals(roleAssignmentDto.getRequiredNumber())) {
                 RoleAssignment roleAssignment = RoleAssignment.builder()
                         .board(recruitBoard)
-                        .role(Role.valueOf(roleAssignmentDto.getRole()))
+//                        .role(Role.valueOf(roleAssignmentDto.getRole()))
+                        .role(roleAssignmentDto.getRole())
                         .requiredNumber(roleAssignmentDto.getRequiredNumber())
                         .appliedNumber(roleAssignmentDto.getAppliedNumber())
                         .isFull(true)
@@ -62,7 +65,7 @@ public class RecruitService {
             else{
                 RoleAssignment roleAssignment = RoleAssignment.builder()
                         .board(recruitBoard)
-                        .role(Role.valueOf(roleAssignmentDto.getRole()))
+                        .role(roleAssignmentDto.getRole())
                         .requiredNumber(roleAssignmentDto.getRequiredNumber())
                         .appliedNumber(roleAssignmentDto.getAppliedNumber())
                         .isFull(false)
@@ -89,9 +92,9 @@ public class RecruitService {
         recruitBoard.setModifiedDate(new Timestamp(System.currentTimeMillis()));
 
         for(RoleAssignmentDto roleAssignmentDto : recruitDto.getRoleAssignments()) {
-            RoleAssignment roleAssignment = roleAssignmentRepository.findByBoardAndRole(recruitBoard, Role.valueOf(roleAssignmentDto.getRole())).orElse(null);
+            RoleAssignment roleAssignment = roleAssignmentRepository.findByBoardAndRole(recruitBoard, roleAssignmentDto.getRole()).orElse(null);
             if(roleAssignment != null && roleAssignmentDto.getRequiredNumber()==0 && roleAssignmentDto.getAppliedNumber()==0) {
-                roleAssignmentRepository.deleteByBoardAndRole(recruitBoard, Role.valueOf(roleAssignmentDto.getRole()));
+                roleAssignmentRepository.deleteByBoardAndRole(recruitBoard,roleAssignmentDto.getRole());
             }
             else if(roleAssignment != null){
                 roleAssignment.setAppliedNumber(roleAssignmentDto.getAppliedNumber());
@@ -110,7 +113,7 @@ public class RecruitService {
                 if(roleAssignmentDto.getAppliedNumber().equals(roleAssignmentDto.getRequiredNumber())) {
                     roleAssignment = RoleAssignment.builder()
                             .board(recruitBoard)
-                            .role(Role.valueOf(roleAssignmentDto.getRole()))
+                            .role(roleAssignmentDto.getRole())
                             .requiredNumber(roleAssignmentDto.getRequiredNumber())
                             .appliedNumber(roleAssignmentDto.getAppliedNumber())
                             .isFull(true)
@@ -120,7 +123,7 @@ public class RecruitService {
                 else{
                     roleAssignment = RoleAssignment.builder()
                             .board(recruitBoard)
-                            .role(Role.valueOf(roleAssignmentDto.getRole()))
+                            .role(roleAssignmentDto.getRole())
                             .requiredNumber(roleAssignmentDto.getRequiredNumber())
                             .appliedNumber(roleAssignmentDto.getAppliedNumber())
                             .isFull(false)
@@ -176,6 +179,14 @@ public class RecruitService {
         return recruitBoard;
 
     }
+
+/*    // 역할 조회
+    public List<RoleAssignment> roleAll(Long id){//여기서 id는 Board id
+        RoleAssignment roleAssignment = roleAssignmentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 역할이 존재하지 않습니다."));
+
+
+    }*/
 
 
 
