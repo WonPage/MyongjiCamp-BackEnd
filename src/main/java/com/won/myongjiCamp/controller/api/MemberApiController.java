@@ -76,7 +76,7 @@ public class MemberApiController {
 
             // 새로운 Refresh Token 생성 및 Redis에 저장
             String newRefreshToken = jwtTokenUtil.generateRefreshToken(userDetailsService.loadUserByUsername(username));
-            redisTemplate.opsForValue().set(username, newRefreshToken);
+            redisTemplate.opsForValue().set("refresh token:" + username, newRefreshToken);
             redisTemplate.expire(username, jwtTokenUtil.getRefreshExpirationTime(), TimeUnit.MILLISECONDS);
 
             Map<String, Object> data = new HashMap<>();
@@ -98,7 +98,7 @@ public class MemberApiController {
         String username = jwtTokenUtil.extractUsername(token); //이메일
 
         // Redis에서 username에 해당하는 Refresh Token 삭제
-        redisTemplate.delete(username);
+        redisTemplate.delete("refresh token:" + username);
 
         return new ResponseDto(HttpStatus.OK.value(), "로그아웃 성공");
 
