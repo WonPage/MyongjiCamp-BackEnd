@@ -32,7 +32,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-        log("여기까진 옴");
         //access 토큰 생성
         String token = jwtTokenUtil.generateToken((UserDetails) authentication.getPrincipal());
         //refresh 토큰 생성
@@ -40,8 +39,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         // Redis에 Refresh Token 저장
         String email = ((UserDetails) authentication.getPrincipal()).getUsername();
-        redisTemplate.opsForValue().set(email, refreshToken);
-        redisTemplate.expire(email, jwtTokenUtil.getRefreshExpirationTime(), TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set("refresh token:" + email, refreshToken);
+        redisTemplate.expire("refresh token:" + email, jwtTokenUtil.getRefreshExpirationTime(), TimeUnit.MILLISECONDS);
 
         response.setStatus(HttpStatus.OK.value());
         response.setContentType("application/json;charset=UTF-8");

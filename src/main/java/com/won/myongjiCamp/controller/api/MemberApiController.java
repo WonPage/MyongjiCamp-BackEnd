@@ -65,18 +65,18 @@ public class MemberApiController {
     public ResponseDto refreshAndGetAuthenticationToken(HttpServletRequest request) throws Exception {
         String authToken = request.getHeader("Authorization");
         final String token = authToken.substring("Bearer ".length());
-        String username = jwtTokenUtil.extractUsername(token); //이메일
-        String storedRefreshToken = redisTemplate.opsForValue().get(username); //key가 email인 refresh Token 가져옴
+        String email = jwtTokenUtil.extractUsername(token); //이메일
+        String storedRefreshToken = redisTemplate.opsForValue().get("refresh token:" + email); //key가 email인 refresh Token 가져옴
 
         //redis에 저장한 토큰이랑 받은 토큰 비교
         if (storedRefreshToken != null && storedRefreshToken.equals(token)) {
             // 새로운 Access Token 생성
-            String refreshedToken = jwtTokenUtil.generateToken(userDetailsService.loadUserByUsername(username));
+            String refreshedToken = jwtTokenUtil.generateToken(userDetailsService.loadUserByUsername(email));
 
             // 새로운 Refresh Token 생성 및 Redis에 저장
-            String newRefreshToken = jwtTokenUtil.generateRefreshToken(userDetailsService.loadUserByUsername(username));
-            redisTemplate.opsForValue().set("refresh token:" + username, newRefreshToken);
-            redisTemplate.expire(username, jwtTokenUtil.getRefreshExpirationTime(), TimeUnit.MILLISECONDS);
+            String newRefreshToken = jwtTokenUtil.generateRefreshToken(userDetailsService.loadUserByUsername(email));
+            redisTemplate.opsForValue().set("refresh token:" + email, newRefreshToken);
+            redisTemplate.expire("refresh token:" + email, jwtTokenUtil.getRefreshExpirationTime(), TimeUnit.MILLISECONDS);
 
             Map<String, Object> data = new HashMap<>();
             data.put("message", "재발급 성공");
