@@ -8,6 +8,7 @@ import com.won.myongjiCamp.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -99,7 +100,7 @@ public class MemberApiController {
         // Redis에서 username에 해당하는 Refresh Token 삭제
         redisTemplate.delete(username);
 
-        return new ResponseDto(HttpStatus.UNAUTHORIZED.value(), "로그아웃 성공");
+        return new ResponseDto(HttpStatus.OK.value(), "로그아웃 성공");
 
     }
 

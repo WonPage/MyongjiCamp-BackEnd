@@ -6,6 +6,7 @@ import com.won.myongjiCamp.dto.ResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -18,17 +19,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static java.rmi.server.LogStream.log;
+
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private JwtTokenUtil jwtTokenUtil;
-    private RedisTemplate<String, String> redisTemplate;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-
+        log("여기까진 옴");
         //access 토큰 생성
         String token = jwtTokenUtil.generateToken((UserDetails) authentication.getPrincipal());
         //refresh 토큰 생성
