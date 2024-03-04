@@ -40,6 +40,7 @@ logging.level:
 
 jwt:
   expiration_time: 86400000 #1일
+  refresh_expiration_time: 2592000000 #30일
   secret: ${JWT_SECRET}
 
 

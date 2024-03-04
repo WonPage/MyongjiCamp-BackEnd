@@ -3,6 +3,7 @@ package com.won.myongjiCamp.config.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import java.util.Date;
 import java.util.function.Function;
 
 @Component
+@Data
 public class JwtTokenUtil {
 
     @Value("${jwt.secret}")
@@ -19,14 +21,21 @@ public class JwtTokenUtil {
     @Value("${jwt.expiration_time}")
     private Long expirationTime; // 토큰 만료 시간
 
+    @Value("${jwt.refresh_expiration_time}")
+    private Long refreshExpirationTime; // Refresh 토큰 만료 시간
+
     public JwtTokenUtil() {
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return doGenerateToken(userDetails.getUsername());
+    public String generateRefreshToken(UserDetails userDetails) {
+        return doGenerateToken(userDetails.getUsername(), refreshExpirationTime);
     }
 
-    private String doGenerateToken(String subject) {
+    public String generateToken(UserDetails userDetails) {
+        return doGenerateToken(userDetails.getUsername(), expirationTime);
+    }
+
+    private String doGenerateToken(String subject, Long expirationTime) {
         Claims claims = Jwts.claims().setSubject(subject);
         return Jwts.builder()
                 .setClaims(claims)
@@ -35,6 +44,7 @@ public class JwtTokenUtil {
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
+
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         return !isTokenExpired(token) && extractUsername(token).equals(userDetails.getUsername());

@@ -5,6 +5,8 @@ import com.won.myongjiCamp.config.jwt.JwtTokenUtil;
 import com.won.myongjiCamp.dto.ResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,22 +16,28 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
+@RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private JwtTokenUtil jwtTokenUtil;
-
-    public CustomAuthenticationSuccessHandler(JwtTokenUtil jwtTokenUtil) {
-        this.jwtTokenUtil = jwtTokenUtil;
-    }
+    private RedisTemplate<String, String> redisTemplate;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
 
-        // JWT 토큰을 생성
+        //access 토큰 생성
         String token = jwtTokenUtil.generateToken((UserDetails) authentication.getPrincipal());
+        //refresh 토큰 생성
+        String refreshToken = jwtTokenUtil.generateRefreshToken((UserDetails) authentication.getPrincipal());
+
+        // Redis에 Refresh Token 저장
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        redisTemplate.opsForValue().set(email, refreshToken);
+        redisTemplate.expire(email, jwtTokenUtil.getRefreshExpirationTime(), TimeUnit.MILLISECONDS);
 
         response.setStatus(HttpStatus.OK.value());
         response.setContentType("application/json;charset=UTF-8");
@@ -37,6 +45,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         Map<String, Object> data = new HashMap<>();
         data.put("message", "로그인 성공");
         data.put("token", token);
+        data.put("refreshToken", refreshToken);
 
         response.getWriter().println(new ObjectMapper().writeValueAsString(
                 new ResponseDto<>(response.getStatus(), data)));
