@@ -1,17 +1,11 @@
-package com.won.myongjiCamp.model;
+package com.won.myongjiCamp.model.board;
 
-import com.won.myongjiCamp.dto.CommentDto;
-import com.won.myongjiCamp.model.board.Board;
+import com.won.myongjiCamp.model.Member;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +50,7 @@ public class Comment {
 /*    @Column(name = "c_parentId")
     private Long cParentId; //대댓글일 경우 모댓글의 ci값 저장해 누구의 대댓글인지 확인 가능*/
 
-
+    private Integer reportCount=0 ; //신고 수
 
 
     @Column(name = "is_delete", nullable = false)
@@ -66,8 +60,7 @@ public class Comment {
     @OneToMany(mappedBy = "parent") // 대댓글 모음집
     private List<Comment> children = new ArrayList<>(); //부모가 삭제돼도 자식은 남아있음
 
-
-
+    private Integer isSecret; // 비밀 댓글이면 1, 댓글이면 0
 
 }
 

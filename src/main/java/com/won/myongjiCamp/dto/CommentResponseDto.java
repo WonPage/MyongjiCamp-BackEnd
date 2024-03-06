@@ -1,11 +1,8 @@
 package com.won.myongjiCamp.dto;
 
-import com.won.myongjiCamp.model.Comment;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data

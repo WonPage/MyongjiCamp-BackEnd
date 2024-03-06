@@ -3,31 +3,22 @@ package com.won.myongjiCamp.controller.api;
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import com.won.myongjiCamp.dto.CommentDto;
 import com.won.myongjiCamp.dto.CommentResponseDto;
-import com.won.myongjiCamp.dto.RecruitDto;
 import com.won.myongjiCamp.dto.ResponseDto;
-import com.won.myongjiCamp.model.Comment;
+import com.won.myongjiCamp.model.board.Comment;
 import com.won.myongjiCamp.model.Member;
-import com.won.myongjiCamp.model.board.Board;
-import com.won.myongjiCamp.model.board.RecruitBoard;
 import com.won.myongjiCamp.repository.CommentRepository;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.repository.RecruitRepository;
 import com.won.myongjiCamp.service.CommentService;
-import com.won.myongjiCamp.service.RecruitService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor

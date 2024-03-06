@@ -1,14 +1,11 @@
 package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
-import com.won.myongjiCamp.dto.CommentDto;
 import com.won.myongjiCamp.dto.RecruitDto;
 import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.dto.RoleAssignmentDto;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.dto.request.BoardSearchDto;
-import com.won.myongjiCamp.model.Comment;
-import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.RecruitBoard;
 import com.won.myongjiCamp.model.board.RecruitStatus;
@@ -27,16 +24,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -119,7 +112,7 @@ public class BoardApiController {
 //            return ResponseEntity.ok(new Result(new NotDetailRecruitResponseDto(recruitBoard));
             return new Result(new NotDetailRecruitResponseDto(recruitBoard));
         }
-        else{
+        else{ // 로그인 o
             List<RoleAssignment> roleAssignmentsList = roleAssignmentRepository.findByBoard(board);
             List<RoleAssignmentDto> roleDto = new ArrayList<>();
             roleAssignmentsList.stream().forEach(r->{
