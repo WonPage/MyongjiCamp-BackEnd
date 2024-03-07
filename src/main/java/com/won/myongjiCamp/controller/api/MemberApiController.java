@@ -1,20 +1,25 @@
 package com.won.myongjiCamp.controller.api;
 
+import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import com.won.myongjiCamp.config.jwt.JwtTokenUtil;
 import com.won.myongjiCamp.dto.request.CreateMemberDto;
 import com.won.myongjiCamp.dto.request.EmailDto;
 import com.won.myongjiCamp.dto.ResponseDto;
+import com.won.myongjiCamp.dto.request.PasswordDto;
+import com.won.myongjiCamp.dto.request.ProfileDto;
 import com.won.myongjiCamp.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -46,7 +51,7 @@ public class MemberApiController {
         Random random = new Random();
         int code = random.nextInt(9000) + 1000;
         String text = "인증 코드는 " + code + "입니다.";
-        memberService.send(emailDto.getEmail(), subject, text, code);
+        memberService.sendCode(emailDto.getEmail(), subject, text, code);
         return new ResponseDto(HttpStatus.OK.value(), "이메일 전송 성공");
     }
 
@@ -65,28 +70,34 @@ public class MemberApiController {
     public ResponseDto refreshAndGetAuthenticationToken(HttpServletRequest request) throws Exception {
         String authToken = request.getHeader("Authorization");
         final String token = authToken.substring("Bearer ".length());
-        String username = jwtTokenUtil.extractUsername(token); //이메일
-        String storedRefreshToken = redisTemplate.opsForValue().get(username); //key가 email인 refresh Token 가져옴
+        String email = jwtTokenUtil.extractUsername(token); //이메일
+        String storedRefreshToken = redisTemplate.opsForValue().get("refresh token:" + email); //key가 email인 refresh Token 가져옴
 
         //redis에 저장한 토큰이랑 받은 토큰 비교
         if (storedRefreshToken != null && storedRefreshToken.equals(token)) {
-            // 새로운 Access Token 생성
-            String refreshedToken = jwtTokenUtil.generateToken(userDetailsService.loadUserByUsername(username));
-
-            // 새로운 Refresh Token 생성 및 Redis에 저장
-            String newRefreshToken = jwtTokenUtil.generateRefreshToken(userDetailsService.loadUserByUsername(username));
-            redisTemplate.opsForValue().set(username, newRefreshToken);
-            redisTemplate.expire(username, jwtTokenUtil.getRefreshExpirationTime(), TimeUnit.MILLISECONDS);
-
-            Map<String, Object> data = new HashMap<>();
-            data.put("message", "재발급 성공");
-            data.put("token", refreshedToken);
-            data.put("refreshToken", newRefreshToken);
+            Map<String, Object> data = newToken(email);
 
             return new ResponseDto<>(HttpStatus.OK.value(), data);
         } else {
             return new ResponseDto(HttpStatus.UNAUTHORIZED.value(), "재발급 실패");
         }
+    }
+
+    //새로운 accsss, refresh 발급받고 redis에 저장
+    private Map<String, Object> newToken(String email) {
+        // 새로운 Access Token 생성
+        String refreshedToken = jwtTokenUtil.generateToken(userDetailsService.loadUserByUsername(email));
+
+        // 새로운 Refresh Token 생성 및 Redis에 저장
+        String newRefreshToken = jwtTokenUtil.generateRefreshToken(userDetailsService.loadUserByUsername(email));
+        redisTemplate.opsForValue().set("refresh token:" + email, newRefreshToken);
+        redisTemplate.expire("refresh token:" + email, jwtTokenUtil.getRefreshExpirationTime(), TimeUnit.MILLISECONDS);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("message", "재발급 성공");
+        data.put("token", refreshedToken);
+        data.put("refreshToken", newRefreshToken);
+        return data;
     }
 
     //로그아웃
@@ -97,11 +108,76 @@ public class MemberApiController {
         String username = jwtTokenUtil.extractUsername(token); //이메일
 
         // Redis에서 username에 해당하는 Refresh Token 삭제
-        redisTemplate.delete(username);
+        redisTemplate.delete("refresh token:" + username);
 
-        return new ResponseDto(HttpStatus.UNAUTHORIZED.value(), "로그아웃 성공");
-
+        return new ResponseDto(HttpStatus.OK.value(), "로그아웃 성공");
     }
 
+    //비밀번호 찾기
+    @PostMapping("/api/email/password")
+    public ResponseDto findPassword(@RequestBody EmailDto emailDto) {
 
+        String subject = "임시 비밀번호 안내 이메일 입니다.";
+        String password = generateRandomPassword();
+        String text = "임시 비밀번호는 " + password + "입니다.\n 보안을 위해 빠른 비밀번호 변경을 권장합니다.";
+        memberService.sendPassword(emailDto.getEmail(), subject, text, password);
+        return new ResponseDto(HttpStatus.OK.value(), "이메일 전송 성공");
+    }
+
+    public String generateRandomPassword() {
+        SecureRandom random = new SecureRandom();
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+
+        StringBuilder password = new StringBuilder();
+
+        for (int i = 0; i < 10; i++) {
+            int index = random.nextInt(characters.length());
+            password.append(characters.charAt(index));
+        }
+
+        return password.toString();
+    }
+
+    //비밀번호 변경 전 현재 비밀번호 인증
+    @PostMapping("/api/auth/password/verify")
+    public ResponseDto verificationPassword(@RequestBody PasswordDto request, @AuthenticationPrincipal PrincipalDetail principal) {
+        memberService.verificationPassword(request.getPassword(),principal.getPassword());
+        return new ResponseDto(HttpStatus.OK.value(), "비밀번호 인증 성공");
+    }
+
+    //개인정보(비밀번호 변경)
+    @PostMapping("/api/auth/password/update")
+    public ResponseDto updatePassword(@RequestBody PasswordDto request, @AuthenticationPrincipal PrincipalDetail principal) {
+        memberService.updatePassword(request,principal.getMember());
+        Map<String, Object> data = newToken(principal.getUsername());
+        return new ResponseDto<>(HttpStatus.OK.value(), data);
+    }
+
+    //개인정보(닉네임, 아이콘(프로필) 변경)
+    @PostMapping("/api/auth/profile/update")
+    public ResponseDto updateProfile(@RequestBody ProfileDto request, @AuthenticationPrincipal PrincipalDetail principal) {
+        memberService.updateProfile(request,principal.getMember());
+        Map<String, Object> data = newToken(principal.getUsername());
+        return new ResponseDto<>(HttpStatus.OK.value(), data);
+    }
+
+    //프로필
+    @GetMapping("/api/auth/profile")
+    public Result profile(@AuthenticationPrincipal PrincipalDetail principal) {
+        return new Result(new ProfileInformationResponseDto(principal.getUsername(),principal.getMember().getNickname(), principal.getMember().getProfileIcon()));
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private T data;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class ProfileInformationResponseDto {
+        private String email;
+        private String nickname;
+        private Integer profileIcon;
+    }
 }

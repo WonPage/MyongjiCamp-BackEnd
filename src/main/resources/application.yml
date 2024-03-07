@@ -19,7 +19,7 @@ spring:
     password: ${MYSQL_PASSWORD}
 
     server:
-#      address: 192.168.89.73
+      address: 192.168.89.73
       port: 8080
       servlet:
         context-path: /
@@ -39,7 +39,7 @@ logging.level:
   org.hibernate.SQL: debug
 
 jwt:
-  expiration_time: 86400000 #1일
+  expiration_time: 43200000 #1일
   refresh_expiration_time: 2592000000 #30일
   secret: ${JWT_SECRET}
 

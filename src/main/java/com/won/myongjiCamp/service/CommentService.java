@@ -55,15 +55,18 @@ public class CommentService {
             parentComment.setChildren(child);
 
         }
-
+        board.setCommentCount(board.getCommentCount() + 1);
     }
 
 
     // 댓글 삭제
     @Transactional
-    public void delete(Long id) {
-        Comment comment = commentRepository.findById(id)
+    public void delete(Long board_id, Long comment_id) {
+        Comment comment = commentRepository.findById(comment_id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재 하지 않습니다."));
+
+        Board board = boardRepository.findById(board_id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
         if (comment.getCdepth() == 0) { // 부모 댓글
             if (comment.getChildren().size() == 0) { // 자식 x
@@ -74,6 +77,7 @@ public class CommentService {
         } else { // 자식 댓글
             commentRepository.delete(comment);
         }
+        board.setCommentCount(board.getCommentCount() - 1);
     }
 
     // 댓글 조회
