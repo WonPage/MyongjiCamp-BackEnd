@@ -1,5 +1,7 @@
 package com.won.myongjiCamp.service;
 
+import com.won.myongjiCamp.dto.request.PasswordDto;
+import com.won.myongjiCamp.dto.request.ProfileDto;
 import com.won.myongjiCamp.exception.EmailDuplicatedException;
 import com.won.myongjiCamp.exception.NicknameDuplicatedException;
 import com.won.myongjiCamp.exception.VerificationFailureException;
@@ -13,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Transactional(readOnly = true)
@@ -57,7 +60,8 @@ public class MemberService {
     }
 
     //이메일 전송
-    public void send(String email, String subject, String text, int code) {
+    @Transactional
+    public void sendCode(String email, String subject, String text, int code) {
         long count = getEmailRequestCount(email);
         if (count == 5) {
             throw new RuntimeException("이메일 인증 요청 5번 초과로 24시간 동안 이메일 인증 요청을 할 수 없습니다.");
@@ -104,5 +108,39 @@ public class MemberService {
         if (!code.equals(savedCode)) {
             throw new VerificationFailureException("이메일 인증 실패");
         }
+    }
+
+    //임시 password 담아서 메일 보내주고 db에 해쉬해서 넣어주기
+    @Transactional
+    public void sendPassword(String email, String subject, String text, String password) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("해당 이메일로 가입된 유저가 존재하지 않습니다."));
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject(subject);
+        message.setText(text);
+        mailSender.send(message);
+        String encPassword = bCryptPasswordEncoder.encode(password);
+        member.setPassword(encPassword);
+    }
+
+    //비밀번호 변경 전에 현재 비밀번호 인증
+    public void verificationPassword(String inputPassword, String storedPassword) {
+        String encPassword = bCryptPasswordEncoder.encode(inputPassword);
+        if(!Objects.equals(encPassword, storedPassword)){
+            throw new IllegalArgumentException("현재 비밀번호와 입력하신 비밀번호가 일치하지 않습니다.");
+        }
+    }
+    //비밀번호 변경
+    @Transactional
+    public void updatePassword(PasswordDto request, Member member) {
+        String encPassword = bCryptPasswordEncoder.encode(request.getPassword());
+        member.setPassword(encPassword);
+    }
+    //프로필 변경
+    @Transactional
+    public void updateProfile(ProfileDto request, Member member) {
+        member.setProfileIcon(request.getProfileIcon());
+        member.setNickname(request.getNickname());
     }
 }

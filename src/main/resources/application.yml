@@ -39,7 +39,7 @@ logging.level:
   org.hibernate.SQL: debug
 
 jwt:
-  expiration_time: 86400000 #1일
+  expiration_time: 43200000 #1일
   refresh_expiration_time: 2592000000 #30일
   secret: ${JWT_SECRET}
 
