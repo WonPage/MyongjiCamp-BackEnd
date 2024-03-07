@@ -82,7 +82,6 @@ public class RecruitService {
     @Transactional
     public void update(RecruitDto recruitDto, Long id){
 
-        Boolean allFull = true;
         RecruitBoard recruitBoard = recruitRepository.findById(id)
                         .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
         recruitBoard.setTitle(recruitDto.getTitle());
@@ -91,58 +90,75 @@ public class RecruitService {
         recruitBoard.setExpectedDuration(recruitDto.getExpectedDuration());
         recruitBoard.setModifiedDate(new Timestamp(System.currentTimeMillis()));
 
-        for(RoleAssignmentDto roleAssignmentDto : recruitDto.getRoleAssignments()) {
-            RoleAssignment roleAssignment = roleAssignmentRepository.findByBoardAndRole(recruitBoard, roleAssignmentDto.getRole()).orElse(null);
-            if(roleAssignment != null && roleAssignmentDto.getRequiredNumber()==0 && roleAssignmentDto.getAppliedNumber()==0) {
-                roleAssignmentRepository.deleteByBoardAndRole(recruitBoard,roleAssignmentDto.getRole());
-            }
-            else if(roleAssignment != null){
-                roleAssignment.setAppliedNumber(roleAssignmentDto.getAppliedNumber());
-                roleAssignment.setRequiredNumber(roleAssignmentDto.getRequiredNumber());
+        if(recruitDto.getStatus().equals(RecruitStatus.RECRUIT_COMPLETE)){ // 프론트에서 모집 완료 버튼을 누르면
+            recruitBoard.setStatus(RecruitStatus.RECRUIT_COMPLETE);
 
-                // 구한 사람 수 == 구하는 사람 수 일 경우, RoleAssignment의 isFull값을 변경하기 위해 if문 사용
-                if(roleAssignmentDto.getRequiredNumber().equals(roleAssignmentDto.getAppliedNumber())){
-                   roleAssignment.setFull(true);
+            for(RoleAssignmentDto roleAssignmentDto : recruitDto.getRoleAssignments()) { // 모든 역할 다 차게 변환
+                RoleAssignment roleAssignment = roleAssignmentRepository.findByBoardAndRole(recruitBoard, roleAssignmentDto.getRole()).orElse(null);
+
+                if(roleAssignment != null){
+                    roleAssignment.setAppliedNumber(roleAssignmentDto.getAppliedNumber());
+                    roleAssignment.setRequiredNumber(roleAssignmentDto.getAppliedNumber());
+                    roleAssignment.setFull(true);
                 }
-               else{ // 역할들 중 하나라도 구한 사람 수 != 구하는 사람 수 일 경우, RecruitStatus.RECRUIT_ONGOING이도록
-                   roleAssignment.setFull(false);
-                   allFull = false; //모집 가능 인원이 다 차지 않은 구간이 있다.-> 상태 RECRUIT_ONGOING
-               }
+            }
+
+        }
+        else {
+            Boolean allFull = true;
+
+            for (RoleAssignmentDto roleAssignmentDto : recruitDto.getRoleAssignments()) {
+                RoleAssignment roleAssignment = roleAssignmentRepository.findByBoardAndRole(recruitBoard, roleAssignmentDto.getRole()).orElse(null);
+                if (roleAssignment != null && roleAssignmentDto.getRequiredNumber() == 0 && roleAssignmentDto.getAppliedNumber() == 0) {
+                    roleAssignmentRepository.deleteByBoardAndRole(recruitBoard, roleAssignmentDto.getRole());
+                }
+                else if (roleAssignment != null) {
+                    roleAssignment.setAppliedNumber(roleAssignmentDto.getAppliedNumber());
+                    roleAssignment.setRequiredNumber(roleAssignmentDto.getRequiredNumber());
+
+                    // 구한 사람 수 == 구하는 사람 수 일 경우, RoleAssignment의 isFull값을 변경하기 위해 if문 사용
+                    if (roleAssignmentDto.getRequiredNumber().equals(roleAssignmentDto.getAppliedNumber())) {
+                        roleAssignment.setFull(true);
+                    } else { // 역할들 중 하나라도 구한 사람 수 != 구하는 사람 수 일 경우, RecruitStatus.RECRUIT_ONGOING이도록
+                        roleAssignment.setFull(false);
+                        allFull = false; //모집 가능 인원이 다 차지 않은 구간이 있다.-> 상태 RECRUIT_ONGOING
+                    }
+                }
+                else {
+                    if (roleAssignmentDto.getAppliedNumber().equals(roleAssignmentDto.getRequiredNumber())) {
+                        roleAssignment = RoleAssignment.builder()
+                                .board(recruitBoard)
+                                .role(roleAssignmentDto.getRole())
+                                .requiredNumber(roleAssignmentDto.getRequiredNumber())
+                                .appliedNumber(roleAssignmentDto.getAppliedNumber())
+                                .isFull(true)
+                                .build();
+                        roleAssignmentRepository.save(roleAssignment);
+                    } else {
+                        roleAssignment = RoleAssignment.builder()
+                                .board(recruitBoard)
+                                .role(roleAssignmentDto.getRole())
+                                .requiredNumber(roleAssignmentDto.getRequiredNumber())
+                                .appliedNumber(roleAssignmentDto.getAppliedNumber())
+                                .isFull(false)
+                                .build();
+                        roleAssignmentRepository.save(roleAssignment);
+
+                        allFull = false;
+
+                    }
+                }
+            }
+            // 모든 역할들이 구한 사람 수 == 구하는 사람 수이다.
+            if(allFull){
+                recruitBoard.setStatus(RecruitStatus.RECRUIT_COMPLETE);
             }
             else{
-                if(roleAssignmentDto.getAppliedNumber().equals(roleAssignmentDto.getRequiredNumber())) {
-                    roleAssignment = RoleAssignment.builder()
-                            .board(recruitBoard)
-                            .role(roleAssignmentDto.getRole())
-                            .requiredNumber(roleAssignmentDto.getRequiredNumber())
-                            .appliedNumber(roleAssignmentDto.getAppliedNumber())
-                            .isFull(true)
-                            .build();
-                    roleAssignmentRepository.save(roleAssignment);
-                }
-                else{
-                    roleAssignment = RoleAssignment.builder()
-                            .board(recruitBoard)
-                            .role(roleAssignmentDto.getRole())
-                            .requiredNumber(roleAssignmentDto.getRequiredNumber())
-                            .appliedNumber(roleAssignmentDto.getAppliedNumber())
-                            .isFull(false)
-                            .build();
-                    roleAssignmentRepository.save(roleAssignment);
-
-                    allFull = false;
-
-                }
+                recruitBoard.setStatus(RecruitStatus.RECRUIT_ONGOING);
             }
         }
 
-        // 모든 역할들이 구한 사람 수 == 구하는 사람 수이다.
-        if(allFull){
-            recruitBoard.setStatus(RecruitStatus.RECRUIT_COMPLETE);
-        }
-        else{
-            recruitBoard.setStatus(RecruitStatus.RECRUIT_ONGOING);
-        }
+
 
 
     }
@@ -155,6 +171,8 @@ public class RecruitService {
                 .orElseThrow(()->new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
         recruitRepository.delete(recruitBoard);
     }
+
+
 
 
 
