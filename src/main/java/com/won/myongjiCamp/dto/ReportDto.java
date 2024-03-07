@@ -13,6 +13,8 @@ public class ReportDto {
     private ReportTargetType targetType;
 
     private Long targetId;
+    private Long targetNickname;
+
 
     private Long reporterId;
 

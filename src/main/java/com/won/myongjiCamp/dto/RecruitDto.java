@@ -9,6 +9,7 @@ import java.util.List;
 
 @Data
 public class RecruitDto {
+    private Long id;
 
     @NotEmpty
     @Length(max = 20)

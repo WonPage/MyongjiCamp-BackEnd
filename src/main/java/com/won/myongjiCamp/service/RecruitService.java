@@ -146,21 +146,7 @@ public class RecruitService {
 
 
     }
-    public RecruitBoard recruitDetail(Long id) {
-        RecruitBoard recruitBoard = recruitRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
-        // Board를 참조하는 Application들을 찾음
-        List<Application> applications = applicationRepository.findByBoard(recruitBoard);
-
-        // 참조하는 Application들의 board 필드를 null로 설정
-        for (Application application : applications) {
-            application.setBoard(null);
-        }
-
-        return recruitBoard;
-
-    }
 
     // 게시글 삭제
     @Transactional
@@ -170,23 +156,8 @@ public class RecruitService {
         recruitRepository.delete(recruitBoard);
     }
 
-    //게시글 상세 조회
-    public RecruitBoard recruitDetail(long id) {
-        RecruitBoard recruitBoard = recruitRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-     /*   1. 제목과 내용은 로그인 필요 x
-        2. 역할과 댓글은 로그인 필요*/
-        return recruitBoard;
-
-    }
-
-/*    // 역할 조회
-    public List<RoleAssignment> roleAll(Long id){//여기서 id는 Board id
-        RoleAssignment roleAssignment = roleAssignmentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 역할이 존재하지 않습니다."));
 
 
-    }*/
 
 
 

@@ -43,13 +43,25 @@ public class ReportService {
                report.setReason(reportDto.getReason());
                report.setStatus(ReportStatus.Reported);
                targetBoard.setReportCount(targetBoard.getReportCount()+1);
+//               targetBoard.setReportStatus(ReportStatus.Reported);
 
                reportRepository.save(report);
            }
            else{       // 이전에 신고한 사람의 경우
                existingReport.setReason(reportDto.getReason()); // 신고 사유만 갱신
+               reportRepository.save(existingReport);
+
 //               throw new IllegalStateException("이미 신고된 댓글입니다."); // 한 번 신고하면 다시는 신고 못하게
            }
+           if(targetBoard.getReportCount()>0){
+               targetBoard.setReportStatus(ReportStatus.Reported);
+           }
+           else if(targetBoard.getReportCount()>=5){
+               targetBoard.setReportStatus(ReportStatus.WARNING);
+
+           }
+
+
        }
        else{ // 댓글 신고의 경우
            Comment targetComment = commentRepository.findById(id)
@@ -63,21 +75,38 @@ public class ReportService {
                report.setReason(reportDto.getReason());
                report.setStatus(ReportStatus.Reported);
                targetComment.setReportCount(targetComment.getReportCount()+1);
+               targetComment.setReportStatus(ReportStatus.Reported);
+
 
                reportRepository.save(report);
            }
            else{
                existingComment.setReason(reportDto.getReason()); // 신고 사유만 갱신
+               reportRepository.save(existingComment);
+
 //               throw new IllegalStateException("이미 신고된 댓글입니다.");
            }
+           if(targetComment.getReportCount()>0){
+               targetComment.setReportStatus(ReportStatus.Reported);
+           }
+           else if(targetComment.getReportCount()>=5){
+               targetComment.setReportStatus(ReportStatus.WARNING);
+
+           }
+
        }
    }
 
-   // 신고가 5번 이상 들어가면 신고 상태 바뀔꺼야
-    // 신고 상태가 underReview인 애들 조회
-//5번째 신고한테만????
+/*   public void findReported(){ // --> 관리자 권한이 필요함, 아직 관리자 페이지 x
+       reportRepository.findReportedBoards(ReportStatus.Reported);
+   }
 
-    // 해당 글에 신고를 전부 다 상태 전환 and 해당 글 삭제.
+   public void findWarning(){ // --> 관리자 권한이 필요함, 아직 관리자 페이지 x
+       reportRepository.findReportedBoards(ReportStatus.WARNING); // 오름 차순으로?
+   }*/
+
+   // 신고 처리 로직 아직 x
+
 
 
 }

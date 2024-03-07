@@ -2,6 +2,7 @@ package com.won.myongjiCamp.model.board;
 
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.Scrap;
+import com.won.myongjiCamp.model.board.report.ReportStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -52,6 +53,9 @@ public abstract class Board {
     @Column(name = "modified_date")
     @CreationTimestamp
     private Timestamp modifiedDate;
+
+    @Enumerated(EnumType.STRING)
+    private ReportStatus reportStatus;
 
 }
 

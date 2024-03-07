@@ -1,6 +1,7 @@
 package com.won.myongjiCamp.model.board;
 
 import com.won.myongjiCamp.model.Member;
+import com.won.myongjiCamp.model.board.report.ReportStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -61,6 +62,9 @@ public class Comment {
     private List<Comment> children = new ArrayList<>(); //부모가 삭제돼도 자식은 남아있음
 
     private Integer isSecret; // 비밀 댓글이면 1, 댓글이면 0
+
+    @Enumerated(EnumType.STRING)
+    private ReportStatus reportStatus;
 
 }
 
