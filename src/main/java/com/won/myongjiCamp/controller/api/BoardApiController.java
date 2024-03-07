@@ -1,14 +1,11 @@
 package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
-import com.won.myongjiCamp.dto.CommentDto;
 import com.won.myongjiCamp.dto.RecruitDto;
 import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.dto.RoleAssignmentDto;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.dto.request.BoardSearchDto;
-import com.won.myongjiCamp.model.Comment;
-import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.RecruitBoard;
 import com.won.myongjiCamp.model.board.RecruitStatus;
@@ -27,16 +24,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -110,55 +103,24 @@ public class BoardApiController {
     @GetMapping("/api/auth/recruit/{id}")
     public Result getRecruitDetail(@AuthenticationPrincipal PrincipalDetail principalDetail, @PathVariable Long id){
 
-        RecruitBoard recruitBoard = recruitService.recruitDetail(id);
-
         RecruitBoard board = recruitRepository.findById(id)
                 .orElseThrow(()->new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
         if(principalDetail == null){ // 로그인 x -> 내용, 제목, 닉네임, 아이콘 보임
 //            return ResponseEntity.ok(new Result(new NotDetailRecruitResponseDto(recruitBoard));
-            return new Result(new NotDetailRecruitResponseDto(recruitBoard));
+            return new Result(new NotDetailRecruitResponseDto(board));
         }
-        else{
+        else{ // 로그인 o
             List<RoleAssignment> roleAssignmentsList = roleAssignmentRepository.findByBoard(board);
             List<RoleAssignmentDto> roleDto = new ArrayList<>();
             roleAssignmentsList.stream().forEach(r->{
                 roleDto.add(convertRoleToDto(r));
             });
-            //왜 역할 안나오지?
 
-            return new Result(new DetailRecruitResponseDto(recruitBoard,roleDto));
+            return new Result(new DetailRecruitResponseDto(board,roleDto));
         }
 
     }
-    /*  @GetMapping("/api/auth/recruit/{id}") //혹시 모를 백업용
-    public Result getRecruitDetail(@AuthenticationPrincipal PrincipalDetail principalDetail, @PathVariable Long id){
-
-        RecruitBoard recruitBoard = recruitService.recruitDetail(id);
-
-        RecruitBoard board = recruitRepository.findById(id)
-                .orElseThrow(()->new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-
-        if(principalDetail == null){ // 로그인 x -> 내용, 제목, 닉네임, 아이콘 보임
-//            return ResponseEntity.ok(new Result(new NotDetailRecruitResponseDto(recruitBoard));
-            return new Result(new NotDetailRecruitResponseDto(recruitBoard));
-        }
-        else{
-            List<RoleAssignment> roleAssignmentsList = roleAssignmentRepository.findByBoard(board);
-            List<RoleAssignmentDto> roleDto = new ArrayList<>();
-            roleAssignmentsList.stream().forEach(r->{
-                roleDto.add(convertRoleToDto(r));
-            });
-            //왜 역할 안나오지?
-           *//* List<RoleAssignmentDto> roleResult = new ArrayList<>();
-            List<RoleAssignment> roleAssignmentsList = roleAssignmentRepository.findByBoard(board);
-            roleAssignmentsList.stream().forEach(()->{
-                roleAssignmentRepository roleDsto = DetailRecruitResponseDto()
-            });*//*
-            return new Result(new DetailRecruitResponseDto(recruitBoard,roleDto));
-        }
-
-    }*/
 
     public RoleAssignmentDto convertRoleToDto(RoleAssignment roleAssignment){
         return new RoleAssignmentDto(
@@ -169,6 +131,7 @@ public class BoardApiController {
     }
     @Data
     static class DetailRecruitResponseDto {
+        private Long writerId; //글 쓴 사람 id
         private String title;
         private String content;
         private Integer scrapCount;
@@ -181,8 +144,8 @@ public class BoardApiController {
         private Timestamp modifiedDate;//수정한 날짜
         private Timestamp createDate; //만든 날짜
 
-//        public DetailRecruitResponseDto(String title,String content,Integer scrapCount,RecruitStatus status,String preferredLocation,String expectedDuration,List<RoleAssignmentDto> roleAssignments,String nickname, Integer profileIcon, Timestamp modifiedDate, Timestamp createDate){
         public DetailRecruitResponseDto(RecruitBoard recruitBoard,List<RoleAssignmentDto> roleAssignmentDtoList){
+            this.writerId = recruitBoard.getMember().getId();
             this.title = recruitBoard.getTitle();
             this.content = recruitBoard.getContent();
             this.status = recruitBoard.getStatus();
@@ -193,18 +156,8 @@ public class BoardApiController {
             this.modifiedDate = recruitBoard.getModifiedDate();
             this.createDate = recruitBoard.getCreateDate();
             this.roleAssignments = roleAssignmentDtoList;
-/*            this.title = title;
-            this.content = content;
-            this.scrapCount = scrapCount;
-            this.status = status;
-            this.preferredLocation = preferredLocation;
-            this.expectedDuration = expectedDuration;
-            this.nickname = nickname;
-            this.profileIcon = profileIcon;
-            this.modifiedDate = modifiedDate;
-            this.createDate = createDate;
+            this.scrapCount = recruitBoard.getScrapCount();
 
-            this.roleAssignments = roleAssignments;*/
 
         }
 
@@ -212,6 +165,7 @@ public class BoardApiController {
     @Data
     @AllArgsConstructor
     static class NotDetailRecruitResponseDto {
+        private Long writerId; // 글 쓴 사람 id
         private String title;
         private String content;
         private Integer scrapCount;
@@ -223,6 +177,7 @@ public class BoardApiController {
         private Timestamp modifiedDate;//수정한 날짜
         private Timestamp createDate; //만든 날짜
         public NotDetailRecruitResponseDto(RecruitBoard recruitBoard){
+            this.writerId = recruitBoard.getMember().getId();
             this.title = recruitBoard.getTitle();
             this.content = recruitBoard.getContent();
             this.status = recruitBoard.getStatus();
@@ -232,6 +187,8 @@ public class BoardApiController {
             this.profileIcon = recruitBoard.getMember().getProfileIcon();
             this.modifiedDate = recruitBoard.getModifiedDate();
             this.createDate = recruitBoard.getCreateDate();
+            this.scrapCount = recruitBoard.getScrapCount();
+
         }
 
     }

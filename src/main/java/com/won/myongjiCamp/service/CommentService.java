@@ -1,7 +1,7 @@
 package com.won.myongjiCamp.service;
 
 import com.won.myongjiCamp.dto.CommentDto;
-import com.won.myongjiCamp.model.Comment;
+import com.won.myongjiCamp.model.board.Comment;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.repository.BoardRepository;
@@ -31,6 +31,7 @@ public class CommentService {
                     .writer(member)
                     .cdepth(0)
                     .isDelete(false)
+                    .isSecret(commentDto.getIsSecret())
                     .build();
             commentRepository.save(comment);
         } else { // 대댓글
@@ -42,6 +43,8 @@ public class CommentService {
                     .content(commentDto.getContent())
                     .writer(member)
                     .cdepth(1)
+                    .isSecret(commentDto.getIsSecret())
+
                     .isDelete(false)
                     .build();
             commentRepository.save(childComment);
@@ -51,14 +54,6 @@ public class CommentService {
             child.add(childComment);
             parentComment.setChildren(child);
 
-//            childComment childCo = childComment.builder()
-
-//            CommentDto parentCommentDto = new CommentDto();
-//            parentCommentDto.
-
-
-//            parentComment.setChildren();
-//            parentComment.getChildren().add(new CommentIdDto());
         }
         board.setCommentCount(board.getCommentCount() + 1);
     }

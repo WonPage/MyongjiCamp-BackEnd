@@ -2,6 +2,7 @@ package com.won.myongjiCamp.model.board;
 
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.Scrap;
+import com.won.myongjiCamp.model.board.report.ReportStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -42,13 +43,19 @@ public abstract class Board {
 
     private Integer commentCount=0; //댓글 수
 
+    private Integer reportCount=0 ; //신고 수
+
+
     @Column(name = "created_date")
     @CreationTimestamp
     private Timestamp createDate;
 
     @Column(name = "modified_date")
-    @UpdateTimestamp
+    @CreationTimestamp
     private Timestamp modifiedDate;
+
+    @Enumerated(EnumType.STRING)
+    private ReportStatus reportStatus;
 
 }
 

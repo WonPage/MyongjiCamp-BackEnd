@@ -1,6 +1,5 @@
 package com.won.myongjiCamp.model.board;
 
-import com.won.myongjiCamp.model.Comment;
 import com.won.myongjiCamp.model.board.role.RoleAssignment;
 import jakarta.persistence.*;
 import lombok.*;
