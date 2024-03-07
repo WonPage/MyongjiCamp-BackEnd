@@ -1,6 +1,7 @@
 package com.won.myongjiCamp.dto;
 
 
+import com.won.myongjiCamp.model.board.RecruitStatus;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -21,8 +22,8 @@ public class RecruitDto {
 
 //    private Integer scrapCount;
 
-/*    @NotEmpty
-    private RecruitStatus status; //모집 중 or 모집 완료*/
+//    @NotEmpty
+    private RecruitStatus status; //모집 중 or 모집 완료
 
     @NotEmpty
     private String preferredLocation; //활동 지역
