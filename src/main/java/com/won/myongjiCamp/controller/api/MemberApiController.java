@@ -7,6 +7,8 @@ import com.won.myongjiCamp.dto.request.EmailDto;
 import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.dto.request.PasswordDto;
 import com.won.myongjiCamp.dto.request.ProfileDto;
+import com.won.myongjiCamp.model.Member;
+import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -30,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 public class MemberApiController {
 
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
     private final StringRedisTemplate redisTemplate;
 
     private final JwtTokenUtil jwtTokenUtil;
@@ -113,13 +116,13 @@ public class MemberApiController {
         return new ResponseDto(HttpStatus.OK.value(), "로그아웃 성공");
     }
 
-    //비밀번호 찾기
+    //비밀번호 찾기(임시 비밀번호 발급)
     @PostMapping("/api/email/password")
     public ResponseDto findPassword(@RequestBody EmailDto emailDto) {
 
         String subject = "임시 비밀번호 안내 이메일 입니다.";
         String password = generateRandomPassword();
-        String text = "임시 비밀번호는 " + password + "입니다.\n 보안을 위해 빠른 비밀번호 변경을 권장합니다.";
+        String text = "임시 비밀번호는 " + password + "입니다.\n\n 보안을 위해 빠른 비밀번호 변경을 권장합니다.";
         memberService.sendPassword(emailDto.getEmail(), subject, text, password);
         return new ResponseDto(HttpStatus.OK.value(), "이메일 전송 성공");
     }
@@ -145,27 +148,79 @@ public class MemberApiController {
         return new ResponseDto(HttpStatus.OK.value(), "비밀번호 인증 성공");
     }
 
+//    //비밀번호 변경 전 현재 비밀번호 인증 테스트
+//    @PostMapping("/api/auth/password/verify")
+//    public ResponseDto verificationPassword(@RequestBody PasswordDto request) {
+//        Member member = memberRepository.findById(2L)
+//                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+//        memberService.verificationPassword(request.getPassword(),member.getPassword());
+//        return new ResponseDto(HttpStatus.OK.value(), "비밀번호 인증 성공");
+//    }
+
     //개인정보(비밀번호 변경)
-    @PostMapping("/api/auth/password/update")
+    @PutMapping("/api/auth/password/update")
     public ResponseDto updatePassword(@RequestBody PasswordDto request, @AuthenticationPrincipal PrincipalDetail principal) {
         memberService.updatePassword(request,principal.getMember());
-        Map<String, Object> data = newToken(principal.getUsername());
-        return new ResponseDto<>(HttpStatus.OK.value(), data);
+        return new ResponseDto<>(HttpStatus.OK.value(), "비밀번호 변경 완료");
     }
 
-    //개인정보(닉네임, 아이콘(프로필) 변경)
-    @PostMapping("/api/auth/profile/update")
-    public ResponseDto updateProfile(@RequestBody ProfileDto request, @AuthenticationPrincipal PrincipalDetail principal) {
-        memberService.updateProfile(request,principal.getMember());
-        Map<String, Object> data = newToken(principal.getUsername());
-        return new ResponseDto<>(HttpStatus.OK.value(), data);
+//    //개인정보(비밀번호 변경) 테스트
+//    @PutMapping("/api/auth/password/update")
+//    public ResponseDto updatePassword(@RequestBody PasswordDto request) {
+//        Member member = memberRepository.findById(1L)
+//                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+//        memberService.updatePassword(request,member);
+//        return new ResponseDto<>(HttpStatus.OK.value(), "비밀번호 변경 완료");
+//    }
+
+    //닉네임 변경
+    @PutMapping("/api/auth/nickname/update")
+    public ResponseDto updateNickname(@RequestBody ProfileDto request, @AuthenticationPrincipal PrincipalDetail principal) {
+        memberService.updateNickname(request,principal.getMember());
+        return new ResponseDto<>(HttpStatus.OK.value(), "변경 완료");
     }
+
+//    //닉네임 변경 테스트
+//    @PutMapping("/api/auth/nickname/update")
+//    public ResponseDto updateNickname(@RequestBody ProfileDto request) {
+//        Member member = memberRepository.findById(1L)
+//                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+//        memberService.updateNickname(request,member);
+//        return new ResponseDto<>(HttpStatus.OK.value(), "변경 완료");
+//    }
+
+    //아이콘 변경
+    @PutMapping("/api/auth/icon/update")
+    public ResponseDto updateIcon(@RequestBody ProfileIconRequestDto request, @AuthenticationPrincipal PrincipalDetail principal) {
+        memberService.updateIcon(request.getProfileIcon(),principal.getMember());
+        return new ResponseDto<>(HttpStatus.OK.value(), "변경 완료");
+    }
+
+//    //아이콘 변경 테스트
+//    @PutMapping("/api/auth/icon/update")
+//    public ResponseDto updateIcon(@RequestBody ProfileIconRequestDto request) {
+//        Member member = memberRepository.findById(1L)
+//                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+//
+//        memberService.updateIcon(request.getProfileIcon(),member);
+//        return new ResponseDto<>(HttpStatus.OK.value(), "변경 완료");
+//    }
 
     //프로필
     @GetMapping("/api/auth/profile")
     public Result profile(@AuthenticationPrincipal PrincipalDetail principal) {
         return new Result(new ProfileInformationResponseDto(principal.getUsername(),principal.getMember().getNickname(), principal.getMember().getProfileIcon()));
     }
+
+//    //프로필 테스트
+//    @GetMapping("/api/auth/profile")
+//    public Result profile() {
+//        Member member = memberRepository.findById(1L)
+//                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+//
+//        return new Result(new ProfileInformationResponseDto(member.getEmail(),member.getNickname(), member.getProfileIcon()));
+//    }
+
 
     @Data
     @AllArgsConstructor
@@ -178,6 +233,11 @@ public class MemberApiController {
     static class ProfileInformationResponseDto {
         private String email;
         private String nickname;
+        private Integer profileIcon;
+    }
+
+    @Data
+    static class ProfileIconRequestDto {
         private Integer profileIcon;
     }
 }

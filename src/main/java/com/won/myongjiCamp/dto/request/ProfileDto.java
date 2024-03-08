@@ -6,8 +6,6 @@ import lombok.Data;
 @Data
 public class ProfileDto {
 
-    private Integer profileIcon;
-
     @NotEmpty
     private String nickname;
 }

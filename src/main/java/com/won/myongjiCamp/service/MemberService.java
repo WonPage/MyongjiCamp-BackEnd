@@ -8,6 +8,7 @@ import com.won.myongjiCamp.exception.VerificationFailureException;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,9 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import static java.rmi.server.LogStream.log;
+
 @Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -126,8 +130,7 @@ public class MemberService {
 
     //비밀번호 변경 전에 현재 비밀번호 인증
     public void verificationPassword(String inputPassword, String storedPassword) {
-        String encPassword = bCryptPasswordEncoder.encode(inputPassword);
-        if(!Objects.equals(encPassword, storedPassword)){
+        if(!bCryptPasswordEncoder.matches(inputPassword, storedPassword)){
             throw new IllegalArgumentException("현재 비밀번호와 입력하신 비밀번호가 일치하지 않습니다.");
         }
     }
@@ -137,10 +140,17 @@ public class MemberService {
         String encPassword = bCryptPasswordEncoder.encode(request.getPassword());
         member.setPassword(encPassword);
     }
-    //프로필 변경
+    //닉네임 변경
     @Transactional
-    public void updateProfile(ProfileDto request, Member member) {
-        member.setProfileIcon(request.getProfileIcon());
+    public void updateNickname(ProfileDto request, Member member) {
+        if (isNicknameDuplicated(request.getNickname())) {
+            throw new NicknameDuplicatedException("이미 사용중인 닉네임입니다.");
+        }
         member.setNickname(request.getNickname());
+    }
+    //아이콘 변경
+    @Transactional
+    public void updateIcon(Integer icon, Member member) {
+        member.setProfileIcon(icon);
     }
 }

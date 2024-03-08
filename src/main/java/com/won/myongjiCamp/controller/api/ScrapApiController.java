@@ -52,7 +52,7 @@ public class ScrapApiController {
     }
 
     //스크랩 가져오기
-    @GetMapping("/api/auth/scrap/{id}")
+    @GetMapping("/api/auth/scrap")
     public Result pullScraps(@ModelAttribute @Valid ScrapDto requestDto, @AuthenticationPrincipal PrincipalDetail principal) {
         log.info("Request param: {}", requestDto);
 
@@ -68,6 +68,26 @@ public class ScrapApiController {
 
         return new Result(collect);
     }
+
+//    //스크랩 가져오기 테스트
+//    @GetMapping("/api/auth/scrap")
+//    public Result pullScraps(@ModelAttribute @Valid ScrapDto requestDto) {
+//        Member member = memberRepository.findById(1L)
+//                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+//
+//
+//        Page<Scrap> scraps = scrapService.pullScraps(requestDto, member);
+//
+//        List<Board> boards = scraps.stream()
+//                .map(Scrap::getBoard)
+//                .collect(Collectors.toList());
+//
+//        List<BoardListResponseDto> collect = boards.stream()
+//                .map(BoardListResponseDto::new)
+//                .collect(Collectors.toList());
+//
+//        return new Result(collect);
+//    }
 
     @Data
     @AllArgsConstructor
