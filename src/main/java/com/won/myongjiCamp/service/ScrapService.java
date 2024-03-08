@@ -66,4 +66,16 @@ public class ScrapService  {
 
         return scrapRepository.findAll(spec, pageable);
     }
+
+    public boolean isScrap(Long board_id, Member member) {
+        Board board = boardRepository.findById(board_id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 글이 존재하지 않습니다."));
+
+        if(!scrapRepository.existsByMemberAndBoard(member, board)) {
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
 }

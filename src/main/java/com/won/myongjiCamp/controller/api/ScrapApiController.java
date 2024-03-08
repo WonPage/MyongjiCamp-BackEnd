@@ -88,6 +88,12 @@ public class ScrapApiController {
 //
 //        return new Result(collect);
 //    }
+    //스크랩 여부
+    @GetMapping("/api/auth/scrap/{board_id}")
+    public Result isScrap(@PathVariable Long board_id, @AuthenticationPrincipal PrincipalDetail principal) {
+        boolean isScrap = scrapService.isScrap(board_id, principal.getMember());
+        return new Result(isScrap);
+    }
 
     @Data
     @AllArgsConstructor
