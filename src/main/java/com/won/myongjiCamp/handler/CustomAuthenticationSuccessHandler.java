@@ -1,6 +1,7 @@
 package com.won.myongjiCamp.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import com.won.myongjiCamp.config.jwt.JwtTokenUtil;
 import com.won.myongjiCamp.dto.ResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,9 +34,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         //access 토큰 생성
-        String token = jwtTokenUtil.generateToken((UserDetails) authentication.getPrincipal());
+        String token = jwtTokenUtil.generateToken((PrincipalDetail) authentication.getPrincipal());
         //refresh 토큰 생성
-        String refreshToken = jwtTokenUtil.generateRefreshToken((UserDetails) authentication.getPrincipal());
+        String refreshToken = jwtTokenUtil.generateRefreshToken((PrincipalDetail) authentication.getPrincipal());
 
         // Redis에 Refresh Token 저장
         String email = ((UserDetails) authentication.getPrincipal()).getUsername();

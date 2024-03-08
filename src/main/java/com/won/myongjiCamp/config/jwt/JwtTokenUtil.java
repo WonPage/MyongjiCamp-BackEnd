@@ -1,11 +1,11 @@
 package com.won.myongjiCamp.config.jwt;
 
+import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -27,16 +27,17 @@ public class JwtTokenUtil {
     public JwtTokenUtil() {
     }
 
-    public String generateRefreshToken(UserDetails userDetails) {
-        return doGenerateToken(userDetails.getUsername(), refreshExpirationTime);
+    public String generateRefreshToken(PrincipalDetail userDetails) {
+        return doGenerateToken(userDetails.getUsername(), refreshExpirationTime, userDetails.getUserId());
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return doGenerateToken(userDetails.getUsername(), expirationTime);
+    public String generateToken(PrincipalDetail userDetails) {
+        return doGenerateToken(userDetails.getUsername(), expirationTime, userDetails.getUserId());
     }
 
-    private String doGenerateToken(String subject, Long expirationTime) {
+    private String doGenerateToken(String subject, Long expirationTime, Long userId) {
         Claims claims = Jwts.claims().setSubject(subject);
+        claims.put("userId", userId);
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -46,7 +47,7 @@ public class JwtTokenUtil {
     }
 
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    public Boolean validateToken(String token, PrincipalDetail userDetails) {
         return !isTokenExpired(token) && extractUsername(token).equals(userDetails.getUsername());
     }
 

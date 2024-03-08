@@ -1,6 +1,7 @@
 package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
+import com.won.myongjiCamp.config.auth.PrincipalDetailService;
 import com.won.myongjiCamp.config.jwt.JwtTokenUtil;
 import com.won.myongjiCamp.dto.request.CreateMemberDto;
 import com.won.myongjiCamp.dto.request.EmailDto;
@@ -18,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.SecureRandom;
@@ -36,7 +36,7 @@ public class MemberApiController {
     private final StringRedisTemplate redisTemplate;
 
     private final JwtTokenUtil jwtTokenUtil;
-    private final UserDetailsService userDetailsService;
+    private final PrincipalDetailService detailService;
 
     @PostMapping("/api/members")
     public ResponseDto saveMember(@RequestBody @Valid CreateMemberDto request) {
@@ -89,10 +89,10 @@ public class MemberApiController {
     //새로운 accsss, refresh 발급받고 redis에 저장
     private Map<String, Object> newToken(String email) {
         // 새로운 Access Token 생성
-        String refreshedToken = jwtTokenUtil.generateToken(userDetailsService.loadUserByUsername(email));
+        String refreshedToken = jwtTokenUtil.generateToken((PrincipalDetail) detailService.loadUserByUsername(email));
 
         // 새로운 Refresh Token 생성 및 Redis에 저장
-        String newRefreshToken = jwtTokenUtil.generateRefreshToken(userDetailsService.loadUserByUsername(email));
+        String newRefreshToken = jwtTokenUtil.generateRefreshToken((PrincipalDetail) detailService.loadUserByUsername(email));
         redisTemplate.opsForValue().set("refresh token:" + email, newRefreshToken);
         redisTemplate.expire("refresh token:" + email, jwtTokenUtil.getRefreshExpirationTime(), TimeUnit.MILLISECONDS);
 
