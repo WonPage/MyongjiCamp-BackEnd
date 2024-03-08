@@ -32,20 +32,20 @@ public class CommentApiController {
     private final CommentRepository commentRepository;
 
     //댓글 작성
-/*    @PostMapping("/api/auth/recruit/{id}/comment")
+    @PostMapping("/api/auth/recruit/{id}/comment")
     public ResponseDto<String> createComment(@RequestBody @Valid CommentDto commentDto, @AuthenticationPrincipal PrincipalDetail principal, @PathVariable Long id){
         commentService.create(commentDto,principal.getMember(),id);
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성 완료");
-    }*/
+    }
 
     //댓글 작성 테스트용
-    @PostMapping("/api/auth/recruit/{id}/comment")
+/*    @PostMapping("/api/auth/recruit/{id}/comment")
     public ResponseDto<String> createComment(@RequestBody @Valid CommentDto commentDto, @PathVariable Long id) {
         Member member = memberRepository.findById(1L)
                 .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
         commentService.create(commentDto, member, id);
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성 완료");
-    }
+    }*/
 
     //댓글 삭제
     @DeleteMapping("/api/auth/recruit/{board_id}/comment/{comment_id}")
@@ -54,15 +54,6 @@ public class CommentApiController {
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글이 삭제되었습니다.");
     }
 
-
-    //대댓글 목록 ai
-
-/*        private CommentRepository commentRepository;
-
-        @GetMapping("/api/auth/recruit/{board_id}/comment/{comment_id}")
-        public List<Comment> getChildren(@PathVariable("comment_id") Comment parentId) {
-            return commentRepository.findByParentId(parentId);
-        }*/
 
     //댓글 전체 조회
     @GetMapping("/api/auth/recruit/{board_id}/comment")
