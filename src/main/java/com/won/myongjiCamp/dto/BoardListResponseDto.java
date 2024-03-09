@@ -3,6 +3,7 @@ package com.won.myongjiCamp.dto;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.CompleteBoard;
 import com.won.myongjiCamp.model.board.RecruitBoard;
+import com.won.myongjiCamp.model.board.RecruitStatus;
 import com.won.myongjiCamp.model.board.role.Role;
 import com.won.myongjiCamp.model.board.role.RoleAssignment;
 import lombok.Data;
@@ -21,6 +22,7 @@ public class BoardListResponseDto {
     private int commentCount;
     private int scrapCount;
     private String imageUrl;
+    private RecruitStatus recruitStatus;
 
     public BoardListResponseDto(Board board) {
         this.boardId = board.getId();
@@ -34,6 +36,7 @@ public class BoardListResponseDto {
                     .map(RoleAssignment::getRole)
                     .collect(Collectors.toList());
             this.expectedDuration = recruitBoard.getExpectedDuration();
+            this.recruitStatus = recruitBoard.getStatus();
         }
 
         if (board instanceof CompleteBoard completeBoard) {
