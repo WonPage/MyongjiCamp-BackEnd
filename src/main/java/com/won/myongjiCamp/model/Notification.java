@@ -1,5 +1,6 @@
 package com.won.myongjiCamp.model;
 
+import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.Comment;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,7 +24,7 @@ public class Notification {
 
     private String content;
 
-    private String url;
+//    private String url;
 
     @Column(nullable = false)
     private boolean isRead;
@@ -37,15 +38,19 @@ public class Notification {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member receiver;
 
-/*
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "target_id")
-    private Comment targetComment; // 알림 대상 댓글 (COMMENT, REPLY일 경우)
-*/
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_id")
+    private Comment targetComment; // 알림 대상 댓글 (COMMENT, REPLY일 경우)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
+    private Board targetBoard;
 
     @CreationTimestamp
     private Timestamp createDate;
+
+
 
 
 }
