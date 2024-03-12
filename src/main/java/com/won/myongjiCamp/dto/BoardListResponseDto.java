@@ -40,7 +40,7 @@ public class BoardListResponseDto {
         }
 
         if (board instanceof CompleteBoard completeBoard) {
-            this.imageUrl = completeBoard.getImageUrl();
+//            this.imageUrl = completeBoard.getImages();
         }
     }
 }

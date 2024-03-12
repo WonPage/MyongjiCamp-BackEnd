@@ -7,6 +7,7 @@ import com.won.myongjiCamp.exception.NicknameDuplicatedException;
 import com.won.myongjiCamp.exception.VerificationFailureException;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.repository.MemberRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;

@@ -18,7 +18,7 @@ import java.util.List;
 @DiscriminatorValue("Complete")
 public class CompleteBoard extends Board {
 
-//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Image> images = new ArrayList<>();
-    private String imageUrl;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images = new ArrayList<>();
+//    private String imageUrl;
 }

@@ -159,9 +159,10 @@ public class MemberApiController {
 
     //개인정보(비밀번호 변경)
     @PutMapping("/api/auth/password/update")
-    public ResponseDto updatePassword(@RequestBody PasswordDto request, @AuthenticationPrincipal PrincipalDetail principal) {
+    public ResponseDto updatePassword(HttpServletRequest refresh, @RequestBody PasswordDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
         memberService.updatePassword(request,principal.getMember());
-        return new ResponseDto<>(HttpStatus.OK.value(), "비밀번호 변경 완료");
+        return refreshAndGetAuthenticationToken(refresh);
+//        return new ResponseDto<>(HttpStatus.OK.value(), "비밀번호 변경 완료");
     }
 
 //    //개인정보(비밀번호 변경) 테스트
@@ -175,9 +176,10 @@ public class MemberApiController {
 
     //닉네임 변경
     @PutMapping("/api/auth/nickname/update")
-    public ResponseDto updateNickname(@RequestBody ProfileDto request, @AuthenticationPrincipal PrincipalDetail principal) {
+    public ResponseDto updateNickname(HttpServletRequest refresh, @RequestBody ProfileDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
         memberService.updateNickname(request,principal.getMember());
-        return new ResponseDto<>(HttpStatus.OK.value(), "변경 완료");
+        return refreshAndGetAuthenticationToken(refresh);
+//        return new ResponseDto<>(HttpStatus.OK.value(), "변경 완료");
     }
 
 //    //닉네임 변경 테스트
@@ -191,9 +193,10 @@ public class MemberApiController {
 
     //아이콘 변경
     @PutMapping("/api/auth/icon/update")
-    public ResponseDto updateIcon(@RequestBody ProfileIconRequestDto request, @AuthenticationPrincipal PrincipalDetail principal) {
+    public ResponseDto updateIcon(HttpServletRequest refresh, @RequestBody ProfileIconRequestDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
         memberService.updateIcon(request.getProfileIcon(),principal.getMember());
-        return new ResponseDto<>(HttpStatus.OK.value(), "변경 완료");
+        return refreshAndGetAuthenticationToken(refresh);
+//        return new ResponseDto<>(HttpStatus.OK.value(), "변경 완료");
     }
 
 //    //아이콘 변경 테스트
