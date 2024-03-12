@@ -36,6 +36,9 @@ public class ImageManager {
 
     //이미지 저장
     public void saveImage(MultipartFile multipartFile, CompleteBoard completeBoard) {
-//        if()
+//        String st
+//        if(!multipartFile.isEmpty()){
+//            multipartFile.transferTo(getImagePath());
+//        }
     }
 }

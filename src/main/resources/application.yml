@@ -43,6 +43,9 @@ jwt:
   refresh_expiration_time: 2592000000 #30일
   secret: ${JWT_SECRET}
 
+file:
+  dir: ./src/main/resources/static/images/
+
 
 
 

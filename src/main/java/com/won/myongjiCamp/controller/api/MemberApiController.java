@@ -161,8 +161,10 @@ public class MemberApiController {
     @PutMapping("/api/auth/password/update")
     public ResponseDto updatePassword(HttpServletRequest refresh, @RequestBody PasswordDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
         memberService.updatePassword(request,principal.getMember());
-        return refreshAndGetAuthenticationToken(refresh);
-//        return new ResponseDto<>(HttpStatus.OK.value(), "비밀번호 변경 완료");
+        String newToken = jwtTokenUtil.generateToken((PrincipalDetail) detailService.loadUserByUsername(principal.getUsername()));
+        Map<String, Object> data = new HashMap<>();
+        data.put("token", newToken);
+        return new ResponseDto<>(HttpStatus.OK.value(), data);
     }
 
 //    //개인정보(비밀번호 변경) 테스트
@@ -178,8 +180,10 @@ public class MemberApiController {
     @PutMapping("/api/auth/nickname/update")
     public ResponseDto updateNickname(HttpServletRequest refresh, @RequestBody ProfileDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
         memberService.updateNickname(request,principal.getMember());
-        return refreshAndGetAuthenticationToken(refresh);
-//        return new ResponseDto<>(HttpStatus.OK.value(), "변경 완료");
+        String newToken = jwtTokenUtil.generateToken((PrincipalDetail) detailService.loadUserByUsername(principal.getUsername()));
+        Map<String, Object> data = new HashMap<>();
+        data.put("token", newToken);
+        return new ResponseDto<>(HttpStatus.OK.value(), data);
     }
 
 //    //닉네임 변경 테스트
@@ -195,8 +199,10 @@ public class MemberApiController {
     @PutMapping("/api/auth/icon/update")
     public ResponseDto updateIcon(HttpServletRequest refresh, @RequestBody ProfileIconRequestDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
         memberService.updateIcon(request.getProfileIcon(),principal.getMember());
-        return refreshAndGetAuthenticationToken(refresh);
-//        return new ResponseDto<>(HttpStatus.OK.value(), "변경 완료");
+        String newToken = jwtTokenUtil.generateToken((PrincipalDetail) detailService.loadUserByUsername(principal.getUsername()));
+        Map<String, Object> data = new HashMap<>();
+        data.put("token", newToken);
+        return new ResponseDto<>(HttpStatus.OK.value(), data);
     }
 
 //    //아이콘 변경 테스트
