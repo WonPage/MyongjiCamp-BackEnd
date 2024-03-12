@@ -16,8 +16,8 @@ public class RoleAssignmentDto {
 
     public RoleAssignmentDto(Role role,Integer appliedNumber,Integer requiredNumber){
         this.role = role;
-        this.requiredNumber = appliedNumber;
-        this.appliedNumber = requiredNumber;
+        this.requiredNumber = requiredNumber;
+        this.appliedNumber = appliedNumber;
     }
 
 

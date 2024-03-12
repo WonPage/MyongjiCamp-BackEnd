@@ -13,9 +13,9 @@ public class CommentDto {
 // dto에서는 board 를 받고 객체 받기 x
 
 
-//    private Long id;
+    private Long id;
 
-//    private Long boardId;
+    private Long boardId;
 
     @NotEmpty
     @Length(max=300)
