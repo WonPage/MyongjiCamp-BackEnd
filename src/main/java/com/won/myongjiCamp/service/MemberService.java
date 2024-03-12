@@ -138,7 +138,9 @@ public class MemberService {
     @Transactional
     public void updatePassword(PasswordDto request, Member member) {
         String encPassword = bCryptPasswordEncoder.encode(request.getPassword());
-        member.setPassword(encPassword);
+        Member findMember = memberRepository.findById(member.getId())
+                .orElseThrow(() -> new IllegalStateException("해당 유저가 존재하지 않습니다."));
+        findMember.setPassword(encPassword);
     }
     //닉네임 변경
     @Transactional
@@ -146,11 +148,15 @@ public class MemberService {
         if (isNicknameDuplicated(request.getNickname())) {
             throw new NicknameDuplicatedException("이미 사용중인 닉네임입니다.");
         }
-        member.setNickname(request.getNickname());
+        Member findMember = memberRepository.findById(member.getId())
+                .orElseThrow(() -> new IllegalStateException("해당 유저가 존재하지 않습니다."));
+        findMember.setNickname(request.getNickname());
     }
     //아이콘 변경
     @Transactional
     public void updateIcon(Integer icon, Member member) {
-        member.setProfileIcon(icon);
+        Member findMember = memberRepository.findById(member.getId())
+                .orElseThrow(() -> new IllegalStateException("해당 유저가 존재하지 않습니다."));
+        findMember.setProfileIcon(icon);
     }
 }
