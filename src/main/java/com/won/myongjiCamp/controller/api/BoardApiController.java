@@ -4,6 +4,7 @@ import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import com.won.myongjiCamp.dto.RecruitDto;
 import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.dto.RoleAssignmentDto;
+import com.won.myongjiCamp.dto.request.CompleteDto;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.dto.request.BoardSearchDto;
 import com.won.myongjiCamp.model.board.Board;
@@ -16,6 +17,7 @@ import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.repository.RecruitRepository;
 import com.won.myongjiCamp.repository.RoleAssignmentRepository;
 import com.won.myongjiCamp.service.BoardService;
+import com.won.myongjiCamp.service.CompleteService;
 import com.won.myongjiCamp.service.RecruitService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -26,7 +28,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +42,8 @@ import java.util.stream.Collectors;
 public class BoardApiController {
 
     private final RecruitService recruitService;
+
+    private final CompleteService completeService;
 
     private final MemberRepository memberRepository;
 
@@ -71,20 +77,6 @@ public class BoardApiController {
         return new ResponseDto<String>(HttpStatus.OK.value(), "게시글이 수정되었습니다.");
     }
 
-//    // complete 게시글 작성
-//    @PostMapping("/api/auth/recruit")
-//    public ResponseDto<String> createComplete(@RequestBody @Valid RecruitDto recruitDto,@AuthenticationPrincipal PrincipalDetail principal){
-//        recruitService.create(recruitDto,principal.getMember());
-//        return new ResponseDto<String>(HttpStatus.OK.value(),"게시글 작성 완료");
-//    }
-
-//    // complete 게시글 수정, id는 게시글 id
-//    @PutMapping("/api/auth/recruit/{id}")
-//    public ResponseDto<String> updateRecruit(@RequestBody @Valid RecruitDto recruitDto, @PathVariable long id){
-//        recruitService.update(recruitDto,id);
-//        return new ResponseDto<String>(HttpStatus.OK.value(), "게시글이 수정되었습니다.");
-//    }
-
     // 게시글 삭제, id는 게시글 id
     @DeleteMapping("/api/auth/recruit/{id}")
     public ResponseDto<String> deleteRecruit(@PathVariable long id){
@@ -92,7 +84,26 @@ public class BoardApiController {
         return new ResponseDto<String>(HttpStatus.OK.value(), "게시글이 삭제되었습니다.");
     }
 
+    // complete 게시글 작성
+    @PostMapping("/api/auth/complete")
+    public ResponseDto<String> createComplete(@ModelAttribute @Valid CompleteDto completeDto, @AuthenticationPrincipal PrincipalDetail principal) throws IOException {
+        completeService.create(completeDto, principal.getMember());
+        return new ResponseDto<String>(HttpStatus.OK.value(),"게시글 작성 완료");
+    }
 
+    // complete 게시글 수정, id는 게시글 id
+    @PutMapping("/api/auth/complete/{id}")
+    public ResponseDto<String> updateComplete(@ModelAttribute @Valid CompleteDto completeDto, @PathVariable long id) throws IOException {
+        completeService.update(id, completeDto);
+        return new ResponseDto<String>(HttpStatus.OK.value(), "게시글이 수정되었습니다.");
+    }
+
+    // complete 게시글 삭제, id는 게시글 id
+    @DeleteMapping("/api/auth/complete/{id}")
+    public ResponseDto<String> deleteComplete(@PathVariable long id){
+        completeService.delete(id);
+        return new ResponseDto<String>(HttpStatus.OK.value(), "게시글이 삭제되었습니다.");
+    }
 
     //글 조회(검색)
     @GetMapping("/api/board")

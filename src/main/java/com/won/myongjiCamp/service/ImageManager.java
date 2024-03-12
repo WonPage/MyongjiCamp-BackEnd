@@ -1,16 +1,25 @@
 package com.won.myongjiCamp.service;
 
 import com.won.myongjiCamp.model.board.CompleteBoard;
+import com.won.myongjiCamp.model.board.Image;
+import com.won.myongjiCamp.repository.ImageRepository;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class ImageManager {
+
+    final private ImageRepository imageRepository;
 
     @Value("${file.dir}")
     private String storePath; //파일 저장할 경로
@@ -29,16 +38,40 @@ public class ImageManager {
     }
 
     //저장되는 경로 반환
-    public String getImagePath(String uploadFileName, String ext) {
-        String imagePath = storePath + ext + "/" + uploadFileName;
+    public String getImagePath(String storedFileName, String ext) {
+        String imagePath = storePath + ext + "/" + storedFileName;
         return imagePath;
     }
 
     //이미지 저장
-    public void saveImage(MultipartFile multipartFile, CompleteBoard completeBoard) {
-//        String st
-//        if(!multipartFile.isEmpty()){
-//            multipartFile.transferTo(getImagePath());
-//        }
+    public Image saveImage(MultipartFile multipartFile, CompleteBoard completeBoard) throws IOException {
+        if(multipartFile.isEmpty()){
+            return null;
+        }
+        String uploadFileName = multipartFile.getOriginalFilename();
+        String storedFileName = createStoreFileName(uploadFileName);
+        String ext = extractExt(uploadFileName);
+
+        multipartFile.transferTo(new File(getImagePath(storedFileName, ext)));
+
+        Image savedImage = Image.builder()
+                .uploadFileName(uploadFileName)
+                .storedFileName(storedFileName)
+                .board(completeBoard)
+                .build();
+
+        return imageRepository.save(savedImage);
+    }
+
+    //전체 이미지 저장
+    public List<Image> saveImages(List<MultipartFile> multipartFiles, CompleteBoard completeBoard) throws IOException {
+        List<Image> imageList = new ArrayList<>();
+
+        for(MultipartFile multipartFile : multipartFiles) {
+            if(!multipartFile.isEmpty()) {
+                imageList.add(saveImage(multipartFile, completeBoard));
+            }
+        }
+        return imageList;
     }
 }
