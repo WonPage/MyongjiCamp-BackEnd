@@ -20,5 +20,14 @@ public class CompleteBoard extends Board {
 
     @OneToMany(mappedBy = "board", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Image> images = new ArrayList<>();
-//    private String imageUrl;
+
+    public void addImage(Image image) {
+        this.images.add(image);
+        image.setBoard(this);
+    }
+
+    public void removeImage(Image image) {
+        this.images.remove(image);
+        image.setBoard(null);
+    }
 }

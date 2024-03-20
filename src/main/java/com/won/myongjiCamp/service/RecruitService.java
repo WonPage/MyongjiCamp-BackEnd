@@ -195,7 +195,6 @@ public class RecruitService {
 
     }
 
-
     // 게시글 삭제
     @Transactional
     public void delete(Long id){

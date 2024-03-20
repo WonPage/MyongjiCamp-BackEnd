@@ -33,8 +33,8 @@ public class CompleteService {
         completeBoard.setTitle(completeDto.getTitle());
         completeBoard.setContent(completeDto.getContent());
         completeBoard.setMember(member);
-        completeBoard.setImages(imageManager.saveImages(completeDto.getImages(), completeBoard));
         completeRepository.save(completeBoard);
+        imageManager.saveImages(completeDto.getImages(), completeBoard);
     }
 
     @Transactional
@@ -54,6 +54,7 @@ public class CompleteService {
             findImages.removeIf(findImage -> {
                 boolean toDelete = !imageNames.contains(findImage.getStoredFileName());
                 if (toDelete) {
+                    completeBoard.removeImage(findImage);
                     imageRepository.delete(findImage); // 이미지 삭제
                 }
                 return toDelete;
@@ -65,7 +66,11 @@ public class CompleteService {
                     newImages.add(image);
                 }
             }
-            completeBoard.setImages(imageManager.saveImages(newImages, completeBoard));
+            List<Image> imageList = imageManager.saveImages(newImages, completeBoard);
+
+            for (Image image : imageList) {
+                completeBoard.addImage(image);
+            }
         }
     }
 

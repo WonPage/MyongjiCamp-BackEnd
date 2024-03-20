@@ -35,7 +35,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         # show_sql: true
@@ -49,7 +49,7 @@ jwt:
   secret: ${JWT_SECRET}
 
 file:
-  dir: ./src/main/resources/static/images/
+  dir: C:/study/myongjiCamp/src/main/resources/static/images/
 
 
 
