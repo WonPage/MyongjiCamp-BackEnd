@@ -24,8 +24,6 @@ public class Notification {
 
     private String content;
 
-//    private String url;
-
     @Column(nullable = false)
     private boolean isRead;
 
@@ -33,8 +31,8 @@ public class Notification {
     @Column(nullable = false)
     private NotificationType notificationType;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member receiver;
 
@@ -49,8 +47,5 @@ public class Notification {
 
     @CreationTimestamp
     private Timestamp createDate;
-
-
-
 
 }

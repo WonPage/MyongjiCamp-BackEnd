@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface ReportRepository extends JpaRepository<Report,Long> {
 
-    Report findByReporterAndReportedBoard(Member reporter, Board board); // board와 신고한 사람으로 찾기
-    Report findByReporterAndReportedComment(Member reporter, Comment comment);
+    Report findByReporterIdAndReportedBoardId(Long reporterId, Long boardId); // board와 신고한 사람으로 찾기
+    Report findByReporterIdAndReportedCommentId(Long reporterId, Long commentId);
 //    List<Report> findByReportStatus(ReportStatus status);
 }

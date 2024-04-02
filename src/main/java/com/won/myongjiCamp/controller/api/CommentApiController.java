@@ -50,10 +50,23 @@ public class CommentApiController {
     public ResponseDto<String> createComment(@RequestBody @Valid CommentDto commentDto, @PathVariable Long id) {
         Member member = memberRepository.findById(1L)
                 .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-        commentService.create(commentDto, member, id);
+        Comment comment = commentService.create(commentDto, member, id);
+
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-        notificationService.sendComment(board.getMember(), commentDto); // 게시글 작성자에게 댓글 알람
+
+        if(comment.getCdepth() == 0){
+            System.out.println("0번 입니다.");
+            CommentDto createCommentDto = convertCommentToDto(comment);
+            notificationService.sendComment(board, createCommentDto); // 게시글 작성자에게 댓글 알람
+        }
+        else if(comment.getCdepth() == 1){
+            System.out.println("1번 입니다.");
+
+            CommentDto createChildCommentDto = convertChildCommentToDto(comment);
+            notificationService.sendChildComment(board,createChildCommentDto);
+        }
+
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성 완료");
     }
 
@@ -79,7 +92,7 @@ public class CommentApiController {
         List<Comment> commentList = commentService.commentAll(id);
 
         commentList.stream().forEach(c->{
-            CommentResponseDto rDto = convertCommentToDto(c);
+            CommentResponseDto rDto = convertResponseCommentToDto(c);
             map.put(c.getId(), rDto);
             if(c.getCdepth() == 1){// 댓글이 부모가 있으면
                 map.get(c.getParent().getId()).getChildren().add(rDto);
@@ -99,8 +112,27 @@ public class CommentApiController {
         private T data;
     }
 
+    public CommentDto convertCommentToDto(Comment comment){ // notification을 위한 아이
+        return new CommentDto(
+                comment.getId(),
+                comment.getBoard().getId(),
+                comment.getContent(),
+                comment.getIsSecret()
+                );
 
-    public CommentResponseDto convertCommentToDto(Comment comment){
+    }
+    public CommentDto convertChildCommentToDto(Comment comment) { // notification을 위한 아이(원댓글의 id가 포함됨)
+        return new CommentDto(
+                comment.getId(),
+                comment.getBoard().getId(),
+                comment.getContent(),
+                comment.getIsSecret(),
+                comment.getParent().getId()
+        );
+
+    }
+
+    public CommentResponseDto convertResponseCommentToDto(Comment comment){
         return new CommentResponseDto(
                 comment.getId(),
                 comment.getBoard().getId(),
@@ -109,6 +141,9 @@ public class CommentApiController {
                 comment.getWriter().getId(),
                 comment.getWriter().getNickname(), 
                 comment.getWriter().getProfileIcon(),
+                comment.getIsSecret(),
+
+
                 new ArrayList<>()
         );
 

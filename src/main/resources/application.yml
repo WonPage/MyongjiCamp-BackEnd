@@ -19,7 +19,7 @@ spring:
     password: ${MYSQL_PASSWORD}
 
     server:
-      address: 192.168.89.73
+#      address: 192.168.89.73
       port: 8080
       servlet:
         context-path: /

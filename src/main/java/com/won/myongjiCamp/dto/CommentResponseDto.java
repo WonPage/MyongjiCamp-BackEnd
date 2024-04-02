@@ -19,8 +19,10 @@ public class CommentResponseDto{ //댓글 조회할 때
 
     private Integer profileIcon;
 
+    private Integer isSecret;
 
-    public CommentResponseDto(Long id,Long boardId,String content, Timestamp commentCreateDate, Long writerId,String nickname,Integer profileIcon,List<CommentResponseDto> children){
+
+    public CommentResponseDto(Long id,Long boardId,String content, Timestamp commentCreateDate, Long writerId,String nickname,Integer profileIcon,Integer isSecret,List<CommentResponseDto> children){
 
         this.id=id;
         this.boardId = boardId;
@@ -29,6 +31,7 @@ public class CommentResponseDto{ //댓글 조회할 때
         this.writerId = writerId;
         this.nickname = nickname;
         this.profileIcon = profileIcon;
+        this.isSecret = isSecret;
         this.children = children;
 
     }

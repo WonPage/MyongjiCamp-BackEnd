@@ -41,8 +41,7 @@ public class Comment {
     private int cdepth; //commentDept, 0이 기본값, 0이면 부모 댓글, 1이면 대댓글
 
 
-    //???
-    @ManyToOne(fetch = FetchType.LAZY) // 대댓글 - 원 댓글
+    @ManyToOne(fetch = FetchType.LAZY) // 대댓글의 원댓글
     @JoinColumn(name = "parent_id")
     private Comment parent;
 
