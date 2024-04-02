@@ -35,6 +35,14 @@ public class NotificationApiController {
     }
 
 
+    // 게시글 삭제, id는 게시글 id
+    @DeleteMapping("/api/auth/noification/{id}")
+    public ResponseDto<String> deleteNotification(@PathVariable long id){
+        notificationService.delete(id);
+        return new ResponseDto<String>(HttpStatus.OK.value(), "알림 삭제되었습니다.");
+    }
+
+
 /*
     @Data
     @AllArgsConstructor
@@ -43,7 +51,6 @@ public class NotificationApiController {
     }
 */
 
-    //알림 삭제 만들어야 됨
 
 
 

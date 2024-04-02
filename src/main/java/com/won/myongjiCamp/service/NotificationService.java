@@ -169,6 +169,13 @@ public class NotificationService {
         return
     }*/
 
+    // 게시글 삭제
+    @Transactional
+    public void delete(Long id){
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(()->new IllegalArgumentException("해당 알림이 존재하지 않습니다."));
+        notificationRepository.delete(notification);
+    }
 
 
 
