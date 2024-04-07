@@ -29,6 +29,10 @@ public class CompleteService {
 
     @Transactional
     public void create(CompleteDto completeDto, Member member) throws IOException {
+        // 이미지 개수 검사
+        if (completeDto.getImages().size() > 5) {
+            throw new IllegalArgumentException("최대 5개의 이미지만 업로드할 수 있습니다.");
+        }
         CompleteBoard completeBoard = new CompleteBoard();
         completeBoard.setTitle(completeDto.getTitle());
         completeBoard.setContent(completeDto.getContent());

@@ -7,7 +7,8 @@ import com.won.myongjiCamp.exception.NicknameDuplicatedException;
 import com.won.myongjiCamp.exception.VerificationFailureException;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.repository.MemberRepository;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -32,6 +33,8 @@ public class MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JavaMailSender mailSender;
     private final StringRedisTemplate redisTemplate;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     //회원가입
     @Transactional
@@ -142,6 +145,7 @@ public class MemberService {
         Member findMember = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new IllegalStateException("해당 유저가 존재하지 않습니다."));
         findMember.setPassword(encPassword);
+        entityManager.flush();
     }
     //닉네임 변경
     @Transactional
@@ -152,6 +156,7 @@ public class MemberService {
         Member findMember = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new IllegalStateException("해당 유저가 존재하지 않습니다."));
         findMember.setNickname(request.getNickname());
+        entityManager.flush();
     }
     //아이콘 변경
     @Transactional
@@ -159,5 +164,6 @@ public class MemberService {
         Member findMember = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new IllegalStateException("해당 유저가 존재하지 않습니다."));
         findMember.setProfileIcon(icon);
+        entityManager.flush();
     }
 }

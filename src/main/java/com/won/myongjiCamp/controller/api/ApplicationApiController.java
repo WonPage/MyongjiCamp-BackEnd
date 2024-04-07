@@ -6,6 +6,7 @@ import com.won.myongjiCamp.model.application.Application;
 import com.won.myongjiCamp.model.application.ApplicationFinalStatus;
 import com.won.myongjiCamp.model.application.ApplicationStatus;
 import com.won.myongjiCamp.model.board.RecruitBoard;
+import com.won.myongjiCamp.model.board.RecruitStatus;
 import com.won.myongjiCamp.model.board.role.Role;
 import com.won.myongjiCamp.repository.ApplicationRepository;
 import com.won.myongjiCamp.repository.MemberRepository;
@@ -80,7 +81,7 @@ public class ApplicationApiController {
     public Result listOfWriter(@AuthenticationPrincipal PrincipalDetail principal) {
         List<RecruitBoard> boards = applicationService.listOfWriter(principal.getMember());
         List<ApplicationResponseDto> collect = boards.stream()
-                .map(b -> new ApplicationResponseDto(b.getId(), principal.getMember().getId(), applicationRepository.countByBoard(b), b.getTitle(), b.getCreateDate()))
+                .map(b -> new ApplicationResponseDto(b.getId(), principal.getMember().getId(), applicationRepository.countByBoard(b), b.getTitle(), b.getStatus(), b.getCreateDate()))
                 .collect(Collectors.toList());
         return new Result(collect);
     }
@@ -135,6 +136,7 @@ public class ApplicationApiController {
         private Long memberId; //멤버 id
         private Long num; //이력서 개수
         private String boardTitle; //글 제목
+        private RecruitStatus recruitStatus;
         private String applyUrl; //지원할때 적는 url
         private String resultUrl; //승인 or 거절 보낼때 적는 url
         private ApplicationStatus firstStatus; // 처음 요청 상태
@@ -149,12 +151,13 @@ public class ApplicationApiController {
 
 
         //모집자 입장에서의 지원 확인 (지원현황)
-        public ApplicationResponseDto(Long boardId, Long memberId, Long num, String boardTitle, Timestamp boardCreateDate) {
+        public ApplicationResponseDto(Long boardId, Long memberId, Long num, String boardTitle, RecruitStatus recruitStatus, Timestamp boardCreateDate) {
             this.boardId = boardId;
             this.memberId = memberId;
             this.num = num;
             this.boardTitle = boardTitle;
             this.boardCreateDate = boardCreateDate;
+            this.recruitStatus = recruitStatus;
         }
 
         //지원자 입장에서의 지원 확인 (지원현황)

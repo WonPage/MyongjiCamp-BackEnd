@@ -3,7 +3,6 @@ package com.won.myongjiCamp.service;
 import com.won.myongjiCamp.model.board.CompleteBoard;
 import com.won.myongjiCamp.model.board.Image;
 import com.won.myongjiCamp.repository.ImageRepository;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

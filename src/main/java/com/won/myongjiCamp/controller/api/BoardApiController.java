@@ -84,22 +84,22 @@ public class BoardApiController {
         return new ResponseDto<String>(HttpStatus.OK.value(), "게시글이 삭제되었습니다.");
     }
 
-//    // complete 게시글 작성
-//    @PostMapping("/api/auth/complete")
-//    public ResponseDto<String> createComplete(@ModelAttribute @Valid CompleteDto completeDto, @AuthenticationPrincipal PrincipalDetail principalDetail) throws IOException {
-//        completeService.create(completeDto, principalDetail.getMember());
-//        return new ResponseDto<String>(HttpStatus.OK.value(),"게시글 작성 완료");
-//    }
-
-    // complete 게시글 작성 TEST
+    // complete 게시글 작성
     @PostMapping("/api/auth/complete")
-    public ResponseDto<String> createComplete(@ModelAttribute @Valid CompleteDto completeDto) throws IOException {
-        Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-
-        completeService.create(completeDto, member);
+    public ResponseDto<String> createComplete(@ModelAttribute @Valid CompleteDto completeDto, @AuthenticationPrincipal PrincipalDetail principalDetail) throws IOException {
+        completeService.create(completeDto, principalDetail.getMember());
         return new ResponseDto<String>(HttpStatus.OK.value(),"게시글 작성 완료");
     }
+
+//    // complete 게시글 작성 TEST
+//    @PostMapping("/api/auth/complete")
+//    public ResponseDto<String> createComplete(@ModelAttribute @Valid CompleteDto completeDto) throws IOException {
+//        Member member = memberRepository.findById(1L)
+//                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+//
+//        completeService.create(completeDto, member);
+//        return new ResponseDto<String>(HttpStatus.OK.value(),"게시글 작성 완료");
+//    }
 
     // complete 게시글 수정, id는 게시글 id
     @PutMapping("/api/auth/complete/{id}")
@@ -118,7 +118,6 @@ public class BoardApiController {
     //글 조회(검색)
     @GetMapping("/api/board")
     public Result findAll(@ModelAttribute @Valid BoardSearchDto requestDto) {
-        log.info("Request param: {}", requestDto);
         Page<Board> boards = boardService.searchBoards(requestDto);
         List<BoardListResponseDto> collect = boards.stream()
                 .map(BoardListResponseDto::new)
