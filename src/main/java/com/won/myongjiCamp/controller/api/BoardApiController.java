@@ -112,7 +112,6 @@ public class BoardApiController {
         private T data;
     }
 
-
     // 게시글 상세 읽기
     @GetMapping("/api/auth/recruit/{id}")
     public Result getRecruitDetail(@AuthenticationPrincipal PrincipalDetail principalDetail, @PathVariable Long id){
