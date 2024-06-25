@@ -47,7 +47,6 @@ public class BoardSpecification {
             if ("complete".equals(status)) {
                 return cb.equal(root.get("status"), RecruitStatus.RECRUIT_COMPLETE);
             }
-
             return null;
         };
     }

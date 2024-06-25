@@ -39,7 +39,7 @@ public class ResumeService {
         resume.setTitle(title);
         resume.setContent(content);
         resume.setUrl(url);
-        resume.setCreateDate(new Timestamp(System.currentTimeMillis()));
+        resume.setCreatedDate(new Timestamp(System.currentTimeMillis()));
     }
     //이력서 삭제
     @Transactional

@@ -47,7 +47,7 @@ public abstract class Board {
 
     @Column(name = "created_date")
     @CreationTimestamp
-    private Timestamp createDate;
+    private Timestamp createdDate;
 
     @Column(name = "modified_date")
     @CreationTimestamp

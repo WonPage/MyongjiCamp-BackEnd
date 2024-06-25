@@ -57,7 +57,7 @@ public class ScrapService  {
 
         Member findMember = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-        String property = "createDate";
+        String property = "createdDate";
         Pageable pageable = PageRequest.of(requestDto.getPageNum(), 8, Sort.by(Sort.Direction.DESC, property));
 
         Specification<Scrap> spec = Specification.where(ScrapSpecification.withStatus(requestDto.getStatus()))

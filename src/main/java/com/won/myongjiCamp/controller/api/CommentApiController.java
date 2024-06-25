@@ -105,7 +105,7 @@ public class CommentApiController {
                 comment.getId(),
                 comment.getBoard().getId(),
                 comment.getContent(),
-                comment.getCreateDate(),
+                comment.getCreatedDate(),
                 comment.getWriter().getId(),
                 comment.getWriter().getNickname(), 
                 comment.getWriter().getProfileIcon(),

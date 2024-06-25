@@ -32,7 +32,7 @@ public class Member {
     private String nickname;
 
     @CreationTimestamp
-    private Timestamp createDate;
+    private Timestamp createdDate;
 
     @OneToMany(mappedBy = "member")
     private List<Resume> resumes = new ArrayList<>();

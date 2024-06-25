@@ -1,4 +1,7 @@
 spring:
+  profiles:
+    include: private
+
   servlet:
     multipart:
       max-file-size: 1MB # 각 파일 최대 크기
@@ -17,10 +20,10 @@ spring:
 #    multipart:
 #      max-file-size: 1MB
 #      max-request-size: 3MB
-
-  redis:
-    host: localhost
-    port: 6379
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -53,8 +56,6 @@ jwt:
   refresh_expiration_time: 2592000000 #30일
   secret: ${JWT_SECRET}
 
-file:
-  dir: C:/study/myongjiCamp/src/main/resources/static/images/
 
 
 

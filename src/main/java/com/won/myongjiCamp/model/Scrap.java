@@ -27,5 +27,5 @@ public class Scrap {
     private Board board;
 
     @CreationTimestamp
-    private Timestamp createDate;
+    private Timestamp createdDate;
 }

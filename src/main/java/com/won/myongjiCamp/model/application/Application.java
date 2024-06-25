@@ -53,6 +53,6 @@ public class Application {
     private ApplicationFinalStatus finalStatus; // 지원자의 최종 승인 / 거절
 
     @CreationTimestamp
-    private Timestamp createDate;
+    private Timestamp createdDate;
 }
 
