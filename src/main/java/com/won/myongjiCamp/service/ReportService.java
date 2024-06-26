@@ -34,15 +34,16 @@ public class ReportService {
        if(reportDto.getTargetType().equals(ReportTargetType.Post) ){ // 게시글 신고의 경우
            Board targetBoard = boardRepository.findById(id)
                    .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-           Report existingReport = reportRepository.findByReporterAndReportedBoard(reporter, targetBoard);
+           Report existingReport = reportRepository.findByReporterIdAndReportedBoardId(reporter.getId(), targetBoard.getId());
            if(existingReport == null){ // 이전에 신고한 적 없는 경우
                Report report = new Report();
                report.setTargetType(ReportTargetType.Post);
-               report.setReportedBoard(targetBoard);
-               report.setReporter(reporter);
+               report.setReportedBoardId(targetBoard.getId());
+               report.setReporterId(reporter.getId());
                report.setReason(reportDto.getReason());
                report.setStatus(ReportStatus.Reported);
-               targetBoard.setReportCount(targetBoard.getReportCount()+1);
+
+
 //               targetBoard.setReportStatus(ReportStatus.Reported);
 
                reportRepository.save(report);
@@ -66,17 +67,21 @@ public class ReportService {
        else{ // 댓글 신고의 경우
            Comment targetComment = commentRepository.findById(id)
                    .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
-           Report existingComment = reportRepository.findByReporterAndReportedComment(reporter, targetComment);
+           Report existingComment = reportRepository.findByReporterIdAndReportedCommentId(reporter.getId(), targetComment.getId());
            if(existingComment == null){
                Report report = new Report();
                report.setTargetType(ReportTargetType.Comment);
-               report.setReportedComment(targetComment);
-               report.setReporter(reporter);
+               report.setReportedCommentId(targetComment.getId());
+               report.setReporterId(reporter.getId());
                report.setReason(reportDto.getReason());
                report.setStatus(ReportStatus.Reported);
-               targetComment.setReportCount(targetComment.getReportCount()+1);
                targetComment.setReportStatus(ReportStatus.Reported);
-
+               //수정 : getReportCount가 기본 0 이면 null로 저장돼서 에러가 난다. if, else문 추가
+               if (targetComment.getReportCount() == null){
+                   targetComment.setReportCount(1);
+               }else{
+                   targetComment.setReportCount(targetComment.getReportCount()+1);
+               }
 
                reportRepository.save(report);
            }

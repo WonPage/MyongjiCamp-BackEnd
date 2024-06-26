@@ -40,7 +40,7 @@ public class ReportApiController {
  // 신고 작성 테스트 용
    @PostMapping("/api/auth/report/{id}")
     public ResponseDto<String> createReport(@RequestBody @Valid ReportDto reportDto, @PathVariable Long id){
-        Member member = memberRepository.findById(2L)
+        Member member = memberRepository.findById(1L)
                 .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
         reportService.createReport(reportDto, member,id);
         return new ResponseDto<String>(HttpStatus.OK.value(), "신고 완료되었습니다.");

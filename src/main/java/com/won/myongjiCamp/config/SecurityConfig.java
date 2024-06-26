@@ -58,11 +58,11 @@ public class SecurityConfig {
                     .permitAll()
                 .and()
                     .formLogin()
-//                    .loginPage("/loginForm")
                     .loginProcessingUrl("/api/login")
                     .successHandler(successHandler)
                     .failureHandler(failureHandler);
 
         return http.build();
     }
+
 }

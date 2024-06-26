@@ -123,7 +123,7 @@ public class BoardApiController {
     }
 
 
-    // recruit 게시글 상세 읽기
+    // 게시글 상세 읽기
     @GetMapping("/api/auth/recruit/{id}")
     public Result getRecruitDetail(@AuthenticationPrincipal PrincipalDetail principalDetail, @PathVariable Long id){
 

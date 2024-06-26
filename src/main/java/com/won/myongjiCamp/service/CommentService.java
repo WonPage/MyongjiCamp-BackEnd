@@ -21,9 +21,11 @@ public class CommentService {
 
     // 댓글 작성
     @Transactional
-    public void create(CommentDto commentDto, Member member, Long id) {
+    public Comment create(CommentDto commentDto, Member member, Long id) {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+        board.setCommentCount(board.getCommentCount() + 1);
+
         if (commentDto.getCdepth() == 0) { //부모 댓글
             Comment comment = Comment.builder()
                     .board(board)
@@ -34,6 +36,8 @@ public class CommentService {
                     .isSecret(commentDto.getIsSecret())
                     .build();
             commentRepository.save(comment);
+
+            return comment;
         } else { // 대댓글
             Comment parentComment = commentRepository.findById(commentDto.getParentId())
                     .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
@@ -44,7 +48,6 @@ public class CommentService {
                     .writer(member)
                     .cdepth(1)
                     .isSecret(commentDto.getIsSecret())
-
                     .isDelete(false)
                     .build();
             commentRepository.save(childComment);
@@ -54,8 +57,8 @@ public class CommentService {
             child.add(childComment);
             parentComment.setChildren(child);
 
+            return childComment;
         }
-        board.setCommentCount(board.getCommentCount() + 1);
     }
 
 
@@ -85,7 +88,6 @@ public class CommentService {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
         return commentRepository.findByBoard(board);
-
     }
 
 
