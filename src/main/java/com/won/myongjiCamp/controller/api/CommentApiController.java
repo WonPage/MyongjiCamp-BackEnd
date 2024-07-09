@@ -31,7 +31,6 @@ public class CommentApiController {
 
     private final CommentRepository commentRepository;
 
-    private final NotificationService notificationService;
     private final FcmService fcmService;
 
     //댓글 작성

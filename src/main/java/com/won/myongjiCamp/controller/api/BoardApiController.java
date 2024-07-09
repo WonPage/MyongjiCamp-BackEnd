@@ -46,31 +46,7 @@ public class BoardApiController {
     public ResponseDto<String> createRecruit(@RequestBody @Valid RecruitDto recruitDto,@AuthenticationPrincipal PrincipalDetail principal){
         recruitService.create(recruitDto,principal.getMember());
         return new ResponseDto<String>(HttpStatus.OK.value(),"게시글 작성 완료");
-<<<<<<< HEAD
-    }*/
-
-
-    // recruit 게시글 작성 테스트용
-/*    @PostMapping("/api/auth/recruit")
-    public ResponseDto<String> createRecruit(@RequestBody @Valid RecruitDto recruitDto){
-        Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-        recruitService.create(recruitDto,member);
-        return new ResponseDto<String>(HttpStatus.OK.value(),"게시글 작성 완료");
-    }*/
-=======
     }
->>>>>>> 9f6c2f2d9c66fd7d4783663b39b82fe9a89fad6f
-
-
-//    // recruit 게시글 작성 테스트용
-//    @PostMapping("/api/auth/recruit")
-//    public ResponseDto<String> createRecruit(@RequestBody @Valid RecruitDto recruitDto){
-//        Member member = memberRepository.findById(1L)
-//                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-//        recruitService.create(recruitDto,member);
-//        return new ResponseDto<String>(HttpStatus.OK.value(),"게시글 작성 완료");
-//    }
 
     // recruit 게시글 수정, id는 게시글 id
     @PutMapping("/api/auth/recruit/{id}")
@@ -79,23 +55,6 @@ public class BoardApiController {
         return new ResponseDto<String>(HttpStatus.OK.value(), "게시글이 수정되었습니다.");
     }
 
-<<<<<<< HEAD
-//    // complete 게시글 작성
-    @PostMapping("/api/auth/recruit")
-    public ResponseDto<String> createComplete(@RequestBody @Valid RecruitDto recruitDto,@AuthenticationPrincipal PrincipalDetail principal){
-        recruitService.create(recruitDto,principal.getMember());
-        return new ResponseDto<String>(HttpStatus.OK.value(),"게시글 작성 완료");
-    }
-
-//    // complete 게시글 수정, id는 게시글 id
-//    @PutMapping("/api/auth/recruit/{id}")
-//    public ResponseDto<String> updateRecruit(@RequestBody @Valid RecruitDto recruitDto, @PathVariable long id){
-//        recruitService.update(recruitDto,id);
-//        return new ResponseDto<String>(HttpStatus.OK.value(), "게시글이 수정되었습니다.");
-//    }
-
-=======
->>>>>>> 9f6c2f2d9c66fd7d4783663b39b82fe9a89fad6f
     // 게시글 삭제, id는 게시글 id
     @DeleteMapping("/api/auth/recruit/{id}")
     public ResponseDto<String> deleteRecruit(@PathVariable long id){
