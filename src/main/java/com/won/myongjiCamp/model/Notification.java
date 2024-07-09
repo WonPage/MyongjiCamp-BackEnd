@@ -4,6 +4,7 @@ import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.Comment;
 import jakarta.persistence.*;
 import lombok.*;
+import org.checkerframework.checker.units.qual.C;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -27,19 +28,21 @@ public class Notification {
     @Column(nullable = false)
     private boolean isRead;
 
-    @Enumerated(EnumType.STRING)
+/*    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private NotificationType notificationType;
+    private NotificationType notificationType;*/
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiver_id")
+    @JoinColumn(name = "member")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member receiver;
 
 
+/*
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
     private Comment targetComment; // 알림 대상 댓글 (COMMENT, REPLY일 경우)
+*/
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")

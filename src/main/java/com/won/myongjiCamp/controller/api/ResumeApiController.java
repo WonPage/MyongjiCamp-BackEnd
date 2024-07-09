@@ -5,6 +5,7 @@ import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.dto.request.ResumeDto;
 import com.won.myongjiCamp.exception.MemberNoMatchException;
 import com.won.myongjiCamp.model.Resume;
+import com.won.myongjiCamp.service.FcmService;
 import com.won.myongjiCamp.service.ResumeService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -25,10 +26,11 @@ import java.util.stream.Collectors;
 public class ResumeApiController {
 
     private final ResumeService resumeService;
-
+    private final FcmService fcmService;
     @PostMapping("/api/auth/resume") // 이력서 작성
     public ResponseDto<String> writeResume(@RequestBody @Valid ResumeDto request, @AuthenticationPrincipal PrincipalDetail principal) {
         resumeService.write(request.getTitle(),request.getContent(),request.getUrl(), principal.getMember());
+
         return new ResponseDto<String>(HttpStatus.OK.value(), "이력서 작성 완료");
     }
 

@@ -35,6 +35,7 @@ public class CommentDto {
 
     private Integer isSecret;
 
+
     @Builder
     public CommentDto(Long id, Long boardId, String content,Integer isSecret){
         this.id = id;

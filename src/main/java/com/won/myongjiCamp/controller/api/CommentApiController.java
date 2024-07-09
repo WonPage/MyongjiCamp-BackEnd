@@ -4,15 +4,12 @@ import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import com.won.myongjiCamp.dto.CommentDto;
 import com.won.myongjiCamp.dto.CommentResponseDto;
 import com.won.myongjiCamp.dto.ResponseDto;
-import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.Comment;
-import com.won.myongjiCamp.model.Member;
-import com.won.myongjiCamp.repository.BoardRepository;
 import com.won.myongjiCamp.repository.CommentRepository;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.repository.RecruitRepository;
 import com.won.myongjiCamp.service.CommentService;
-import com.won.myongjiCamp.service.NotificationService;
+import com.won.myongjiCamp.service.FcmService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,17 +32,22 @@ public class CommentApiController {
     private final CommentRepository commentRepository;
 
     private final NotificationService notificationService;
+    private final FcmService fcmService;
 
     //댓글 작성
-/*    @PostMapping("/api/auth/recruit/{id}/comment")
-    public ResponseDto<String> createComment(@RequestBody @Valid CommentDto commentDto, @AuthenticationPrincipal PrincipalDetail principal, @PathVariable Long id){
+    @PostMapping("/api/auth/recruit/{id}/comment")
+        public ResponseDto<String> createComment(@RequestBody @Valid CommentDto commentDto, @AuthenticationPrincipal PrincipalDetail principal, @PathVariable Long id){
         commentService.create(commentDto,principal.getMember(),id);
 //알림 써야 함
+        //댓글 -> 게시글 작성자에게 알림
+        fcmService.sendNotification(principal.getMember(), commentDto, id);
+        //대댓 -> 댓글 작성자 & 게시글 작성자에게 알림
+
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성 완료");
-    }*/
+    }
 
     //댓글 작성 테스트용
-    private final BoardRepository boardRepository;
+/*    private final BoardRepository boardRepository;
     @PostMapping("/api/auth/recruit/{id}/comment")
     public ResponseDto<String> createComment(@RequestBody @Valid CommentDto commentDto, @PathVariable Long id) {
         Member member = memberRepository.findById(1L)
@@ -68,7 +70,7 @@ public class CommentApiController {
         }
 
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성 완료");
-    }
+    }*/
 
     //댓글 삭제
     @DeleteMapping("/api/auth/recruit/{board_id}/comment/{comment_id}")
@@ -112,6 +114,7 @@ public class CommentApiController {
         private T data;
     }
 
+/*
     public CommentDto convertCommentToDto(Comment comment){ // notification을 위한 아이
         return new CommentDto(
                 comment.getId(),
@@ -131,6 +134,7 @@ public class CommentApiController {
         );
 
     }
+*/
 
     public CommentResponseDto convertResponseCommentToDto(Comment comment){
         return new CommentResponseDto(

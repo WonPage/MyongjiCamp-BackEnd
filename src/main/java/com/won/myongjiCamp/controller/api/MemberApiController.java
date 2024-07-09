@@ -3,12 +3,12 @@ package com.won.myongjiCamp.controller.api;
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import com.won.myongjiCamp.config.auth.PrincipalDetailService;
 import com.won.myongjiCamp.config.jwt.JwtTokenUtil;
+import com.won.myongjiCamp.dto.TokenDto;
 import com.won.myongjiCamp.dto.request.CreateMemberDto;
 import com.won.myongjiCamp.dto.request.EmailDto;
 import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.dto.request.PasswordDto;
 import com.won.myongjiCamp.dto.request.ProfileDto;
-import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -105,14 +105,16 @@ public class MemberApiController {
 
     //로그아웃
     @PostMapping("/api/auth/logout")
-    public ResponseDto logout(HttpServletRequest request) {
+    public ResponseDto logout(HttpServletRequest request, @RequestBody TokenDto expoToken) {
         String authToken = request.getHeader("Authorization");
         final String token = authToken.substring("Bearer ".length());
         String username = jwtTokenUtil.extractUsername(token); //이메일
 
         // Redis에서 username에 해당하는 Refresh Token 삭제
         redisTemplate.delete("refresh token:" + username);
-
+//        redisTemplate.delete("expo notification token:" + username);
+        redisTemplate.opsForList().remove("expo notification token:" + username,0, expoToken.getToken());
+        System.out.println("ruru"+expoToken.getToken());
         return new ResponseDto(HttpStatus.OK.value(), "로그아웃 성공");
     }
 
