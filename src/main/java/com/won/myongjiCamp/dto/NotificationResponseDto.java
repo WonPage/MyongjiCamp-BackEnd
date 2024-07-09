@@ -36,7 +36,7 @@ public class NotificationResponseDto {
         this.isRead = notification.isRead();
         this.receiverId = notification.getReceiver().getId();
         this.targetBoardId = notification.getTargetBoard().getId();
-        this.createDate = notification.getCreateDate();
+        this.createDate = notification.getCreatedDate();
     }
 
     //댓글용
