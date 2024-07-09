@@ -6,6 +6,7 @@ import com.won.myongjiCamp.model.application.Application;
 import com.won.myongjiCamp.model.application.ApplicationFinalStatus;
 import com.won.myongjiCamp.model.application.ApplicationStatus;
 import com.won.myongjiCamp.model.board.RecruitBoard;
+import com.won.myongjiCamp.model.board.RecruitStatus;
 import com.won.myongjiCamp.model.board.role.Role;
 import com.won.myongjiCamp.repository.ApplicationRepository;
 import com.won.myongjiCamp.repository.MemberRepository;
@@ -80,7 +81,7 @@ public class ApplicationApiController {
     public Result listOfWriter(@AuthenticationPrincipal PrincipalDetail principal) {
         List<RecruitBoard> boards = applicationService.listOfWriter(principal.getMember());
         List<ApplicationResponseDto> collect = boards.stream()
-                .map(b -> new ApplicationResponseDto(b.getId(), principal.getMember().getId(), applicationRepository.countByBoard(b), b.getTitle(), b.getCreateDate()))
+                .map(b -> new ApplicationResponseDto(b.getId(), principal.getMember().getId(), applicationRepository.countByBoard(b), b.getTitle(), b.getStatus(), b.getCreatedDate()))
                 .collect(Collectors.toList());
         return new Result(collect);
     }
@@ -90,7 +91,7 @@ public class ApplicationApiController {
     public Result listApplication(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetail principal){
         List<Application> applications = applicationService.listApplication(id);
         List<ApplicationResponseDto> collect = applications.stream()
-                .map(b -> new ApplicationResponseDto(b.getId(), b.getApplicant().getNickname(), b.getApplicant().getProfileIcon(), b.getRole(), b.getFirstStatus(), b.getFinalStatus(), b.getCreateDate()))
+                .map(b -> new ApplicationResponseDto(b.getId(), b.getApplicant().getNickname(), b.getApplicant().getProfileIcon(), b.getRole(), b.getFirstStatus(), b.getFinalStatus(), b.getCreatedDate()))
                 .collect(Collectors.toList());
         return new Result(collect);
     }
@@ -100,7 +101,7 @@ public class ApplicationApiController {
     public Result listOfApplicant(@AuthenticationPrincipal PrincipalDetail principal) {
         List<Application> applications = applicationService.listOfApplicant(principal.getMember());
         List<ApplicationResponseDto> collect = applications.stream()
-                .map(a -> new ApplicationResponseDto(a.getBoard().getId(), a.getId(), principal.getMember().getId(), a.getBoard().getTitle(), a.getFirstStatus(), a.getFinalStatus(), a.getCreateDate()))
+                .map(a -> new ApplicationResponseDto(a.getBoard().getId(), a.getId(), principal.getMember().getId(), a.getBoard().getTitle(), a.getFirstStatus(), a.getFinalStatus(), a.getCreatedDate()))
                 .collect(Collectors.toList());
         return new Result(collect);
     }
@@ -135,12 +136,13 @@ public class ApplicationApiController {
         private Long memberId; //멤버 id
         private Long num; //이력서 개수
         private String boardTitle; //글 제목
+        private RecruitStatus recruitStatus;
         private String applyUrl; //지원할때 적는 url
         private String resultUrl; //승인 or 거절 보낼때 적는 url
         private ApplicationStatus firstStatus; // 처음 요청 상태
         private ApplicationFinalStatus finalStatus; // 최종 요청 상태
-        private Timestamp applyCreateDate; //지원한 시간
-        private Timestamp boardCreateDate; //글 작성 시간
+        private Timestamp applycreatedDate; //지원한 시간
+        private Timestamp boardcreatedDate; //글 작성 시간
         private Role role;
         private Integer icon;
         private String nickname;
@@ -149,23 +151,24 @@ public class ApplicationApiController {
 
 
         //모집자 입장에서의 지원 확인 (지원현황)
-        public ApplicationResponseDto(Long boardId, Long memberId, Long num, String boardTitle, Timestamp boardCreateDate) {
+        public ApplicationResponseDto(Long boardId, Long memberId, Long num, String boardTitle, RecruitStatus recruitStatus, Timestamp boardcreatedDate) {
             this.boardId = boardId;
             this.memberId = memberId;
             this.num = num;
             this.boardTitle = boardTitle;
-            this.boardCreateDate = boardCreateDate;
+            this.boardcreatedDate = boardcreatedDate;
+            this.recruitStatus = recruitStatus;
         }
 
         //지원자 입장에서의 지원 확인 (지원현황)
-        public ApplicationResponseDto(Long boardId, Long applicationId, Long memberId, String boardTitle, ApplicationStatus firstStatus, ApplicationFinalStatus finalStatus, Timestamp applyCreateDate) {
+        public ApplicationResponseDto(Long boardId, Long applicationId, Long memberId, String boardTitle, ApplicationStatus firstStatus, ApplicationFinalStatus finalStatus, Timestamp applycreatedDate) {
             this.boardId = boardId;
             this.applicationId = applicationId;
             this.memberId = memberId;
             this.boardTitle = boardTitle;
             this.firstStatus = firstStatus;
             this.finalStatus = finalStatus;
-            this.applyCreateDate = applyCreateDate;
+            this.applycreatedDate = applycreatedDate;
         }
 
         //지원서 상세보기
@@ -181,14 +184,14 @@ public class ApplicationApiController {
         }
 
         //지원서 목록
-        public ApplicationResponseDto(Long applicationId, String nickname, Integer icon, Role role, ApplicationStatus firstStatus, ApplicationFinalStatus finalStatus, Timestamp applyCreateDate) {
+        public ApplicationResponseDto(Long applicationId, String nickname, Integer icon, Role role, ApplicationStatus firstStatus, ApplicationFinalStatus finalStatus, Timestamp applycreatedDate) {
             this.applicationId = applicationId;
             this.nickname = nickname;
             this.icon = icon;
             this.role = role;
             this.firstStatus = firstStatus;
             this.finalStatus = finalStatus;
-            this.applyCreateDate = applyCreateDate;
+            this.applycreatedDate = applycreatedDate;
         }
 
         //결과 메세지 확인

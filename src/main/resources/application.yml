@@ -1,4 +1,12 @@
 spring:
+  profiles:
+    include: private
+
+  servlet:
+    multipart:
+      max-file-size: 1MB # 각 파일 최대 크기
+      max-request-size: 10MB # 전체 요청 최대 크기
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -8,9 +16,14 @@ spring:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
 
-  redis:
-    host: localhost
-    port: 6379
+#  servlet:
+#    multipart:
+#      max-file-size: 1MB
+#      max-request-size: 3MB
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -43,8 +56,6 @@ jwt:
   refresh_expiration_time: 2592000000 #30일
   secret: ${JWT_SECRET}
 
-file:
-  dir: ./src/main/resources/static/images/
 
 
 

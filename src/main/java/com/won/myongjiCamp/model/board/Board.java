@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -48,7 +47,7 @@ public abstract class Board {
 
     @Column(name = "created_date")
     @CreationTimestamp
-    private Timestamp createDate;
+    private Timestamp createdDate;
 
     @Column(name = "modified_date")
     @CreationTimestamp

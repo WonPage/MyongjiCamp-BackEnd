@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.SecureRandom;
@@ -163,10 +164,7 @@ public class MemberApiController {
     @PutMapping("/api/auth/password/update")
     public ResponseDto updatePassword(@RequestBody PasswordDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
         memberService.updatePassword(request,principal.getMember());
-        String newToken = jwtTokenUtil.generateToken((PrincipalDetail) detailService.loadUserByUsername(principal.getUsername()));
-        Map<String, Object> data = new HashMap<>();
-        data.put("token", newToken);
-        return new ResponseDto<>(HttpStatus.OK.value(), data);
+        return new ResponseDto<>(HttpStatus.OK.value(), "비밀번호 변경이 완료되었습니다.");
     }
 
 //    //개인정보(비밀번호 변경) 테스트
@@ -182,10 +180,7 @@ public class MemberApiController {
     @PutMapping("/api/auth/nickname/update")
     public ResponseDto updateNickname(@RequestBody ProfileDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
         memberService.updateNickname(request,principal.getMember());
-        String newToken = jwtTokenUtil.generateToken((PrincipalDetail) detailService.loadUserByUsername(principal.getUsername()));
-        Map<String, Object> data = new HashMap<>();
-        data.put("token", newToken);
-        return new ResponseDto<>(HttpStatus.OK.value(), data);
+        return new ResponseDto<>(HttpStatus.OK.value(), "닉네임 변경이 완료되었습니다.");
     }
 
 //    //닉네임 변경 테스트
@@ -201,10 +196,7 @@ public class MemberApiController {
     @PutMapping("/api/auth/icon/update")
     public ResponseDto updateIcon(@RequestBody ProfileIconRequestDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
         memberService.updateIcon(request.getProfileIcon(),principal.getMember());
-        String newToken = jwtTokenUtil.generateToken((PrincipalDetail) detailService.loadUserByUsername(principal.getUsername()));
-        Map<String, Object> data = new HashMap<>();
-        data.put("token", newToken);
-        return new ResponseDto<>(HttpStatus.OK.value(), data);
+        return new ResponseDto<>(HttpStatus.OK.value(), "아이콘 변경이 완료되었습니다.");
     }
 
 //    //아이콘 변경 테스트

@@ -48,7 +48,7 @@ public class Report {
 
     @Column(name = "created_date")
     @CreationTimestamp
-    private Timestamp createDate;
+    private Timestamp createdDate;
 
 
 }

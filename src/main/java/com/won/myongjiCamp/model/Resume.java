@@ -29,6 +29,6 @@ public class Resume {
     private Member member;
 
     @CreationTimestamp
-    private Timestamp createDate;
+    private Timestamp createdDate;
 
 }

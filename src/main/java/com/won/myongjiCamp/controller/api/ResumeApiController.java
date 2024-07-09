@@ -60,7 +60,7 @@ public class ResumeApiController {
         Map<String, Object> map = new HashMap<>();
         List<Resume> findResume = resumeService.resumeAll(principal.getMember());
         List<ResumeResponseDto> collect = findResume.stream()
-                .map(m -> new ResumeResponseDto(m.getTitle(), m.getCreateDate(), m.getId()))
+                .map(m -> new ResumeResponseDto(m.getTitle(), m.getCreatedDate(), m.getId()))
                 .collect(Collectors.toList());
         return new Result(collect);
     }
@@ -69,7 +69,7 @@ public class ResumeApiController {
     public Result ListResume(@PathVariable long id, @AuthenticationPrincipal PrincipalDetail principal) throws MemberNoMatchException {
         Map<String, Object> map = new HashMap<>();
         Resume resume = resumeService.resumeDetail(id, principal.getMember());
-        ResumeResponseDto response =  new ResumeResponseDto(resume.getTitle(), resume.getContent(), resume.getUrl(), resume.getCreateDate(), resume.getId());
+        ResumeResponseDto response =  new ResumeResponseDto(resume.getTitle(), resume.getContent(), resume.getUrl(), resume.getCreatedDate(), resume.getId());
         return new Result(response);
     }
 
@@ -84,12 +84,12 @@ public class ResumeApiController {
         private String title;
         private String content;
         private String url;
-        private Timestamp createDate;
+        private Timestamp createdDate;
         private Long id;
 
-        public ResumeResponseDto(String title, Timestamp createDate, Long id) {
+        public ResumeResponseDto(String title, Timestamp createdDate, Long id) {
             this.title = title;
-            this.createDate = createDate;
+            this.createdDate = createdDate;
             this.id = id;
         }
     }

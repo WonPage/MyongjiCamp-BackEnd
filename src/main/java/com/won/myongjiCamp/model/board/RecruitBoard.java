@@ -18,10 +18,10 @@ public class RecruitBoard extends Board {
     @Enumerated(EnumType.STRING)
     private RecruitStatus status;  // 모집중, 모집 완료 상태 구분
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String preferredLocation; //활동 지역
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String expectedDuration; //예상 기간
 
     // OneToMany에서는 many가 주인

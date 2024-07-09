@@ -33,7 +33,7 @@ public class Comment {
 
     @Column(name = "created_date",nullable = false)
     @CreationTimestamp
-    private Timestamp createDate;
+    private Timestamp createdDate;
 
 
     @Column(name = "c_dept",nullable = false)
