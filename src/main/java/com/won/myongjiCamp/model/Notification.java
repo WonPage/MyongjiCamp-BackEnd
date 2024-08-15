@@ -49,6 +49,6 @@ public class Notification {
     private Board targetBoard;
 
     @CreationTimestamp
-    private Timestamp createdDate;
+    private Timestamp createDate;
 
 }

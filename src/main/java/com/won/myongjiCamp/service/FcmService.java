@@ -177,7 +177,6 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 System.out.println("Notification sent successfully.");
-
             } else {
                 try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getErrorStream()))) {
                     StringBuilder response = new StringBuilder();
