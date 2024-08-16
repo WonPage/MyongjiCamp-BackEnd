@@ -1,4 +1,4 @@
-name: HARUCHI Dev CI/CD
+name: MyongjiCamp Dev CI/CD
 
 on:
   pull_request:
