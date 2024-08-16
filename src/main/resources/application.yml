@@ -102,6 +102,7 @@ spring:
         # show_sql: true
         format_sql: true
 
-
-
-
+  data:
+    redis:
+      host: ${AWS_REDIS_HOST} #로컬로 실행할 때에는 로컬 Redis 서버로만 테스트 가능. 연동 x
+      port: 6379
