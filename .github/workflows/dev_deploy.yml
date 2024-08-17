@@ -24,8 +24,8 @@ jobs:
         run: chmod +x ./gradlew
         shell: bash # (6).권한 부여
 
-      - name: Build with Gradle
-        run: ./gradlew clean build -x test
+      - name: Build with Maven
+        run: mvn clean install -DskipTests
         shell: bash # (7).build시작
 
       - name: Get current time
