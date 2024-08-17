@@ -5,6 +5,7 @@ import com.won.myongjiCamp.dto.RoleAssignmentDto;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.application.Application;
 import com.won.myongjiCamp.model.board.Board;
+import com.won.myongjiCamp.model.board.CompleteBoard;
 import com.won.myongjiCamp.model.board.RecruitBoard;
 import com.won.myongjiCamp.model.board.RecruitStatus;
 import com.won.myongjiCamp.model.board.role.Role;
@@ -200,6 +201,8 @@ public class RecruitService {
     public void delete(Long id){
         RecruitBoard recruitBoard = recruitRepository.findById(id)
                 .orElseThrow(()->new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+        CompleteBoard completeBoard = (CompleteBoard) recruitBoard.getWriteCompleteBoard();
+        completeBoard.setWriteRecruitBoard(null);
         recruitRepository.delete(recruitBoard);
     }
 

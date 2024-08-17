@@ -2,10 +2,13 @@ package com.won.myongjiCamp.service;
 
 import com.won.myongjiCamp.dto.request.CompleteDto;
 import com.won.myongjiCamp.model.Member;
+import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.CompleteBoard;
 import com.won.myongjiCamp.model.board.Image;
+import com.won.myongjiCamp.model.board.RecruitBoard;
 import com.won.myongjiCamp.repository.CompleteRepository;
 import com.won.myongjiCamp.repository.ImageRepository;
+import com.won.myongjiCamp.repository.RecruitRepository;
 import lombok.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +26,10 @@ public class CompleteService {
     final private CompleteRepository completeRepository;
     final private ImageRepository imageRepository;
     final private S3ImageService s3ImageService;
+    final private RecruitRepository recruitRepository;
 
     @Transactional
-    public WriteCompleteResponseDto create(CompleteDto completeDto, Member member) {
+    public WriteCompleteResponseDto create(CompleteDto completeDto, Member member, Long id) {
         // 이미지 개수 검사
         if (completeDto.getImages().size() > 5) {
             throw new IllegalArgumentException("최대 5개의 이미지만 업로드할 수 있습니다.");
@@ -52,6 +56,12 @@ public class CompleteService {
         for(Image image : saveImageList){
             completeBoard.addImage(image);
         }
+
+        RecruitBoard recruitBoard = recruitRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+
+        recruitBoard.setWriteCompleteBoard(completeBoard);
+        completeBoard.setWriteRecruitBoard(recruitBoard);
 
         WriteCompleteResponseDto writeCompleteResponseDto = WriteCompleteResponseDto.builder()
                 .boardId(completeBoard.getId())
@@ -126,6 +136,8 @@ public class CompleteService {
                 throw new IllegalArgumentException("이미지 삭제 실패: " + image.getUrl());
             }
         }
+        RecruitBoard recruitBoard = (RecruitBoard) completeBoard.getWriteRecruitBoard();
+        recruitBoard.setWriteCompleteBoard(null);
         completeRepository.deleteById(id);
     }
 
