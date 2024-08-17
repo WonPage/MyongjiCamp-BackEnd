@@ -20,25 +20,13 @@ jobs:
           java-version: 17 # (5).자바 설치
           distribution: 'adopt'
 
-#      - name: Grant execute permission for gradlew
-#        run: chmod +x ./gradlew
-#        shell: bash # (6).권한 부여
-#
-#      - name: Build with Gradle
-#        run: ./gradlew clean build -x test
-#        shell: bash # (7).build시작
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash # (6).권한 부여
 
-      - name: Create deploy directory
-        run: mkdir -p deploy
-        shell: bash # 디렉토리 생성
-
-      - name: Build with Maven
-        run: mvn clean install -DskipTests
-        shell: bash # (7). build 시작
-
-      - name: Copy JAR file
-        run: cp target/*.jar deploy/
-        shell: bash # JAR 파일을 deploy 디렉토리로 복사
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+        shell: bash # (7).build시작
 
       - name: Get current time
         uses: 1466587594/get-current-time@v2
@@ -54,7 +42,7 @@ jobs:
       - name: Generate deployment package
         run: |
           mkdir -p deploy
-          cp target/*.jar deploy/  
+          cp build/libs/*.jar deploy/application.jar
           cp Procfile deploy/Procfile
           cp -r .ebextensions-dev deploy/.ebextensions
           cp -r .platform deploy/.platform
