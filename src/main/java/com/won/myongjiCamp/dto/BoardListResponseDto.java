@@ -31,7 +31,6 @@ public class BoardListResponseDto {
         this.modifiedDate = board.getModifiedDate();
         this.commentCount = board.getCommentCount();
         this.scrapCount = board.getScrapCount();
-        this.boardType = getBoardType();
 
         if (board instanceof RecruitBoard recruitBoard) {
             this.roles = recruitBoard.getRoles().stream()
@@ -39,10 +38,12 @@ public class BoardListResponseDto {
                     .collect(Collectors.toList());
             this.expectedDuration = recruitBoard.getExpectedDuration();
             this.recruitStatus = recruitBoard.getStatus();
+            this.boardType = "recruit";
         }
 
         if (board instanceof CompleteBoard completeBoard) {
             this.imageUrl = completeBoard.getImages().get(0).getUrl();
+            this.boardType = "complete";
         }
     }
 }
