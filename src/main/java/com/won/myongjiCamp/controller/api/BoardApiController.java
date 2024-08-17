@@ -6,6 +6,7 @@ import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.dto.RoleAssignmentDto;
 import com.won.myongjiCamp.dto.request.CompleteDto;
 import com.won.myongjiCamp.dto.request.BoardSearchDto;
+import com.won.myongjiCamp.model.application.Application;
 import com.won.myongjiCamp.model.board.*;
 import com.won.myongjiCamp.model.board.role.Role;
 import com.won.myongjiCamp.model.board.role.RoleAssignment;
@@ -134,6 +135,17 @@ public class BoardApiController {
                 .orElseThrow(()->new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
         return new Result(new DetailCompleteResponseDto(board));
+    }
+
+    // 내가 작성한 complete 게시글 목록
+    @GetMapping("/api/auth/complete/writer")
+    public Result getMemberComplete(@AuthenticationPrincipal PrincipalDetail principalDetail){
+
+        List<CompleteBoard> boards = boardService.listMemberComplete(principalDetail.getMember());
+        List<MemberCompleteBoardListResponseDto> collect = boards.stream()
+                .map(b -> new MemberCompleteBoardListResponseDto(b))
+                .collect(Collectors.toList());
+        return new Result(collect);
     }
 
 
@@ -269,6 +281,25 @@ public class BoardApiController {
             for(Image image : completeBoard.getImages()){
                 this.imageUrls.add(image.getUrl());
             }
+        }
+    }
+
+    @Data
+    public class MemberCompleteBoardListResponseDto {
+        private Long boardId;
+        private String title;
+        private Timestamp modifiedDate;
+        private Timestamp createdDate;
+        private int commentCount;
+        private int scrapCount;
+
+        public MemberCompleteBoardListResponseDto(Board board) {
+            this.boardId = board.getId();
+            this.title = board.getTitle();
+            this.modifiedDate = board.getModifiedDate();
+            this.createdDate = board.getCreatedDate();
+            this.commentCount = board.getCommentCount();
+            this.scrapCount = board.getScrapCount();
         }
     }
 }
