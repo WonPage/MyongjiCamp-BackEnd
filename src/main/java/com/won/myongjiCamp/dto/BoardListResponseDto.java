@@ -23,6 +23,7 @@ public class BoardListResponseDto {
     private int scrapCount;
     private String imageUrl;
     private RecruitStatus recruitStatus;
+    private String boardType;
 
     public BoardListResponseDto(Board board) {
         this.boardId = board.getId();
@@ -30,6 +31,7 @@ public class BoardListResponseDto {
         this.modifiedDate = board.getModifiedDate();
         this.commentCount = board.getCommentCount();
         this.scrapCount = board.getScrapCount();
+        this.boardType = getBoardType();
 
         if (board instanceof RecruitBoard recruitBoard) {
             this.roles = recruitBoard.getRoles().stream()
@@ -40,7 +42,7 @@ public class BoardListResponseDto {
         }
 
         if (board instanceof CompleteBoard completeBoard) {
-//            this.imageUrl = completeBoard.getImages();
+            this.imageUrl = completeBoard.getImages().get(0).getUrl();
         }
     }
 }
