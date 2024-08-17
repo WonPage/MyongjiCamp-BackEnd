@@ -36,6 +36,9 @@ jobs:
         run: mvn clean install -DskipTests
         shell: bash # (7). build 시작
 
+      - name: Copy JAR file
+        run: cp target/*.jar deploy/
+        shell: bash # JAR 파일을 deploy 디렉토리로 복사
 
       - name: Get current time
         uses: 1466587594/get-current-time@v2
