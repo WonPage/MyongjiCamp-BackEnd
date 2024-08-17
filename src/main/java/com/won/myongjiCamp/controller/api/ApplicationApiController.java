@@ -33,34 +33,20 @@ public class ApplicationApiController {
     private final MemberRepository memberRepository;
     private final ApplicationRepository applicationRepository;
 
-//    //지원 (id = board id)
-//    @PostMapping("/api/auth/apply/{id}")
-//    public ResponseDto apply(@RequestBody @Valid ApplicationDto request, @PathVariable Long id, @AuthenticationPrincipal PrincipalDetail principal) {
-//        applicationService.apply(request, id, principal.getMember());
-//        return new ResponseDto(HttpStatus.OK.value(), "지원이 완료되었습니다.");
-//    }
-    //지원 (id = board id) 테스트 코드
+    //지원 (id = board id)
     @PostMapping("/api/auth/apply/{id}")
-    public ResponseDto apply(@RequestBody @Valid ApplicationDto request, @PathVariable Long id) {
-        Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-        applicationService.apply(request, id, member);
+    public ResponseDto apply(@RequestBody @Valid ApplicationDto request, @PathVariable Long id, @AuthenticationPrincipal PrincipalDetail principal) {
+        applicationService.apply(request, id, principal.getMember());
         return new ResponseDto(HttpStatus.OK.value(), "지원이 완료되었습니다.");
     }
-//    //지원 취소 (id = board id)
-//    @DeleteMapping("/api/auth/apply/{id}")
-//    public ResponseDto cancel(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetail principal) {
-//        applicationService.cancel(id, principal.getMember());
-//        return new ResponseDto(HttpStatus.OK.value(), "지원이 취소되었습니다.");
-//    }
-    //지원 취소 (id = board id) 테스트 코드
+
+    //지원 취소 (id = board id)
     @DeleteMapping("/api/auth/apply/{id}")
-    public ResponseDto cancel(@PathVariable Long id) {
-        Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-        applicationService.cancel(id, member);
+    public ResponseDto cancel(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetail principal) {
+        applicationService.cancel(id, principal.getMember());
         return new ResponseDto(HttpStatus.OK.value(), "지원이 취소되었습니다.");
     }
+
     //first 지원 수락 or 거절 (id = application id) -> applicationstatus 수정
     //보낼 때 dto에 메세지 담아서 ~
     @PutMapping("/api/auth/apply/first/{id}")
@@ -68,6 +54,7 @@ public class ApplicationApiController {
         applicationService.firstResult(request, id);
         return new ResponseDto(HttpStatus.OK.value(), "해당 지원 처리가 완료되었습니다.");
     }
+
     //first 지원 수락 or 거절 (id = application id) -> applicationstatus 수정
     //보낼 때 dto에 메세지 담아서 ~
     @PutMapping("/api/auth/apply/final/{id}")

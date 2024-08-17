@@ -37,36 +37,10 @@ public class CommentApiController {
     private final NotificationService notificationService;
 
     //댓글 작성
-/*    @PostMapping("/api/auth/recruit/{id}/comment")
+    @PostMapping("/api/auth/recruit/{id}/comment")
     public ResponseDto<String> createComment(@RequestBody @Valid CommentDto commentDto, @AuthenticationPrincipal PrincipalDetail principal, @PathVariable Long id){
         commentService.create(commentDto,principal.getMember(),id);
 //알림 써야 함
-        return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성 완료");
-    }*/
-
-    //댓글 작성 테스트용
-    private final BoardRepository boardRepository;
-    @PostMapping("/api/auth/recruit/{id}/comment")
-    public ResponseDto<String> createComment(@RequestBody @Valid CommentDto commentDto, @PathVariable Long id) {
-        Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-        Comment comment = commentService.create(commentDto, member, id);
-
-        Board board = boardRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-
-        if(comment.getCdepth() == 0){
-            System.out.println("0번 입니다.");
-            CommentDto createCommentDto = convertCommentToDto(comment);
-            notificationService.sendComment(board, createCommentDto); // 게시글 작성자에게 댓글 알람
-        }
-        else if(comment.getCdepth() == 1){
-            System.out.println("1번 입니다.");
-
-            CommentDto createChildCommentDto = convertChildCommentToDto(comment);
-            notificationService.sendChildComment(board,createChildCommentDto);
-        }
-
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성 완료");
     }
 
