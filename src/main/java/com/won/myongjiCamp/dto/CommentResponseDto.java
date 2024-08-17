@@ -21,8 +21,10 @@ public class CommentResponseDto{ //댓글 조회할 때
 
     private Integer isSecret;
 
+    private boolean isDelete;
 
-    public CommentResponseDto(Long id,Long boardId,String content, Timestamp commentCreateDate, Long writerId,String nickname,Integer profileIcon,Integer isSecret,List<CommentResponseDto> children){
+
+    public CommentResponseDto(Long id,Long boardId,String content, Timestamp commentCreateDate, Long writerId,String nickname,Integer profileIcon,Integer isSecret,List<CommentResponseDto> children, boolean isDelete){
 
         this.id=id;
         this.boardId = boardId;
@@ -33,6 +35,7 @@ public class CommentResponseDto{ //댓글 조회할 때
         this.profileIcon = profileIcon;
         this.isSecret = isSecret;
         this.children = children;
+        this.isDelete = isDelete;
 
     }
 

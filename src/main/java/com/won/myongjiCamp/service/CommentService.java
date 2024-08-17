@@ -6,6 +6,7 @@ import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.repository.BoardRepository;
 import com.won.myongjiCamp.repository.CommentRepository;
+import com.won.myongjiCamp.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import java.util.List;
 public class CommentService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final MemberRepository memberRepository;
 
     // 댓글 작성
     @Transactional
@@ -60,7 +62,6 @@ public class CommentService {
             return childComment;
         }
     }
-
 
     // 댓글 삭제
     @Transactional

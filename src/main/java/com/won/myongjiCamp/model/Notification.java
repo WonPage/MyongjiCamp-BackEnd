@@ -37,7 +37,6 @@ public class Notification {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member receiver;
 
-
 /*
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
@@ -46,6 +45,7 @@ public class Notification {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Board targetBoard;
 
     @CreationTimestamp

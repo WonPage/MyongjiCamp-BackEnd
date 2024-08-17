@@ -31,24 +31,20 @@ public class FcmApiController {
 
 
     @PostMapping("/api/v1/fcm/send")
-    public ResponseEntity pushMessage(@RequestBody @Validated FcmSendDto fcmSendDto) throws IOException {
-        System.out.println("푸시 메세지 전송");
+    public ResponseDto<String> pushMessage(@RequestBody @Validated FcmSendDto fcmSendDto) throws IOException {
         int result = fcmService.sendMessageTo(fcmSendDto);
-        return new ResponseEntity(result, HttpStatus.OK);
+        return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성");
     }
 
-    @PostMapping("/token/post")
-    public void postToken(@RequestBody @Validated TokenDto tokenDto){
-//        System.out.println("token : " + tokenDto.getToken());
+    //여기여기
+    @PostMapping("/fcmToken")
+    public ResponseDto<String> fcmToken(@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestBody @Validated TokenDto tokenDto){
+        fcmService.fcmToken(principalDetail.getMember(),tokenDto);
+        System.out.println("fcm : "+tokenDto.getToken());
+        return new ResponseDto<String>(HttpStatus.OK.value(),"fcm save");
     }
 
-    //Redis에 expoToken 저장
-    @PostMapping("/send/expoToken")
-    public ResponseDto<String> saveExpoToken(@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestBody @Validated TokenDto tokenDto){
-        fcmService.saveExpoToken(principalDetail.getMember(),tokenDto);
-        return new ResponseDto<String>(HttpStatus.OK.value(),"expoToken save");
-    }
-    //Redis에 expoToken 삭제
+    //Redis에 expoToken 삭제 -> fcmToken 삭제
     @PostMapping("/delete/expoToken")
     public ResponseDto<String> deleteExpoToken(@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestBody @Validated TokenDto tokenDto){
         fcmService.deleteExpoToken(principalDetail.getMember(),tokenDto);
@@ -74,7 +70,7 @@ public class FcmApiController {
 
 
 
-    //한 달이 지난 알림은 삭제 && page로 보여주기
+    //한 달이 지난 알림은 삭제
 
     @Data
     @AllArgsConstructor

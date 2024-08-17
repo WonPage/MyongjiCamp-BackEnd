@@ -6,10 +6,13 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.won.myongjiCamp.dto.CommentDto;
 import com.won.myongjiCamp.dto.Fcm.FcmMessageDto;
 import com.won.myongjiCamp.dto.Fcm.FcmSendDto;
+import com.won.myongjiCamp.dto.RoleAssignmentDto;
 import com.won.myongjiCamp.dto.TokenDto;
 import com.won.myongjiCamp.model.*;
 import com.won.myongjiCamp.model.board.Board;
+import com.won.myongjiCamp.model.board.Comment;
 import com.won.myongjiCamp.repository.BoardRepository;
+import com.won.myongjiCamp.repository.CommentRepository;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -42,8 +45,8 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
     private final BoardRepository boardRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
-    public int sendMessageTo(FcmSendDto fcmSendDto) throws IOException{
-        String message = makeMessage(fcmSendDto);
+    public int sendMessageTo(FcmSendDto fcmSendDto) throws IOException {
+        List<String> messages = makeMessage(fcmSendDto);
         RestTemplate restTemplate = new RestTemplate();
 
         restTemplate.getMessageConverters() // 한글 깨짐 해결
@@ -51,50 +54,59 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer "+getAccessToken());
+        headers.set("Authorization", "Bearer " + getAccessToken());
 
-        HttpEntity entity = new HttpEntity<>(message, headers);
+        List<Integer> results = new ArrayList<>();
+        for (String message : messages) {
+            System.out.println(message);
+            HttpEntity entity = new HttpEntity<>(message, headers);
+            String API_URL = "<https://fcm.googleapis.com/v1/projects/mjcamp-67915/messages:send>";
+//            String API_URL = "https://fcm.googleapis.com/v1/projects/fcmtest-94004/messages:send";
 
-        String API_URL = "<https://fcm.googleapis.com/v1/projects/mjcamp-67915/messages:send>";
-        ResponseEntity response = restTemplate.exchange(API_URL, HttpMethod.POST, entity, String.class);
-        System.out.println("response "+response.getStatusCode());
-        return response.getStatusCode() == HttpStatus.OK ? 1:0;
+            ResponseEntity response = restTemplate.exchange(API_URL, HttpMethod.POST, entity, String.class);
+            System.out.println("response " + response.getStatusCode());
+
+            results.add(response.getStatusCode() == HttpStatus.OK ? 1 : 0);
+        }
+        if (results.contains(0)) {
+            return 0;
+        } else {
+            return 1;
+        }
     }
 
-    private String getAccessToken() throws IOException{
+    public String getAccessToken() throws IOException {
         String firebaseConfigPath = "firebase/mjcamp-67915-firebase-adminsdk-ydkil-e1224a7415.json";
+//        String firebaseConfigPath = "firebase/fcmtest-94004-firebase-adminsdk-bxn5z-ea38c5420d.json";
         GoogleCredentials googleCredentials = GoogleCredentials
                 .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream())
-                .createScoped(List.of("<https://www.googleapis.com/auth/cloud-platform>"));
+                .createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
         googleCredentials.refreshIfExpired();
         return googleCredentials.getAccessToken().getTokenValue();
     }
 
 
     // fcm 전송 정보를 기반으로 메시지 구성(Object -> String)
-    public String makeMessage(FcmSendDto fcmSendDto) throws JsonProcessingException{
+    public List<String> makeMessage(FcmSendDto fcmSendDto) throws JsonProcessingException {
         ObjectMapper om = new ObjectMapper();
-        FcmMessageDto fcmMessageDto = FcmMessageDto.builder()
-                .message(FcmMessageDto.Message.builder()
-                        .token(fcmSendDto.getToken())
-                        .notification(FcmMessageDto.Notification.builder()
-                                        .title(fcmSendDto.getTitle())
-                                        .body(fcmSendDto.getBody())
-                                        .image(null)
-                                        .build()
-                        ).build())
-                .validateOnly(false).build();
-        return om.writeValueAsString(fcmMessageDto);
+        List<String> messageList = new ArrayList<>();
+        for (String fcmToken : fcmSendDto.getTo()) {
+            FcmMessageDto fcmMessageDto = FcmMessageDto.builder()
+                    .message(FcmMessageDto.Message.builder()
+                            .token(fcmToken)
+                            .notification(FcmMessageDto.Notification.builder()
+                                    .title(fcmSendDto.getTitle())
+                                    .body(fcmSendDto.getBody())
+                                    .image(null)
+                                    .build()
+                            ).build())
+                    .validateOnly(false).build();
+            messageList.add(om.writeValueAsString(fcmMessageDto));
+        }
+        return messageList;
     }
-    @Transactional
-    public void saveExpoToken(Member mem, TokenDto tokenDto){
-        Member member = memberRepository.findById(mem.getId())
-                .orElseThrow(()->new IllegalArgumentException("존재하지 않는 회원입니다."));
-        // expoToken이 그 사람의 expoToken이 아닐 수 도 있음
-        redisTemplate.opsForList().rightPush("expo notification token:" + member.getEmail(), tokenDto.getToken());
 
-    }
-    public Notification createNotification(Member member, Board board, String content){
+    public Notification createNotification(Member member, Board board, String content) {
         return Notification.builder()
                 .targetBoard(board)
                 .content(content) // 댓글 내용
@@ -103,104 +115,81 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
                 .build();
     }
 
+    final private CommentRepository commentRepository;
     @Transactional
-    public void sendNotification(Member mem, CommentDto commentDto,Long id){
-        Member member = memberRepository.findById(mem.getId()) // 댓글 쓴 사람
-                .orElseThrow(()->new IllegalArgumentException("존재하지 않는 회원입니다."));
-
+    public void sendNotification(Member mem, CommentDto commentDto, Long id) throws IOException {
+        Member member = memberRepository.findById(mem.getId()) // 댓글 작성자
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+
         List<String> boardWriterTokens = redisTemplate.opsForList().range("expo notification token:" + board.getMember().getEmail(), 0, -1);
-        List<String> commentWriterTokens = redisTemplate.opsForList().range("expo notification token:" + member.getEmail(), 0, -1); // 댓글 작성자(대댓용)
-
-        String reqURL = "https://exp.host/--/api/v2/push/send";
-        try{
-            URL url = new URL(reqURL);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
-            ArrayList<String> tos = new ArrayList<>(); //보낼 사람들
-            NotificationMessage message = new NotificationMessage();
 
 
-            ArrayList<Notification> notifications = new ArrayList<>();
-            if(commentDto.getCdepth() == 0 ){// 댓글
-                if(boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
-                    //게시글 작성자 한 사람이 여러개의 기기에서 로그인 했을 경우 모든 기기에게 알림을 보내야 한다.(tos에 추가)
-                    tos.addAll(boardWriterTokens);
-                    message = NotificationMessage.builder()
-                            .to(tos)
-                            .sound("default")
-                            .title("명지캠프")
-                            .body("댓글이 달렸습니다 : "+commentDto.getContent())
-                            .data(new HashMap<>())
-                            .build();
-                    //모든 기기에 알림을 보냈지만 쌓이는 알림은 하나여야 한다.
-                    notifications.add(createNotification(board.getMember(),board, message.getBody()));
-                }
+        ArrayList<String> tos = new ArrayList<>(); //보낼 사람들
+        FcmSendDto fcmSendMessage = new FcmSendDto(); //fcm으로 보낼 알림
+
+        ArrayList<Notification> notifications = new ArrayList<>(); // 알림 목록을 위해 sql에 저장시킬 알림들
+        if (commentDto.getCdepth() == 0) {// 댓글
+            if(board.getMember().getId().equals(mem.getId())){
+                return;
             }
-            else{ // 대댓글
-                if(boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
-                    tos.addAll(boardWriterTokens);
-                    notifications.add(createNotification(board.getMember(),board, "대댓글이 달렸습니다 : "+commentDto.getContent()));
-                }
-                if(commentWriterTokens != null && !commentWriterTokens.isEmpty()){
-                    tos.addAll(commentWriterTokens);
-                    notifications.add(createNotification(member,board, "대댓글이 달렸습니다 : "+commentDto.getContent()));
+            if (boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
+                //게시글 작성자 한 사람이 여러개의 기기에서 로그인 했을 경우 모든 기기에게 알림을 보내야 한다.(tos에 추가)
+                tos.addAll(boardWriterTokens);
+                fcmSendMessage = FcmSendDto.builder()
+                        .to(tos)
+                        .title("명지캠프")
+                        .body("댓글이 달렸습니다 : " + commentDto.getContent())
+                        .build();
+                //모든 기기에 알림을 보냈지만 쌓이는 알림은 하나여야 한다.
+                notifications.add(createNotification(board.getMember(), board, fcmSendMessage.getBody()));
+            }
+        } else { // 대댓글
+            Comment comment = commentRepository.findById(commentDto.getParentId())
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
+            Member parentMember = memberRepository.findById(comment.getWriter().getId()) //대댓글의 부모 댓글 작성자
+                    .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 회원입니다."));
+            List<String> commentWriterTokens = redisTemplate.opsForList().range("expo notification token:" + parentMember.getEmail(), 0, -1); // 댓글 작성자(대댓용)
 
-                }
-                if(!tos.isEmpty()) {
-                    message = NotificationMessage.builder()
-                            .to(tos)
-                            .sound("default")
-                            .title("명지캠프")
-                            .body("대댓글이 달렸습니다 : "+commentDto.getContent())
-                            .data(new HashMap<>())
-                            .build();
-                }
+            if(board.getMember().getId().equals(mem.getId())){
+                return;
             }
-            for(int i=0; i<notifications.size(); i++){
-                notificationRepository.save(notifications.get(i));
+            if(parentMember.getId().equals(mem.getId())){
+                return;
             }
-            //HttpURLConnection 설정 값 셋팅(필수 헤더 세팅)
-            con.setRequestMethod("POST"); //인증 토큰 전송
-            con.setRequestProperty("Accept","application/json");
-            con.setRequestProperty("Accept-encoding","gzip, deflate");
-            con.setRequestProperty("Content-type","application/json"); //인증 토큰 전송
-            con.setDoOutput(true); //OutputStream으로 POST     데이터를 넘겨주겠다는 옵션
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonInputString = objectMapper.writeValueAsString(message);
-            try (OutputStream os = con.getOutputStream()) {
-                byte[] input = jsonInputString.getBytes("utf-8");
-                os.write(input, 0, input.length);
+            if (boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
+                tos.addAll(boardWriterTokens);
+                notifications.add(createNotification(board.getMember(), board, "대댓글이 달렸습니다 : " + commentDto.getContent()));
             }
-            int responseCode = con.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                System.out.println("Notification sent successfully.");
-            } else {
-                try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getErrorStream()))) {
-                    StringBuilder response = new StringBuilder();
-                    String responseLine;
-                    while ((responseLine = br.readLine()) != null) {
-                        response.append(responseLine.trim());
-                    }
-                    System.out.println("Response Error: " + response.toString());
-                }
-                System.out.println("Failed to send notification. Response Code: " + responseCode);
+            if (commentWriterTokens != null && !commentWriterTokens.isEmpty()) {
+                tos.addAll(commentWriterTokens);
+                notifications.add(createNotification(parentMember, board, "대댓글이 달렸습니다 : " + commentDto.getContent()));
             }
-
-        }
-        catch (Exception e){
-            e.printStackTrace();
+            if (!tos.isEmpty()) {
+                fcmSendMessage = FcmSendDto.builder()
+                        .to(tos)
+                        .title("명지캠프")
+                        .body("대댓글이 달렸습니다 : " + commentDto.getContent())
+                        .build();
+            }
         }
 
+        for (int i = 0; i < notifications.size(); i++) {
+            notificationRepository.save(notifications.get(i));
+        }
+        if (fcmSendMessage != null) {
+            sendMessageTo(fcmSendMessage);
+        } else {
+            System.out.println("fcm nothing");
+        }
     }
 
-    public void deleteExpoToken(Member member,TokenDto tokenDto){
-        redisTemplate.opsForList().remove("expo notification token:" + member.getEmail(),0,tokenDto.getToken());
+    public void deleteExpoToken(Member member, TokenDto tokenDto) {
+        redisTemplate.opsForList().remove("expo notification token:" + member.getEmail(), 0, tokenDto.getToken());
     }
 
-    public Page<Notification> findAllNotifications(Member mem, int pageNum){
+    public Page<Notification> findAllNotifications(Member mem, int pageNum) {
         Member member = memberRepository.findById(mem.getId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         Pageable pageable = PageRequest.of(pageNum, 30, Sort.by("createDate").descending());
@@ -210,7 +199,7 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
     }
 
     @Transactional
-    public void isRead(Member mem,long notificationId){
+    public void isRead(Member mem, long notificationId) {
         Member member = memberRepository.findById(mem.getId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
@@ -219,6 +208,21 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
         notification.setRead(true);
     }
 
+    @Transactional
+    public void fcmToken(Member mem, TokenDto tokenDto) {
+        Member member = memberRepository.findById(mem.getId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        //이미 redis에 존재하면 저장 x
+        redisTemplate.opsForList().rightPush("expo notification token:" + member.getEmail(), tokenDto.getToken());
+
+        //여기여기 -> redis에 중복되는 토큰이 저장되는 상황이 있는지 확인하기 : 있다면 아래 코드 사용
+/*
+        List<String> existToken = redisTemplate.opsForList().range("expo notification token:" + member.getEmail(), 0, -1);
+
+        if(!existToken.contains(tokenDto.getToken())){
+        }
+        */
+    }
 
 
 }
