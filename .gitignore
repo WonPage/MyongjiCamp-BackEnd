@@ -1,12 +1,4 @@
-# Created by https://www.toptal.com/developers/gitignore/api/macos,windows,gradle,intellij+all,java
-# Edit at https://www.toptal.com/developers/gitignore?templates=macos,windows,gradle,intellij+all,java
-
-### Intellij+all ###
-# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
-# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
-
-#application-secret.yml파일 무시하기
-application-secret.yml
+HELP.md
 
 # User-specific stuff
 .idea/**/workspace.xml
