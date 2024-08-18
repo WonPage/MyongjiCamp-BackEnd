@@ -186,7 +186,9 @@ public class BoardApiController {
             this.createdDate = recruitBoard.getCreatedDate();
             this.roleAssignments = roleAssignmentDtoList;
             this.scrapCount = recruitBoard.getScrapCount();
-            this.completeBoardId = recruitBoard.getWriteCompleteBoard().getId();
+            if(recruitBoard.getWriteCompleteBoard() != null) {
+                this.completeBoardId = recruitBoard.getWriteCompleteBoard().getId();
+            }
         }
 
     }
