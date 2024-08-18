@@ -1,8 +1,11 @@
 package com.won.myongjiCamp.service;
 
 import com.won.myongjiCamp.dto.request.BoardSearchDto;
+import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.Board;
+import com.won.myongjiCamp.model.board.CompleteBoard;
 import com.won.myongjiCamp.repository.BoardRepository;
+import com.won.myongjiCamp.repository.CompleteRepository;
 import com.won.myongjiCamp.specification.BoardSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final CompleteRepository completeRepository;
 
     public Page<Board> searchBoards(BoardSearchDto requestDto) {
 
@@ -43,4 +48,8 @@ public class BoardService {
         return boardRepository.findAll(spec, pageable);
     }
 
+    public List<CompleteBoard> listMemberComplete(Member member) {
+        List boards = completeRepository.findByMember(member);
+        return boards;
+    }
 }

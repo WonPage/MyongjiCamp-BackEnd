@@ -6,6 +6,7 @@ import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.dto.RoleAssignmentDto;
 import com.won.myongjiCamp.dto.request.CompleteDto;
 import com.won.myongjiCamp.dto.request.BoardSearchDto;
+import com.won.myongjiCamp.model.application.Application;
 import com.won.myongjiCamp.model.board.*;
 import com.won.myongjiCamp.model.board.role.Role;
 import com.won.myongjiCamp.model.board.role.RoleAssignment;
@@ -62,11 +63,11 @@ public class BoardApiController {
         return new ResponseDto<String>(HttpStatus.OK.value(), "게시글이 삭제되었습니다.");
     }
 
-    // complete 게시글 작성
-    @PostMapping("/api/auth/complete")
-    public Result createComplete(@ModelAttribute @Valid CompleteDto completeDto, @AuthenticationPrincipal PrincipalDetail principalDetail) throws IOException {
+    // complete 게시글 작성, id는 모집완료 글 id
+    @PostMapping("/api/auth/complete/{id}")
+    public Result createComplete(@ModelAttribute @Valid CompleteDto completeDto, @AuthenticationPrincipal PrincipalDetail principalDetail, @PathVariable long id) throws IOException {
 
-        CompleteService.WriteCompleteResponseDto writeCompleteResponseDto = completeService.create(completeDto, principalDetail.getMember());
+        CompleteService.WriteCompleteResponseDto writeCompleteResponseDto = completeService.create(completeDto, principalDetail.getMember(), id);
 
         return new Result(writeCompleteResponseDto);
     }
@@ -136,6 +137,17 @@ public class BoardApiController {
         return new Result(new DetailCompleteResponseDto(board));
     }
 
+    // 내가 작성한 complete 게시글 목록
+    @GetMapping("/api/auth/complete/writer")
+    public Result getMemberComplete(@AuthenticationPrincipal PrincipalDetail principalDetail){
+
+        List<CompleteBoard> boards = boardService.listMemberComplete(principalDetail.getMember());
+        List<MemberCompleteBoardListResponseDto> collect = boards.stream()
+                .map(b -> new MemberCompleteBoardListResponseDto(b))
+                .collect(Collectors.toList());
+        return new Result(collect);
+    }
+
 
     public RoleAssignmentDto convertRoleToDto(RoleAssignment roleAssignment){
         return new RoleAssignmentDto(
@@ -159,6 +171,7 @@ public class BoardApiController {
         private Integer profileIcon; // 글 쓴 사람 아이콘
         private Timestamp modifiedDate;//수정한 날짜
         private Timestamp createdDate; //만든 날짜
+        private Long completeBoardId; //개발 완료 글 id
 
         public DetailRecruitResponseDto(RecruitBoard recruitBoard,List<RoleAssignmentDto> roleAssignmentDtoList){
             this.writerId = recruitBoard.getMember().getId();
@@ -173,8 +186,7 @@ public class BoardApiController {
             this.createdDate = recruitBoard.getCreatedDate();
             this.roleAssignments = roleAssignmentDtoList;
             this.scrapCount = recruitBoard.getScrapCount();
-
-
+            this.completeBoardId = recruitBoard.getWriteCompleteBoard().getId();
         }
 
     }
@@ -192,6 +204,8 @@ public class BoardApiController {
         private Integer profileIcon; // 글 쓴 사람 아이콘
         private Timestamp modifiedDate;//수정한 날짜
         private Timestamp createdDate; //만든 날짜
+        private Long completeBoardId; //개발 완료 글 id
+
         public NotDetailRecruitResponseDto(RecruitBoard recruitBoard){
             this.writerId = recruitBoard.getMember().getId();
             this.title = recruitBoard.getTitle();
@@ -204,9 +218,10 @@ public class BoardApiController {
             this.modifiedDate = recruitBoard.getModifiedDate();
             this.createdDate = recruitBoard.getCreatedDate();
             this.scrapCount = recruitBoard.getScrapCount();
-
+            if(recruitBoard.getWriteCompleteBoard() != null){
+                this.completeBoardId = recruitBoard.getWriteCompleteBoard().getId();
+            }
         }
-
     }
     @Data
     public class BoardListResponseDto {
@@ -250,6 +265,7 @@ public class BoardApiController {
         private Integer profileIcon; // 글 쓴 사람 아이콘
         private Timestamp createdDate; //만든 날짜
         private List<String> imageUrls = new ArrayList<>();
+        private Long recruitBoardId;
 
         public DetailCompleteResponseDto(CompleteBoard completeBoard) {
             this.writerId = completeBoard.getMember().getId();
@@ -259,9 +275,31 @@ public class BoardApiController {
             this.profileIcon = completeBoard.getMember().getProfileIcon();
             this.createdDate = completeBoard.getCreatedDate();
             this.scrapCount = completeBoard.getScrapCount();
+            if (completeBoard.getWriteRecruitBoard() != null){
+                this.recruitBoardId = completeBoard.getWriteRecruitBoard().getId();
+            }
             for(Image image : completeBoard.getImages()){
                 this.imageUrls.add(image.getUrl());
             }
+        }
+    }
+
+    @Data
+    public class MemberCompleteBoardListResponseDto {
+        private Long boardId;
+        private String title;
+        private Timestamp modifiedDate;
+        private Timestamp createdDate;
+        private int commentCount;
+        private int scrapCount;
+
+        public MemberCompleteBoardListResponseDto(Board board) {
+            this.boardId = board.getId();
+            this.title = board.getTitle();
+            this.modifiedDate = board.getModifiedDate();
+            this.createdDate = board.getCreatedDate();
+            this.commentCount = board.getCommentCount();
+            this.scrapCount = board.getScrapCount();
         }
     }
 }

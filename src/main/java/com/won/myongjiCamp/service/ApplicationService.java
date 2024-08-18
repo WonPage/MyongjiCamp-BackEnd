@@ -1,7 +1,5 @@
 package com.won.myongjiCamp.service;
 
-import com.won.myongjiCamp.config.auth.PrincipalDetail;
-import com.won.myongjiCamp.controller.api.ApplicationApiController;
 import com.won.myongjiCamp.dto.request.ApplicationDto;
 import com.won.myongjiCamp.exception.AlreadyProcessException;
 import com.won.myongjiCamp.model.Member;
@@ -17,22 +15,16 @@ import com.won.myongjiCamp.repository.ApplicationRepository;
 import com.won.myongjiCamp.repository.BoardRepository;
 import com.won.myongjiCamp.repository.RecruitRepository;
 import com.won.myongjiCamp.repository.RoleAssignmentRepository;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import java.sql.Timestamp;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import static com.won.myongjiCamp.model.application.ApplicationFinalStatus.PENDING;
 import static com.won.myongjiCamp.model.application.ApplicationStatus.*;
-import static org.apache.coyote.http11.Constants.a;
 
 @Transactional(readOnly = true)
 @Service
@@ -125,7 +117,7 @@ public class ApplicationService {
                     state.set(false);
                 }
             });
-            if (!state.get()) {
+            if (state.get()) {
                 board.setStatus(RecruitStatus.RECRUIT_COMPLETE);
             }
         }

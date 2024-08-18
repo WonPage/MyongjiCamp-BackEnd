@@ -1,9 +1,6 @@
 package com.won.myongjiCamp.model.board;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -30,4 +27,9 @@ public class CompleteBoard extends Board {
         this.images.remove(image);
         image.setBoard(null);
     }
+
+    //모집완료 글
+    @OneToOne
+    @JoinColumn(name = "mapping_recruit_board_id")
+    private Board writeRecruitBoard;
 }

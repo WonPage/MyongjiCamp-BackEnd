@@ -31,5 +31,9 @@ public class RecruitBoard extends Board {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    // 개발완료 글
+    @OneToOne
+    @JoinColumn(name = "mapping_complete_board_id")
+    private Board writeCompleteBoard;
 
 }
