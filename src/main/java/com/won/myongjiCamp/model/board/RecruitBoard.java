@@ -33,5 +33,9 @@ public class RecruitBoard extends Board {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Comment> comments = new ArrayList<>();
 
+    // 개발완료 글
+    @OneToOne
+    @JoinColumn(name = "mapping_complete_board_id")
+    private Board writeCompleteBoard;
 
 }
