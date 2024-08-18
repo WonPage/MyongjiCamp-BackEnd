@@ -23,6 +23,7 @@ public class BoardListResponseDto {
     private int scrapCount;
     private String imageUrl;
     private RecruitStatus recruitStatus;
+    private String boardType;
 
     public BoardListResponseDto(Board board) {
         this.boardId = board.getId();
@@ -37,10 +38,12 @@ public class BoardListResponseDto {
                     .collect(Collectors.toList());
             this.expectedDuration = recruitBoard.getExpectedDuration();
             this.recruitStatus = recruitBoard.getStatus();
+            this.boardType = "recruit";
         }
 
         if (board instanceof CompleteBoard completeBoard) {
-//            this.imageUrl = completeBoard.getImages();
+            this.imageUrl = completeBoard.getImages().get(0).getUrl();
+            this.boardType = "complete";
         }
     }
 }

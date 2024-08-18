@@ -60,7 +60,7 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
         for (String message : messages) {
             System.out.println(message);
             HttpEntity entity = new HttpEntity<>(message, headers);
-            String API_URL = "<https://fcm.googleapis.com/v1/projects/mjcamp-67915/messages:send>";
+            String API_URL = "https://fcm.googleapis.com/v1/projects/mjcamp-67915/messages:send";
 //            String API_URL = "https://fcm.googleapis.com/v1/projects/fcmtest-94004/messages:send";
 
             ResponseEntity response = restTemplate.exchange(API_URL, HttpMethod.POST, entity, String.class);
@@ -125,54 +125,55 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
 
         List<String> boardWriterTokens = redisTemplate.opsForList().range("expo notification token:" + board.getMember().getEmail(), 0, -1);
 
-
         ArrayList<String> tos = new ArrayList<>(); //보낼 사람들
-        FcmSendDto fcmSendMessage = new FcmSendDto(); //fcm으로 보낼 알림
+        FcmSendDto fcmSendMessage = null; //fcm으로 보낼 알림
 
         ArrayList<Notification> notifications = new ArrayList<>(); // 알림 목록을 위해 sql에 저장시킬 알림들
         if (commentDto.getCdepth() == 0) {// 댓글
-            if(board.getMember().getId().equals(mem.getId())){
-                return;
-            }
-            if (boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
-                //게시글 작성자 한 사람이 여러개의 기기에서 로그인 했을 경우 모든 기기에게 알림을 보내야 한다.(tos에 추가)
-                tos.addAll(boardWriterTokens);
-                fcmSendMessage = FcmSendDto.builder()
-                        .to(tos)
-                        .title("명지캠프")
-                        .body("댓글이 달렸습니다 : " + commentDto.getContent())
-                        .build();
-                //모든 기기에 알림을 보냈지만 쌓이는 알림은 하나여야 한다.
+            if (!board.getMember().getId().equals(mem.getId())) {
+                fcmSendMessage = new FcmSendDto();
+                System.out.println(boardWriterTokens);
+                if (boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
+                    //게시글 작성자 한 사람이 여러개의 기기에서 로그인 했을 경우 모든 기기에게 알림을 보내야 한다.(tos에 추가)
+                    System.out.println(boardWriterTokens);
+                    tos.addAll(boardWriterTokens);
+                    fcmSendMessage = FcmSendDto.builder()
+                            .to(tos)
+                            .title("명지캠프")
+                            .body("댓글이 달렸습니다 : " + commentDto.getContent())
+                            .build();
+                    //모든 기기에 알림을 보냈지만 쌓이는 알림은 하나여야 한다.
+                }
                 notifications.add(createNotification(board.getMember(), board, fcmSendMessage.getBody()));
             }
         } else { // 대댓글
-            Comment comment = commentRepository.findById(commentDto.getParentId())
+            Comment comment = commentRepository.findById(commentDto.getParentId()) //부모 댓글
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
-            Member parentMember = memberRepository.findById(comment.getWriter().getId()) //대댓글의 부모 댓글 작성자
+            Member parentMember = memberRepository.findById(comment.getWriter().getId()) //부모 댓글 작성자
                     .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 회원입니다."));
             List<String> commentWriterTokens = redisTemplate.opsForList().range("expo notification token:" + parentMember.getEmail(), 0, -1); // 댓글 작성자(대댓용)
+            if(!board.getMember().getId().equals(mem.getId()) || !parentMember.getId().equals(mem.getId())){
+                fcmSendMessage = new FcmSendDto();
 
-            if(board.getMember().getId().equals(mem.getId())){
-                return;
+                if (boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
+                    tos.addAll(boardWriterTokens);
+                    notifications.add(createNotification(board.getMember(), board, "대댓글이 달렸습니다 : " + commentDto.getContent()));
+                }
+                if (commentWriterTokens != null && !commentWriterTokens.isEmpty()) {
+                    tos.addAll(commentWriterTokens);
+                    notifications.add(createNotification(parentMember, board, "대댓글이 달렸습니다 : " + commentDto.getContent()));
+                }
+
+                if (!tos.isEmpty()) {
+                    fcmSendMessage = FcmSendDto.builder()
+                            .to(tos)
+                            .title("명지캠프")
+//                            .title("test")
+                            .body("대댓글이 달렸습니다 : " + commentDto.getContent())
+                            .build();
+                }
             }
-            if(parentMember.getId().equals(mem.getId())){
-                return;
-            }
-            if (boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
-                tos.addAll(boardWriterTokens);
-                notifications.add(createNotification(board.getMember(), board, "대댓글이 달렸습니다 : " + commentDto.getContent()));
-            }
-            if (commentWriterTokens != null && !commentWriterTokens.isEmpty()) {
-                tos.addAll(commentWriterTokens);
-                notifications.add(createNotification(parentMember, board, "대댓글이 달렸습니다 : " + commentDto.getContent()));
-            }
-            if (!tos.isEmpty()) {
-                fcmSendMessage = FcmSendDto.builder()
-                        .to(tos)
-                        .title("명지캠프")
-                        .body("대댓글이 달렸습니다 : " + commentDto.getContent())
-                        .build();
-            }
+
         }
 
         for (int i = 0; i < notifications.size(); i++) {

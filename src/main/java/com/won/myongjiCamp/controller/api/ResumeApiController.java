@@ -5,7 +5,6 @@ import com.won.myongjiCamp.dto.ResponseDto;
 import com.won.myongjiCamp.dto.request.ResumeDto;
 import com.won.myongjiCamp.exception.MemberNoMatchException;
 import com.won.myongjiCamp.model.Resume;
-import com.won.myongjiCamp.service.FcmService;
 import com.won.myongjiCamp.service.ResumeService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -26,22 +25,12 @@ import java.util.stream.Collectors;
 public class ResumeApiController {
 
     private final ResumeService resumeService;
-    private final FcmService fcmService;
+
     @PostMapping("/api/auth/resume") // 이력서 작성
     public ResponseDto<String> writeResume(@RequestBody @Valid ResumeDto request, @AuthenticationPrincipal PrincipalDetail principal) {
-        resumeService.write(request.getTitle(),request.getContent(),request.getUrl(), principal.getMember());
-
+        resumeService.write(request.getTitle(), request.getContent(), request.getUrl(), principal.getMember());
         return new ResponseDto<String>(HttpStatus.OK.value(), "이력서 작성 완료");
     }
-
-//    @PostMapping("/api/auth/resume") // 이력서 작성 테스트
-//    public ResponseDto<String> writeResume(@RequestBody @Valid ResumeDto request) {
-//
-//        Member member = memberRepository.findById(1L)
-//                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-//        resumeService.write(request.getTitle(),request.getContent(),request.getUrl(), member);
-//        return new ResponseDto<String>(HttpStatus.OK.value(), "이력서 작성 완료");
-//    }
 
     @PutMapping("/api/auth/resume/{id}") // 이력서 수정, id는 이력서 id
     public ResponseDto<String> updateResume(@RequestBody @Valid ResumeDto request, @PathVariable long id) {

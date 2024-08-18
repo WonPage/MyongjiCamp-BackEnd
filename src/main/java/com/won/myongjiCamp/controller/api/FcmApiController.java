@@ -39,6 +39,7 @@ public class FcmApiController {
     //여기여기
     @PostMapping("/fcmToken")
     public ResponseDto<String> fcmToken(@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestBody @Validated TokenDto tokenDto){
+        System.out.println("hi");
         fcmService.fcmToken(principalDetail.getMember(),tokenDto);
         System.out.println("fcm : "+tokenDto.getToken());
         return new ResponseDto<String>(HttpStatus.OK.value(),"fcm save");

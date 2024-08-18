@@ -115,7 +115,7 @@ public class MemberApiController {
         redisTemplate.delete("refresh token:" + username);
 //        redisTemplate.delete("expo notification token:" + username);
         redisTemplate.opsForList().remove("expo notification token:" + username,0, expoToken.getToken());
-        System.out.println("ruru"+expoToken.getToken());
+//        System.out.println("ruru"+expoToken.getToken());
         return new ResponseDto(HttpStatus.OK.value(), "로그아웃 성공");
     }
 
@@ -151,30 +151,12 @@ public class MemberApiController {
         return new ResponseDto(HttpStatus.OK.value(), "비밀번호 인증 성공");
     }
 
-//    //비밀번호 변경 전 현재 비밀번호 인증 테스트
-//    @PostMapping("/api/auth/password/verify")
-//    public ResponseDto verificationPassword(@RequestBody PasswordDto request) {
-//        Member member = memberRepository.findById(2L)
-//                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-//        memberService.verificationPassword(request.getPassword(),member.getPassword());
-//        return new ResponseDto(HttpStatus.OK.value(), "비밀번호 인증 성공");
-//    }
-
     //개인정보(비밀번호 변경)
     @PutMapping("/api/auth/password/update")
     public ResponseDto updatePassword(@RequestBody PasswordDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
         memberService.updatePassword(request,principal.getMember());
         return new ResponseDto<>(HttpStatus.OK.value(), "비밀번호 변경이 완료되었습니다.");
     }
-
-//    //개인정보(비밀번호 변경) 테스트
-//    @PutMapping("/api/auth/password/update")
-//    public ResponseDto updatePassword(@RequestBody PasswordDto request) {
-//        Member member = memberRepository.findById(1L)
-//                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-//        memberService.updatePassword(request,member);
-//        return new ResponseDto<>(HttpStatus.OK.value(), "비밀번호 변경 완료");
-//    }
 
     //닉네임 변경
     @PutMapping("/api/auth/nickname/update")
@@ -183,15 +165,6 @@ public class MemberApiController {
         return new ResponseDto<>(HttpStatus.OK.value(), "닉네임 변경이 완료되었습니다.");
     }
 
-//    //닉네임 변경 테스트
-//    @PutMapping("/api/auth/nickname/update")
-//    public ResponseDto updateNickname(@RequestBody ProfileDto request) {
-//        Member member = memberRepository.findById(1L)
-//                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-//        memberService.updateNickname(request,member);
-//        return new ResponseDto<>(HttpStatus.OK.value(), "변경 완료");
-//    }
-
     //아이콘 변경
     @PutMapping("/api/auth/icon/update")
     public ResponseDto updateIcon(@RequestBody ProfileIconRequestDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
@@ -199,31 +172,11 @@ public class MemberApiController {
         return new ResponseDto<>(HttpStatus.OK.value(), "아이콘 변경이 완료되었습니다.");
     }
 
-//    //아이콘 변경 테스트
-//    @PutMapping("/api/auth/icon/update")
-//    public ResponseDto updateIcon(@RequestBody ProfileIconRequestDto request) {
-//        Member member = memberRepository.findById(1L)
-//                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-//
-//        memberService.updateIcon(request.getProfileIcon(),member);
-//        return new ResponseDto<>(HttpStatus.OK.value(), "변경 완료");
-//    }
-
     //프로필
     @GetMapping("/api/auth/profile")
     public Result profile(@AuthenticationPrincipal PrincipalDetail principal) {
         return new Result(new ProfileInformationResponseDto(principal.getUsername(),principal.getMember().getNickname(), principal.getMember().getProfileIcon()));
     }
-
-//    //프로필 테스트
-//    @GetMapping("/api/auth/profile")
-//    public Result profile() {
-//        Member member = memberRepository.findById(1L)
-//                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-//
-//        return new Result(new ProfileInformationResponseDto(member.getEmail(),member.getNickname(), member.getProfileIcon()));
-//    }
-
 
     @Data
     @AllArgsConstructor

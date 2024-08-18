@@ -38,6 +38,7 @@ public class CommentService {
                     .isSecret(commentDto.getIsSecret())
                     .build();
             commentRepository.save(comment);
+            System.out.println("comment save"+comment);
 
             return comment;
         } else { // 대댓글
