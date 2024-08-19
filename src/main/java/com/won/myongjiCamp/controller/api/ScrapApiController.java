@@ -1,18 +1,11 @@
 package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
-import com.won.myongjiCamp.dto.BoardListResponseDto;
-import com.won.myongjiCamp.dto.CommentResponseDto;
-import com.won.myongjiCamp.dto.ResponseDto;
+import com.won.myongjiCamp.dto.response.BoardListResponseDto;
+import com.won.myongjiCamp.dto.response.ResponseDto;
 import com.won.myongjiCamp.dto.request.ScrapDto;
-import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.Scrap;
 import com.won.myongjiCamp.model.board.Board;
-import com.won.myongjiCamp.model.board.CompleteBoard;
-import com.won.myongjiCamp.model.board.RecruitBoard;
-import com.won.myongjiCamp.model.board.RecruitStatus;
-import com.won.myongjiCamp.model.board.role.Role;
-import com.won.myongjiCamp.model.board.role.RoleAssignment;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.service.ScrapService;
 import jakarta.validation.Valid;
@@ -25,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 

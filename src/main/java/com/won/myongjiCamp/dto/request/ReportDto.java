@@ -1,4 +1,4 @@
-package com.won.myongjiCamp.dto;
+package com.won.myongjiCamp.dto.request;
 
 import com.won.myongjiCamp.model.board.report.ReportReason;
 import com.won.myongjiCamp.model.board.report.ReportStatus;

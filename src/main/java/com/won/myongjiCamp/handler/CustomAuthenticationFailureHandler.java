@@ -1,7 +1,7 @@
 package com.won.myongjiCamp.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.won.myongjiCamp.dto.ResponseDto;
+import com.won.myongjiCamp.dto.response.ResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;

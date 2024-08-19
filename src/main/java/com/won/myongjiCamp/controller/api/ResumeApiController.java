@@ -1,7 +1,7 @@
 package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
-import com.won.myongjiCamp.dto.ResponseDto;
+import com.won.myongjiCamp.dto.response.ResponseDto;
 import com.won.myongjiCamp.dto.request.ResumeDto;
 import com.won.myongjiCamp.exception.MemberNoMatchException;
 import com.won.myongjiCamp.model.Resume;

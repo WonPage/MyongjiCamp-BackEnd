@@ -3,11 +3,10 @@ package com.won.myongjiCamp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.won.myongjiCamp.dto.CommentDto;
+import com.won.myongjiCamp.dto.request.CommentDto;
 import com.won.myongjiCamp.dto.Fcm.FcmMessageDto;
 import com.won.myongjiCamp.dto.Fcm.FcmSendDto;
-import com.won.myongjiCamp.dto.RoleAssignmentDto;
-import com.won.myongjiCamp.dto.TokenDto;
+import com.won.myongjiCamp.dto.request.TokenDto;
 import com.won.myongjiCamp.model.*;
 import com.won.myongjiCamp.model.application.Application;
 import com.won.myongjiCamp.model.board.Board;
@@ -27,11 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Transactional(readOnly = true)

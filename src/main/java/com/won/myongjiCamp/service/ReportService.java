@@ -1,6 +1,6 @@
 package com.won.myongjiCamp.service;
 
-import com.won.myongjiCamp.dto.ReportDto;
+import com.won.myongjiCamp.dto.request.ReportDto;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.Comment;
@@ -14,8 +14,6 @@ import com.won.myongjiCamp.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)

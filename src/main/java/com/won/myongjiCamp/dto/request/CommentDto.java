@@ -1,13 +1,12 @@
-package com.won.myongjiCamp.dto;
+package com.won.myongjiCamp.dto.request;
 
-import jakarta.persistence.Column;
+import com.won.myongjiCamp.dto.response.CommentResponseDto;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 

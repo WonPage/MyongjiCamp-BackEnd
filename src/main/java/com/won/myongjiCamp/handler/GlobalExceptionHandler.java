@@ -1,6 +1,6 @@
 package com.won.myongjiCamp.handler;
 
-import com.won.myongjiCamp.dto.ResponseDto;
+import com.won.myongjiCamp.dto.response.ResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

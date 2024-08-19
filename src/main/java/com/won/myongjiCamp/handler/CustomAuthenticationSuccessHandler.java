@@ -3,7 +3,7 @@ package com.won.myongjiCamp.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import com.won.myongjiCamp.config.jwt.JwtTokenUtil;
-import com.won.myongjiCamp.dto.ResponseDto;
+import com.won.myongjiCamp.dto.response.ResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import static java.rmi.server.LogStream.log;
 
 @RestController
 @RequiredArgsConstructor

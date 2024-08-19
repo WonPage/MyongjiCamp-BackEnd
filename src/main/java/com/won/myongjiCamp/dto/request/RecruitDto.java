@@ -1,6 +1,7 @@
-package com.won.myongjiCamp.dto;
+package com.won.myongjiCamp.dto.request;
 
 
+import com.won.myongjiCamp.dto.RoleAssignmentDto;
 import com.won.myongjiCamp.model.board.RecruitStatus;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.won.myongjiCamp.service;
 
-import com.won.myongjiCamp.dto.CommentDto;
+import com.won.myongjiCamp.dto.request.CommentDto;
 import com.won.myongjiCamp.model.board.Comment;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.Board;
