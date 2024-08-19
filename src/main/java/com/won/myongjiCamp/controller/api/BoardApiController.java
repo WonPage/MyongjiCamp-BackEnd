@@ -56,7 +56,7 @@ public class BoardApiController {
         return new ResponseDto<String>(HttpStatus.OK.value(), "게시글이 수정되었습니다.");
     }
 
-    // 게시글 삭제, id는 게시글 id
+    // 모집 게시글 삭제, id는 게시글 id
     @DeleteMapping("/api/auth/recruit/{id}")
     public ResponseDto<String> deleteRecruit(@PathVariable long id){
         recruitService.delete(id);

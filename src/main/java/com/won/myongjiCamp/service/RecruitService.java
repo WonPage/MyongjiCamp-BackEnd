@@ -202,7 +202,9 @@ public class RecruitService {
         RecruitBoard recruitBoard = recruitRepository.findById(id)
                 .orElseThrow(()->new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
         CompleteBoard completeBoard = (CompleteBoard) recruitBoard.getWriteCompleteBoard();
-        completeBoard.setWriteRecruitBoard(null);
+        if(completeBoard != null) {
+            completeBoard.setWriteRecruitBoard(null);
+        }
         recruitRepository.delete(recruitBoard);
     }
 
