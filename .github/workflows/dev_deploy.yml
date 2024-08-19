@@ -22,7 +22,8 @@ jobs:
 
       - name: Add FCM Credentials
         run: |
-          echo $FCM_CREDENTIALS | base64 --decode > src/main/resources/firebase/mjcamp-67915-firebase-adminsdk-ydkil-e1224a7415.json
+          echo $FCM_CREDENTIALS > temp
+          cat temp | base64 --decode > src/main/resources/firebase/mjcamp-67915-firebase-adminsdk-ydkil-e1224a7415.json
         env:
           FCM_CREDENTIALS: ${{secrets.FCM_CREDENTIALS}}
 
