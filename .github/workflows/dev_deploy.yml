@@ -22,9 +22,8 @@ jobs:
 
       - name: Add FCM Credentials
         run: |
-          echo $FCM_CREDENTIALS | base64 --decode > mjcamp-67915-firebase-adminsdk-ydkil-e1224a7415.json
-        env: 
-          FCM_CREDENTIALS : ${{secrets.FCM_CREDENTIALS}}
+          echo ${{secrets.FCM_CREDENTIALS}} | base64 --decode > ../../src/main/resources/firebase/mjcamp-67915-firebase-adminsdk-ydkil-e1224a7415.json
+          echo "Current is $(pwd)"
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
