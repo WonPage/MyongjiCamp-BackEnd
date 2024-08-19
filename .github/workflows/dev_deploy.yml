@@ -22,9 +22,13 @@ jobs:
 
       - name: Add FCM Credentials
         run: |
-          echo $FCM_CREDENTIALS | base64 --decode > src/main/resources/firebase/mjcamp-67915-firebase-adminsdk-ydkil-e1224a7415.json
+          # '|'를 줄 바꿈 문자('\n')로 변환하여 temp.json 파일에 저장
+          echo "${{ secrets.FCM_CREDENTIALS }}" | tr '|' '\n' > temp.json
+          # temp.json 파일을 base64 디코딩하여 최종 JSON 파일에 저장
+          cat temp.json | base64 --decode > src/main/resources/firebase/mjcamp-67915-firebase-adminsdk-ydkil-e1224a7415.json
         env:
-          FCM_CREDENTIALS: ${{secrets.FCM_CREDENTIALS}}
+          FCM_CREDENTIALS: ${{ secrets.FCM_CREDENTIALS }}
+
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
