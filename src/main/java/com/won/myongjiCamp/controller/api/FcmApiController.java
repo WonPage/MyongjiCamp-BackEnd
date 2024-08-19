@@ -14,14 +14,12 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @RestController
@@ -56,9 +54,15 @@ public class FcmApiController {
     @GetMapping("/get/notifications")
     public Result getNotifications(@AuthenticationPrincipal PrincipalDetail principalDetail,@ModelAttribute @Valid PageDto pageDto){
         Page<Notification> notificationPage = fcmService.findAllNotifications(principalDetail.getMember(),pageDto.getPageNum());
+
         List<NotificationResponseDto> notificationList = notificationPage.stream()
                 .map(NotificationResponseDto::new)
                 .collect(Collectors.toList());
+
+        for(int i=0; i<notificationList.size(); i++){
+            System.out.println(notificationList.get(i).getNotificationStatus());
+        }
+
         return new Result(notificationList);
     }
     //알림 읽음

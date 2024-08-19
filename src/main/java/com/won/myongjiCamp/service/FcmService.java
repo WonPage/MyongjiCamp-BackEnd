@@ -9,12 +9,10 @@ import com.won.myongjiCamp.dto.Fcm.FcmSendDto;
 import com.won.myongjiCamp.dto.RoleAssignmentDto;
 import com.won.myongjiCamp.dto.TokenDto;
 import com.won.myongjiCamp.model.*;
+import com.won.myongjiCamp.model.application.Application;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.Comment;
-import com.won.myongjiCamp.repository.BoardRepository;
-import com.won.myongjiCamp.repository.CommentRepository;
-import com.won.myongjiCamp.repository.MemberRepository;
-import com.won.myongjiCamp.repository.NotificationRepository;
+import com.won.myongjiCamp.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
@@ -44,6 +42,7 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final RedisTemplate<String, String> redisTemplate;
+     private final CommentRepository commentRepository;
 
     public int sendMessageTo(FcmSendDto fcmSendDto) throws IOException {
         List<String> messages = makeMessage(fcmSendDto);
@@ -106,16 +105,92 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
         return messageList;
     }
 
-    public Notification createNotification(Member member, Board board, String content) {
+    public Notification createNotification(Member member, Board board, String content,NotificationStatus notificationStatus) {
         return Notification.builder()
                 .targetBoard(board)
                 .content(content) // 댓글 내용
                 .isRead(false)
                 .receiver(member)
+                .notificationStatus(notificationStatus)
                 .build();
     }
 
-    final private CommentRepository commentRepository;
+    //모집자에게 지원 들어옴 알림
+    @Transactional
+    public void applyNotification(Long id) throws IOException {
+        Board board = boardRepository.findById(id)
+                .orElseThrow(()->new IllegalArgumentException("존재하지 않는 게시글입니다."));
+        List<String> boardWriterTokens = redisTemplate.opsForList().range("expo notification token:" + board.getMember().getEmail(), 0, -1);
+        ArrayList<String> tos = new ArrayList<>(); //모집자
+        FcmSendDto fcmSendMessage = null; //fcm으로 보낼 알림
+        if (boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
+            System.out.println(boardWriterTokens);
+            tos.addAll(boardWriterTokens);
+            fcmSendMessage = FcmSendDto.builder()
+                    .to(tos)
+                    .title("명지캠프")
+                    .body("지원서가 도착했습니다!")
+                    .build();
+        }
+        notificationRepository.save(createNotification(board.getMember(), board, "지원서가 도착했습니다!", NotificationStatus.APPLY));
+        if (fcmSendMessage != null) {
+            sendMessageTo(fcmSendMessage);
+        } else {
+            System.out.println("fcm nothing");
+        }
+    }
+    private final ApplicationRepository applicationRepository;
+    //지원자에게 지원 결과 알림
+    @Transactional
+    public void firstResultNotification(Long id) throws IOException {
+        Application application = applicationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 지원이 존재하지 않습니다."));
+        System.out.println("applicant email"+application.getApplicant().getEmail());
+        List<String> applicantToken = redisTemplate.opsForList().range("expo notification token:" + application.getApplicant().getEmail(), 0, -1);
+        ArrayList<String> tos = new ArrayList<>(); //모집자
+        FcmSendDto fcmSendMessage = null; //fcm으로 보낼 알림
+        if (applicantToken != null && !applicantToken.isEmpty()) {
+            tos.addAll(applicantToken);
+            fcmSendMessage = FcmSendDto.builder()
+                    .to(tos)
+                    .title("명지캠프")
+                    .body("지원서가 도착했습니다!")
+                    .build();
+        }
+        notificationRepository.save(createNotification(application.getApplicant(), application.getBoard(), "지원 결과가 도착했습니다", NotificationStatus.APPLY));
+        if (fcmSendMessage != null) {
+            sendMessageTo(fcmSendMessage);
+        } else {
+            System.out.println("fcm nothing");
+        }
+    }
+
+    //모집자에게 매칭 결과 알림
+    @Transactional
+    public void finalResultNotification(Long id) throws IOException {
+        Application application = applicationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 지원이 존재하지 않습니다."));
+        List<String> boardWriterTokens = redisTemplate.opsForList().range("expo notification token:" + application.getBoard().getMember().getEmail(), 0, -1);
+        ArrayList<String> tos = new ArrayList<>(); //모집자
+        FcmSendDto fcmSendMessage = null; //fcm으로 보낼 알림
+        if (boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
+            System.out.println(boardWriterTokens);
+            tos.addAll(boardWriterTokens);
+            fcmSendMessage = FcmSendDto.builder()
+                    .to(tos)
+                    .title("명지캠프")
+                    .body("매칭 결과가 도착하였습니다!")
+                    .build();
+        }
+        notificationRepository.save(createNotification(application.getBoard().getMember(), application.getBoard(), "매칭 결과가 도착하였습니다!", NotificationStatus.APPLY));
+        if (fcmSendMessage != null) {
+            sendMessageTo(fcmSendMessage);
+        } else {
+            System.out.println("fcm nothing");
+        }
+
+    }
+    //댓글 대댓글 알림
     @Transactional
     public void sendNotification(Member mem, CommentDto commentDto, Long id) throws IOException {
         Member member = memberRepository.findById(mem.getId()) // 댓글 작성자
@@ -132,7 +207,6 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
         if (commentDto.getCdepth() == 0) {// 댓글
             if (!board.getMember().getId().equals(mem.getId())) {
                 fcmSendMessage = new FcmSendDto();
-                System.out.println(boardWriterTokens);
                 if (boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
                     //게시글 작성자 한 사람이 여러개의 기기에서 로그인 했을 경우 모든 기기에게 알림을 보내야 한다.(tos에 추가)
                     System.out.println(boardWriterTokens);
@@ -144,7 +218,7 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
                             .build();
                     //모든 기기에 알림을 보냈지만 쌓이는 알림은 하나여야 한다.
                 }
-                notifications.add(createNotification(board.getMember(), board, fcmSendMessage.getBody()));
+                notifications.add(createNotification(board.getMember(), board, "댓글이 달렸습니다 : " + commentDto.getContent(), NotificationStatus.COMMENT));
             }
         } else { // 대댓글
             Comment comment = commentRepository.findById(commentDto.getParentId()) //부모 댓글
@@ -157,18 +231,17 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
 
                 if (boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
                     tos.addAll(boardWriterTokens);
-                    notifications.add(createNotification(board.getMember(), board, "대댓글이 달렸습니다 : " + commentDto.getContent()));
+                    notifications.add(createNotification(board.getMember(), board, "대댓글이 달렸습니다 : " + commentDto.getContent(), NotificationStatus.COMMENT));
                 }
                 if (commentWriterTokens != null && !commentWriterTokens.isEmpty()) {
                     tos.addAll(commentWriterTokens);
-                    notifications.add(createNotification(parentMember, board, "대댓글이 달렸습니다 : " + commentDto.getContent()));
+                    notifications.add(createNotification(parentMember, board, "대댓글이 달렸습니다 : " + commentDto.getContent(), NotificationStatus.COMMENT));
                 }
 
                 if (!tos.isEmpty()) {
                     fcmSendMessage = FcmSendDto.builder()
                             .to(tos)
                             .title("명지캠프")
-//                            .title("test")
                             .body("대댓글이 달렸습니다 : " + commentDto.getContent())
                             .build();
                 }

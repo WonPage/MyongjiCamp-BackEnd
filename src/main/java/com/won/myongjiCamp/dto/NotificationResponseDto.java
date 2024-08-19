@@ -2,9 +2,11 @@ package com.won.myongjiCamp.dto;
 
 import com.won.myongjiCamp.model.Notification;
 //import com.won.myongjiCamp.model.NotificationType;
+import com.won.myongjiCamp.model.NotificationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.security.core.parameters.P;
 
 import java.sql.Timestamp;
 
@@ -24,6 +26,8 @@ public class NotificationResponseDto {
 
     private Timestamp createDate;
 
+    private NotificationStatus notificationStatus;
+
 
     public NotificationResponseDto(Notification notification){
         this.id = notification.getId();
@@ -31,7 +35,9 @@ public class NotificationResponseDto {
         this.isRead = notification.isRead();
         this.receiverId = notification.getReceiver().getId();
         this.targetBoardId = notification.getTargetBoard().getId();
+        this.targetBoardId = notification.getTargetBoard().getId();
         this.createDate = notification.getCreateDate();
+        this.notificationStatus = notification.getNotificationStatus();
     }
 
 }

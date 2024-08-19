@@ -20,6 +20,12 @@ jobs:
           java-version: 17 # (5).자바 설치
           distribution: 'adopt'
 
+      - name: Add FCM Credentials
+        run: |
+          echo $FCM_CREDENTIALS | base64 --decode > mjcamp-67915-firebase-adminsdk-ydkil-e1224a7415.json
+        env: 
+          FCM_CREDENTIALS : ${{secrets.FCM_CREDENTIALS}}
+
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
         shell: bash # (6).권한 부여

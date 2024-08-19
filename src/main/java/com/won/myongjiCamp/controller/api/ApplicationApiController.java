@@ -14,6 +14,7 @@ import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.service.ApplicationService;
 import com.won.myongjiCamp.dto.request.ApplicationDto;
 import com.won.myongjiCamp.dto.ResponseDto;
+import com.won.myongjiCamp.service.FcmService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,11 +35,14 @@ public class ApplicationApiController {
     private final ApplicationService applicationService;
     private final MemberRepository memberRepository;
     private final ApplicationRepository applicationRepository;
+    private final FcmService fcmService;
 
     //지원 (id = board id)
     @PostMapping("/api/auth/apply/{id}")
-    public ResponseDto apply(@RequestBody @Valid ApplicationDto request, @PathVariable Long id, @AuthenticationPrincipal PrincipalDetail principal) {
+    public ResponseDto apply(@RequestBody @Valid ApplicationDto request, @PathVariable Long id, @AuthenticationPrincipal PrincipalDetail principal) throws IOException {
         applicationService.apply(request, id, principal.getMember());
+        //모집자에게 지원서 도착 알림
+        fcmService.applyNotification(id);
         return new ResponseDto(HttpStatus.OK.value(), "지원이 완료되었습니다.");
     }
 
@@ -51,16 +56,20 @@ public class ApplicationApiController {
     //first 지원 수락 or 거절 (id = application id) -> applicationstatus 수정
     //보낼 때 dto에 메세지 담아서 ~
     @PutMapping("/api/auth/apply/first/{id}")
-    public ResponseDto firstResult(@RequestBody @Valid ApplicationDto request, @PathVariable Long id) {
+    public ResponseDto firstResult(@RequestBody @Valid ApplicationDto request, @PathVariable Long id) throws IOException {
         applicationService.firstResult(request, id);
+        //지원자에게 지원 결과 알림
+        fcmService.firstResultNotification(id);
         return new ResponseDto(HttpStatus.OK.value(), "해당 지원 처리가 완료되었습니다.");
     }
 
     //first 지원 수락 or 거절 (id = application id) -> applicationstatus 수정
     //보낼 때 dto에 메세지 담아서 ~
     @PutMapping("/api/auth/apply/final/{id}")
-    public ResponseDto finalResult(@RequestBody @Valid ApplicationDto request, @PathVariable Long id) {
+    public ResponseDto finalResult(@RequestBody @Valid ApplicationDto request, @PathVariable Long id) throws IOException {
         applicationService.finalResult(request, id);
+        //모집자에게 매칭 결과 알림
+        fcmService.finalResultNotification(id);
         return new ResponseDto(HttpStatus.OK.value(), "해당 지원 처리가 완료되었습니다.");
     }
     
