@@ -137,7 +137,9 @@ public class CompleteService {
             }
         }
         RecruitBoard recruitBoard = (RecruitBoard) completeBoard.getWriteRecruitBoard();
-        recruitBoard.setWriteCompleteBoard(null);
+        if (recruitBoard != null) {
+            recruitBoard.setWriteCompleteBoard(null);
+        }
         completeRepository.deleteById(id);
     }
 
