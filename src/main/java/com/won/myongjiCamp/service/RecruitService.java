@@ -98,7 +98,10 @@ public class RecruitService {
             for(RoleAssignmentDto roleAssignmentDto : recruitDto.getRoleAssignments()) { // 모든 역할 다 차게 변환
                 RoleAssignment roleAssignment = roleAssignmentRepository.findByBoardAndRole(recruitBoard, roleAssignmentDto.getRole()).orElse(null);
 
-                if(roleAssignment != null){
+                if(roleAssignment != null && roleAssignmentDto.getAppliedNumber() == 0){
+                    roleAssignmentRepository.deleteByBoardAndRole(recruitBoard, roleAssignmentDto.getRole());
+                }
+                else if(roleAssignment != null){
                     roleAssignment.setAppliedNumber(roleAssignmentDto.getAppliedNumber());
                     roleAssignment.setRequiredNumber(roleAssignmentDto.getAppliedNumber());
                     roleAssignment.setFull(true);
@@ -139,9 +142,6 @@ public class RecruitService {
                     roleAssignmentRepository.deleteByBoardAndRole(recruitBoard, roleAssignmentDto.getRole());
                 }
                 else if (roleAssignment != null) {
-                    /*for(RoleAssignment existRole : roleAssignmentRepository.findByBoard(board)){
-                    }*/
-
                         // 안쓰는 ROLE 없애야 됨
 //                    roleAssignment.setRole(roleAssignmentDto.getRole());
                     roleAssignment.setAppliedNumber(roleAssignmentDto.getAppliedNumber());

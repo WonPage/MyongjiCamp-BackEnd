@@ -1,6 +1,7 @@
 package com.won.myongjiCamp.dto;
 
-import com.won.myongjiCamp.model.NotificationType;
+//import com.won.myongjiCamp.model.NotificationType;
+import com.won.myongjiCamp.model.NotificationStatus;
 import jakarta.persistence.Column;
 import lombok.Data;
 
@@ -13,8 +14,6 @@ public class NotificationDto {
 
     private boolean isRead;
 
-    private NotificationType notificationType;
-
     private Long receiverId;
 
     private Long targetCommentId;
@@ -23,6 +22,6 @@ public class NotificationDto {
 
     private Long targetBoardId;
 
-//    private String url;
+    private NotificationStatus notificationStatus;
 
 }

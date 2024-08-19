@@ -28,12 +28,13 @@ public class CommentDto {
 
     private int cdepth;
 
-//    @Column(nullable = true)
     private Long parentId;
 
     private List<CommentResponseDto> children = new ArrayList<>();
 
     private Integer isSecret;
+
+
 
     @Builder
     public CommentDto(Long id, Long boardId, String content,Integer isSecret){

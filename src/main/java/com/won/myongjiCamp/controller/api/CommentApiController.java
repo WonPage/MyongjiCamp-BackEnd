@@ -3,24 +3,26 @@ package com.won.myongjiCamp.controller.api;
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import com.won.myongjiCamp.dto.CommentDto;
 import com.won.myongjiCamp.dto.CommentResponseDto;
+import com.won.myongjiCamp.dto.Fcm.FcmMessageDto;
+import com.won.myongjiCamp.dto.Fcm.FcmSendDto;
 import com.won.myongjiCamp.dto.ResponseDto;
-import com.won.myongjiCamp.model.board.Board;
+import com.won.myongjiCamp.dto.TokenDto;
 import com.won.myongjiCamp.model.board.Comment;
-import com.won.myongjiCamp.model.Member;
-import com.won.myongjiCamp.repository.BoardRepository;
 import com.won.myongjiCamp.repository.CommentRepository;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.repository.RecruitRepository;
 import com.won.myongjiCamp.service.CommentService;
-import com.won.myongjiCamp.service.NotificationService;
+import com.won.myongjiCamp.service.FcmService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -28,19 +30,13 @@ import java.util.*;
 public class CommentApiController {
 
     private final CommentService commentService;
-    private final MemberRepository memberRepository;
-
-    private final RecruitRepository recruitRepository;
-
-    private final CommentRepository commentRepository;
-
-    private final NotificationService notificationService;
+    private final FcmService fcmService;
 
     //댓글 작성
     @PostMapping("/api/auth/recruit/{id}/comment")
-    public ResponseDto<String> createComment(@RequestBody @Valid CommentDto commentDto, @AuthenticationPrincipal PrincipalDetail principal, @PathVariable Long id){
+    public ResponseDto<String> createComment(@RequestBody @Valid CommentDto commentDto, @AuthenticationPrincipal PrincipalDetail principal, @PathVariable Long id) throws IOException {
         commentService.create(commentDto,principal.getMember(),id);
-//알림 써야 함
+        fcmService.sendNotification(principal.getMember(), commentDto, id);
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성 완료");
     }
 
@@ -56,11 +52,6 @@ public class CommentApiController {
     @GetMapping("/api/auth/recruit/{board_id}/comment")
     private Result CommentList(@PathVariable("board_id") Long id,@AuthenticationPrincipal PrincipalDetail principalDetail){
 
-//        Board board = recruitRepository.findById(id)
-//                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
- /*       if (principalDetail == null) {
-            return new Result<>(Collections.emptyList()); // 로그인하지 않은 경우 빈 리스트 반환
-        }*/
         List<CommentResponseDto> result = new ArrayList<>();
         Map<Long, CommentResponseDto> map = new HashMap<>();
         List<Comment> commentList = commentService.commentAll(id);
@@ -86,26 +77,6 @@ public class CommentApiController {
         private T data;
     }
 
-    public CommentDto convertCommentToDto(Comment comment){ // notification을 위한 아이
-        return new CommentDto(
-                comment.getId(),
-                comment.getBoard().getId(),
-                comment.getContent(),
-                comment.getIsSecret()
-                );
-
-    }
-    public CommentDto convertChildCommentToDto(Comment comment) { // notification을 위한 아이(원댓글의 id가 포함됨)
-        return new CommentDto(
-                comment.getId(),
-                comment.getBoard().getId(),
-                comment.getContent(),
-                comment.getIsSecret(),
-                comment.getParent().getId()
-        );
-
-    }
-
     public CommentResponseDto convertResponseCommentToDto(Comment comment){
         return new CommentResponseDto(
                 comment.getId(),
@@ -117,7 +88,8 @@ public class CommentApiController {
                 comment.getWriter().getProfileIcon(),
                 comment.getIsSecret(),
 
-                new ArrayList<>()
+                new ArrayList<>(),
+                comment.isDelete()
         );
 
     }
