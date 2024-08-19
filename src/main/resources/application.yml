@@ -1,7 +1,7 @@
 # default
 spring:
   profiles:
-    active: local # default
+    active: dev # default
     group:
       local:  # local, common profile을 그룹지어 함께 어플리케이션 구동
         - common

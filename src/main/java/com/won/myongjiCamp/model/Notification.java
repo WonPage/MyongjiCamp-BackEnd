@@ -1,5 +1,6 @@
 package com.won.myongjiCamp.model;
 
+import com.google.firebase.database.annotations.Nullable;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.Comment;
 import jakarta.persistence.*;
@@ -28,25 +29,18 @@ public class Notification {
     @Column(nullable = false)
     private boolean isRead;
 
-/*    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private NotificationType notificationType;*/
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member receiver;
 
-/*
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id")
-    private Comment targetComment; // 알림 대상 댓글 (COMMENT, REPLY일 경우)
-*/
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Board targetBoard;
+
+    private NotificationStatus notificationStatus;
 
     @CreationTimestamp
     private Timestamp createDate;
