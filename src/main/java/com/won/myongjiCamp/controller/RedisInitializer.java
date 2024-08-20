@@ -14,7 +14,7 @@ public class RedisInitializer {
     @PostConstruct
     public void clearRedis() {
         // 모든 데이터 삭제
-        redisTemplate.getConnectionFactory().getConnection().flushAll();
-        System.out.println("Redis 데이터가 삭제되었습니다.");
+//        redisTemplate.getConnectionFactory().getConnection().flushAll();
+        System.out.println("Redis 데이터가 삭제되었습니다. x");
     }
 }
