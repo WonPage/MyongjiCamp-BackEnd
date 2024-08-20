@@ -1,7 +1,6 @@
 package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
-import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.application.Application;
 import com.won.myongjiCamp.model.application.ApplicationFinalStatus;
 import com.won.myongjiCamp.model.application.ApplicationStatus;
@@ -13,7 +12,7 @@ import com.won.myongjiCamp.repository.ApplicationRepository;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.service.ApplicationService;
 import com.won.myongjiCamp.dto.request.ApplicationDto;
-import com.won.myongjiCamp.dto.ResponseDto;
+import com.won.myongjiCamp.dto.response.ResponseDto;
 import com.won.myongjiCamp.service.FcmService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

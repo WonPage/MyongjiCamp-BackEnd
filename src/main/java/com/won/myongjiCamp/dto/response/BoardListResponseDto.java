@@ -1,4 +1,4 @@
-package com.won.myongjiCamp.dto;
+package com.won.myongjiCamp.dto.response;
 
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.CompleteBoard;

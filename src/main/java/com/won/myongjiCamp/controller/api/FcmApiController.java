@@ -2,10 +2,10 @@ package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
 import com.won.myongjiCamp.dto.Fcm.FcmSendDto;
-import com.won.myongjiCamp.dto.NotificationResponseDto;
-import com.won.myongjiCamp.dto.PageDto;
-import com.won.myongjiCamp.dto.ResponseDto;
-import com.won.myongjiCamp.dto.TokenDto;
+import com.won.myongjiCamp.dto.response.NotificationResponseDto;
+import com.won.myongjiCamp.dto.request.PageDto;
+import com.won.myongjiCamp.dto.response.ResponseDto;
+import com.won.myongjiCamp.dto.request.TokenDto;
 import com.won.myongjiCamp.model.Notification;
 import com.won.myongjiCamp.service.FcmService;
 import jakarta.validation.Valid;
@@ -34,7 +34,7 @@ public class FcmApiController {
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성");
     }
 
-    //여기여기
+
     @PostMapping("/fcmToken")
     public ResponseDto<String> fcmToken(@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestBody @Validated TokenDto tokenDto){
         System.out.println("hi");

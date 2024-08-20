@@ -1,16 +1,10 @@
 package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
-import com.won.myongjiCamp.dto.CommentDto;
-import com.won.myongjiCamp.dto.CommentResponseDto;
-import com.won.myongjiCamp.dto.Fcm.FcmMessageDto;
-import com.won.myongjiCamp.dto.Fcm.FcmSendDto;
-import com.won.myongjiCamp.dto.ResponseDto;
-import com.won.myongjiCamp.dto.TokenDto;
+import com.won.myongjiCamp.dto.request.CommentDto;
+import com.won.myongjiCamp.dto.response.CommentResponseDto;
+import com.won.myongjiCamp.dto.response.ResponseDto;
 import com.won.myongjiCamp.model.board.Comment;
-import com.won.myongjiCamp.repository.CommentRepository;
-import com.won.myongjiCamp.repository.MemberRepository;
-import com.won.myongjiCamp.repository.RecruitRepository;
 import com.won.myongjiCamp.service.CommentService;
 import com.won.myongjiCamp.service.FcmService;
 import jakarta.validation.Valid;
@@ -19,7 +13,6 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;

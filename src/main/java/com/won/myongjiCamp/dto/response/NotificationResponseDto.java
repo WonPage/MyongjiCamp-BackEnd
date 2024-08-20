@@ -1,12 +1,10 @@
-package com.won.myongjiCamp.dto;
+package com.won.myongjiCamp.dto.response;
 
 import com.won.myongjiCamp.model.Notification;
-//import com.won.myongjiCamp.model.NotificationType;
 import com.won.myongjiCamp.model.NotificationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.security.core.parameters.P;
 
 import java.sql.Timestamp;
 

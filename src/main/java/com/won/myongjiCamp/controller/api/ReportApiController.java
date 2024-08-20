@@ -1,28 +1,16 @@
 package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
-import com.won.myongjiCamp.dto.ReportDto;
-import com.won.myongjiCamp.dto.ResponseDto;
-import com.won.myongjiCamp.model.Member;
-import com.won.myongjiCamp.model.board.Board;
-import com.won.myongjiCamp.model.board.report.Report;
-import com.won.myongjiCamp.model.board.report.ReportReason;
-import com.won.myongjiCamp.model.board.report.ReportStatus;
-import com.won.myongjiCamp.model.board.report.ReportTargetType;
+import com.won.myongjiCamp.dto.request.ReportDto;
+import com.won.myongjiCamp.dto.response.ResponseDto;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.repository.ReportRepository;
 import com.won.myongjiCamp.service.ReportService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.sql.internal.ParameterRecognizerImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor

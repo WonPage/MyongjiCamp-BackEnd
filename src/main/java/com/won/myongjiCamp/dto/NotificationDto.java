@@ -1,8 +1,6 @@
 package com.won.myongjiCamp.dto;
 
-//import com.won.myongjiCamp.model.NotificationType;
 import com.won.myongjiCamp.model.NotificationStatus;
-import jakarta.persistence.Column;
 import lombok.Data;
 
 @Data

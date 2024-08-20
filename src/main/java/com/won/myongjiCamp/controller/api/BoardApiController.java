@@ -1,12 +1,11 @@
 package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.auth.PrincipalDetail;
-import com.won.myongjiCamp.dto.RecruitDto;
-import com.won.myongjiCamp.dto.ResponseDto;
+import com.won.myongjiCamp.dto.request.RecruitDto;
+import com.won.myongjiCamp.dto.response.ResponseDto;
 import com.won.myongjiCamp.dto.RoleAssignmentDto;
 import com.won.myongjiCamp.dto.request.CompleteDto;
 import com.won.myongjiCamp.dto.request.BoardSearchDto;
-import com.won.myongjiCamp.model.application.Application;
 import com.won.myongjiCamp.model.board.*;
 import com.won.myongjiCamp.model.board.role.Role;
 import com.won.myongjiCamp.model.board.role.RoleAssignment;

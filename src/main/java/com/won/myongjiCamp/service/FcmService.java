@@ -3,11 +3,10 @@ package com.won.myongjiCamp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.won.myongjiCamp.dto.CommentDto;
+import com.won.myongjiCamp.dto.request.CommentDto;
 import com.won.myongjiCamp.dto.Fcm.FcmMessageDto;
 import com.won.myongjiCamp.dto.Fcm.FcmSendDto;
-import com.won.myongjiCamp.dto.RoleAssignmentDto;
-import com.won.myongjiCamp.dto.TokenDto;
+import com.won.myongjiCamp.dto.request.TokenDto;
 import com.won.myongjiCamp.model.*;
 import com.won.myongjiCamp.model.application.Application;
 import com.won.myongjiCamp.model.board.Board;
@@ -27,11 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Transactional(readOnly = true)
@@ -206,10 +202,7 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
         ArrayList<Notification> notifications = new ArrayList<>(); // 알림 목록을 위해 sql에 저장시킬 알림들
         if (commentDto.getCdepth() == 0) {// 댓글
             if (!board.getMember().getId().equals(mem.getId())) {
-                fcmSendMessage = new FcmSendDto();
                 if (boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
-                    //게시글 작성자 한 사람이 여러개의 기기에서 로그인 했을 경우 모든 기기에게 알림을 보내야 한다.(tos에 추가)
-                    System.out.println(boardWriterTokens);
                     tos.addAll(boardWriterTokens);
                     fcmSendMessage = FcmSendDto.builder()
                             .to(tos)
@@ -225,9 +218,10 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
             Member parentMember = memberRepository.findById(comment.getWriter().getId()) //부모 댓글 작성자
                     .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 회원입니다."));
+            System.out.println("parent comment id " + comment.getWriter().getId());
+
             List<String> commentWriterTokens = redisTemplate.opsForList().range("expo notification token:" + parentMember.getEmail(), 0, -1); // 댓글 작성자(대댓용)
-            if(!board.getMember().getId().equals(mem.getId()) || !parentMember.getId().equals(mem.getId())){
-                fcmSendMessage = new FcmSendDto();
+            if(!board.getMember().getId().equals(mem.getId()) && !parentMember.getId().equals(mem.getId())){
 
                 if (boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
                     tos.addAll(boardWriterTokens);
