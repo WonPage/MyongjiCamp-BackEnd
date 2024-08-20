@@ -29,10 +29,6 @@ HELP.md
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 
-# firebase
-src/main/resources/firebase/*
-src/main/resources/application-private.properties
-
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
