@@ -108,3 +108,8 @@ spring:
     redis:
       host: ${AWS_REDIS_HOST} #로컬로 실행할 때에는 로컬 Redis 서버로만 테스트 가능. 연동 x
       port: 6379
+
+  fcm:
+    key:
+      path: mjcamp-67915-firebase-adminsdk-ydkil-e1224a7415.json
+      scope: https://www.googleapis.com/auth/cloud-platform

@@ -34,7 +34,7 @@ public class FcmApiController {
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성");
     }
 
-    //여기여기
+
     @PostMapping("/fcmToken")
     public ResponseDto<String> fcmToken(@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestBody @Validated TokenDto tokenDto){
         System.out.println("hi");
