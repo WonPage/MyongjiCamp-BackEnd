@@ -1,6 +1,6 @@
 package com.won.myongjiCamp.controller.api;
 
-import com.won.myongjiCamp.config.auth.PrincipalDetail;
+import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
 import com.won.myongjiCamp.dto.request.RecruitDto;
 import com.won.myongjiCamp.dto.response.ResponseDto;
 import com.won.myongjiCamp.dto.RoleAssignmentDto;

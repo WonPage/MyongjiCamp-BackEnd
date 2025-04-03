@@ -1,6 +1,6 @@
 package com.won.myongjiCamp.config.jwt;
 
-import com.won.myongjiCamp.config.auth.PrincipalDetail;
+import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

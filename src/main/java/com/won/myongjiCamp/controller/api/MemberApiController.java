@@ -1,7 +1,7 @@
 package com.won.myongjiCamp.controller.api;
 
-import com.won.myongjiCamp.config.auth.PrincipalDetail;
-import com.won.myongjiCamp.config.auth.PrincipalDetailService;
+import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
+import com.won.myongjiCamp.config.security.auth.PrincipalDetailService;
 import com.won.myongjiCamp.config.jwt.JwtTokenUtil;
 import com.won.myongjiCamp.dto.request.TokenDto;
 import com.won.myongjiCamp.dto.request.CreateMemberDto;

@@ -1,17 +1,16 @@
-package com.won.myongjiCamp.config;
+package com.won.myongjiCamp.config.security;
 
-import com.won.myongjiCamp.config.auth.PrincipalDetailService;
+import com.won.myongjiCamp.config.security.auth.PrincipalDetailService;
 import com.won.myongjiCamp.config.jwt.JwtRequestFilter;
-import com.won.myongjiCamp.handler.CustomAuthenticationFailureHandler;
-import com.won.myongjiCamp.handler.CustomAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -19,15 +18,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration // IoC
 @EnableWebSecurity
 public class SecurityConfig {
+    @Autowired
+    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
-
-    @Autowired
-    private CustomAuthenticationSuccessHandler successHandler;
-
-    @Autowired
-    private CustomAuthenticationFailureHandler failureHandler;
 
     @Autowired
     private PrincipalDetailService principalDetailService;
@@ -42,25 +37,28 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(principalDetailService).passwordEncoder(encode());
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(principalDetailService);
+        authProvider.setPasswordEncoder(encode());
+        return authProvider;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf().disable()
-                .authorizeHttpRequests()
-//                    .requestMatchers("/","/login","/api/**")
-//                    .permitAll()
-                    .anyRequest()
-                    .permitAll()
+                .sessionManagement()
+                  .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                    .formLogin()
-                    .loginProcessingUrl("/api/login")
-                    .successHandler(successHandler)
-                    .failureHandler(failureHandler);
+                .exceptionHandling()
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .and()
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests()
+                    .requestMatchers("/api/auth/**").authenticated()
+                    .anyRequest().permitAll();
 
         return http.build();
     }

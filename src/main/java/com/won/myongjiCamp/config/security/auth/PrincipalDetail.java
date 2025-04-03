@@ -1,4 +1,4 @@
-package com.won.myongjiCamp.config.auth;
+package com.won.myongjiCamp.config.security.auth;
 
 import com.won.myongjiCamp.model.Member;
 import lombok.Getter;

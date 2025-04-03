@@ -1,7 +1,7 @@
 package com.won.myongjiCamp.config.jwt;
 
-import com.won.myongjiCamp.config.auth.PrincipalDetail;
-import com.won.myongjiCamp.config.auth.PrincipalDetailService;
+import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
+import com.won.myongjiCamp.config.security.auth.PrincipalDetailService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

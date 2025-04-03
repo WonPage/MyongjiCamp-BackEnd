@@ -1,7 +1,7 @@
 package com.won.myongjiCamp.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.won.myongjiCamp.config.auth.PrincipalDetail;
+import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
 import com.won.myongjiCamp.config.jwt.JwtTokenUtil;
 import com.won.myongjiCamp.dto.response.ResponseDto;
 import jakarta.servlet.http.HttpServletRequest;

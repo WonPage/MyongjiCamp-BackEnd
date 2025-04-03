@@ -1,6 +1,6 @@
 package com.won.myongjiCamp.controller.api;
 
-import com.won.myongjiCamp.config.auth.PrincipalDetail;
+import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
 import com.won.myongjiCamp.model.application.Application;
 import com.won.myongjiCamp.model.application.ApplicationFinalStatus;
 import com.won.myongjiCamp.model.application.ApplicationStatus;
