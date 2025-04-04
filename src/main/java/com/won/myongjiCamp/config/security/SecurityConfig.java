@@ -2,6 +2,7 @@ package com.won.myongjiCamp.config.security;
 
 import com.won.myongjiCamp.config.security.auth.PrincipalDetailService;
 import com.won.myongjiCamp.config.jwt.JwtRequestFilter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration // IoC
 @EnableWebSecurity
+@Slf4j
 public class SecurityConfig {
     @Autowired
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
@@ -28,7 +30,8 @@ public class SecurityConfig {
     private PrincipalDetailService principalDetailService;
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -62,5 +65,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
 }

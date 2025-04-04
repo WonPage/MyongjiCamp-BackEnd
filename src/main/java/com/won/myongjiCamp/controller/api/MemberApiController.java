@@ -3,13 +3,14 @@ package com.won.myongjiCamp.controller.api;
 import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
 import com.won.myongjiCamp.config.security.auth.PrincipalDetailService;
 import com.won.myongjiCamp.config.jwt.JwtTokenUtil;
+import com.won.myongjiCamp.dto.request.MemberRequest;
 import com.won.myongjiCamp.dto.request.TokenDto;
 import com.won.myongjiCamp.dto.request.CreateMemberDto;
 import com.won.myongjiCamp.dto.request.EmailDto;
 import com.won.myongjiCamp.dto.response.ResponseDto;
 import com.won.myongjiCamp.dto.request.PasswordDto;
 import com.won.myongjiCamp.dto.request.ProfileDto;
-import com.won.myongjiCamp.repository.MemberRepository;
+import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -32,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 public class MemberApiController {
 
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
     private final StringRedisTemplate redisTemplate;
 
     private final JwtTokenUtil jwtTokenUtil;
@@ -43,6 +43,25 @@ public class MemberApiController {
         Long id = memberService.join(request.getEmail(),request.getPassword(), request.getNickname(),request.getProfileIcon());
         Map<String, Long> data = new HashMap<>();
         data.put("id", id);
+        return new ResponseDto(HttpStatus.OK.value(), data);
+    }
+
+    @PostMapping("/api/login")
+    public ResponseDto login(@RequestBody @Valid MemberRequest.loginMember request) {
+        Member member = memberService.login(request.getUsername(),request.getPassword());
+
+        if (member == null) {
+            return new ResponseDto(HttpStatus.BAD_REQUEST.value(), "아이디 또는 비밀번호가 틀렸습니다.");
+        }
+
+        PrincipalDetail principal = new PrincipalDetail(member);
+
+        Map<String, String> tokens = memberService.generateAndStoreTokens(principal);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("message", "로그인 성공");
+        data.putAll(tokens);
+
         return new ResponseDto(HttpStatus.OK.value(), data);
     }
 

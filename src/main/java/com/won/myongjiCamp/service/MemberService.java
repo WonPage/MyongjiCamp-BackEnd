@@ -1,5 +1,7 @@
 package com.won.myongjiCamp.service;
 
+import com.won.myongjiCamp.config.jwt.JwtTokenUtil;
+import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
 import com.won.myongjiCamp.dto.request.PasswordDto;
 import com.won.myongjiCamp.dto.request.ProfileDto;
 import com.won.myongjiCamp.exception.EmailDuplicatedException;
@@ -9,8 +11,12 @@ import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,10 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-
-import static java.rmi.server.LogStream.log;
 
 @Transactional(readOnly = true)
 @Service
@@ -33,6 +36,7 @@ public class MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JavaMailSender mailSender;
     private final StringRedisTemplate redisTemplate;
+    private final JwtTokenUtil jwtTokenUtil;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -165,5 +169,39 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalStateException("해당 유저가 존재하지 않습니다."));
         findMember.setProfileIcon(icon);
         entityManager.flush();
+    }
+
+    @Transactional
+    public Member login(String email, String password) {
+        Optional<Member> optionalEmail = memberRepository.findByEmail(email);
+
+        if (optionalEmail.isEmpty()) {
+            return null;
+        }
+
+        Member member = optionalEmail.get();
+
+        if (!bCryptPasswordEncoder.matches(password, member.getPassword())) {
+            return null;
+        }
+
+        return member;
+    }
+
+    public Map<String, String> generateAndStoreTokens(PrincipalDetail principal) {
+        String accessToken = jwtTokenUtil.generateToken(principal);
+        String refreshToken = jwtTokenUtil.generateRefreshToken(principal);
+
+        String email = principal.getUsername();
+
+        redisTemplate.opsForValue().set("refresh token:" + email, refreshToken);
+        redisTemplate.expire("refresh token:" + email,
+                jwtTokenUtil.getRefreshExpirationTime(), TimeUnit.MILLISECONDS);
+
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("token", accessToken);
+        tokens.put("refreshToken", refreshToken);
+
+        return tokens;
     }
 }
