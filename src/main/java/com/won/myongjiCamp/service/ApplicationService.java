@@ -1,6 +1,6 @@
 package com.won.myongjiCamp.service;
 
-import com.won.myongjiCamp.dto.request.ApplicationDto;
+import com.won.myongjiCamp.dto.request.ApplicationRequest;
 import com.won.myongjiCamp.exception.AlreadyProcessException;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.application.Application;
@@ -37,7 +37,7 @@ public class ApplicationService {
     private final RecruitRepository recruitRepository;
 
     @Transactional
-    public void apply(ApplicationDto request, Long id, Member member) {
+    public void apply(ApplicationRequest request, Long id, Member member) {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 글이 존재하지 않습니다."));
         Application findApplication = applicationRepository.findByApplicantAndBoard(member, board).orElse(null);
@@ -70,7 +70,7 @@ public class ApplicationService {
 
     //first 지원 수락 or 거절
     @Transactional
-    public void firstResult(ApplicationDto request, Long id) {
+    public void firstResult(ApplicationRequest request, Long id) {
         Application application = applicationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 지원이 존재하지 않습니다."));
         application.setFirstStatus(valueOf(request.getFirstStatus()));
@@ -83,7 +83,7 @@ public class ApplicationService {
 
     //final 지원 수락 or 거절
     @Transactional
-    public void finalResult(ApplicationDto request, Long id) {
+    public void finalResult(ApplicationRequest request, Long id) {
         //application리포지토리에서 해당 지원 찾기
         Application application = applicationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 지원이 존재하지 않습니다."));

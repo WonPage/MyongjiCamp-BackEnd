@@ -1,8 +1,8 @@
 package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
-import com.won.myongjiCamp.dto.request.CommentDto;
-import com.won.myongjiCamp.dto.response.CommentResponseDto;
+import com.won.myongjiCamp.dto.request.CommentRequest;
+import com.won.myongjiCamp.dto.response.CommentResponse;
 import com.won.myongjiCamp.dto.response.ResponseDto;
 import com.won.myongjiCamp.model.board.Comment;
 import com.won.myongjiCamp.service.CommentService;
@@ -27,9 +27,9 @@ public class CommentApiController {
 
     //댓글 작성
     @PostMapping("/api/auth/recruit/{id}/comment")
-    public ResponseDto<String> createComment(@RequestBody @Valid CommentDto commentDto, @AuthenticationPrincipal PrincipalDetail principal, @PathVariable Long id) throws IOException {
-        commentService.create(commentDto,principal.getMember(),id);
-        fcmService.sendNotification(principal.getMember(), commentDto, id);
+    public ResponseDto<String> createComment(@RequestBody @Valid CommentRequest commentRequest, @AuthenticationPrincipal PrincipalDetail principal, @PathVariable Long id) throws IOException {
+        commentService.create(commentRequest,principal.getMember(),id);
+        fcmService.sendNotification(principal.getMember(), commentRequest, id);
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성 완료");
     }
 
@@ -45,12 +45,12 @@ public class CommentApiController {
     @GetMapping("/api/auth/recruit/{board_id}/comment")
     private Result CommentList(@PathVariable("board_id") Long id,@AuthenticationPrincipal PrincipalDetail principalDetail){
 
-        List<CommentResponseDto> result = new ArrayList<>();
-        Map<Long, CommentResponseDto> map = new HashMap<>();
+        List<CommentResponse> result = new ArrayList<>();
+        Map<Long, CommentResponse> map = new HashMap<>();
         List<Comment> commentList = commentService.commentAll(id);
 
         commentList.stream().forEach(c->{
-            CommentResponseDto rDto = convertResponseCommentToDto(c);
+            CommentResponse rDto = convertResponseCommentToDto(c);
             map.put(c.getId(), rDto);
             if(c.getCdepth() == 1){// 댓글이 부모가 있으면
                 map.get(c.getParent().getId()).getChildren().add(rDto);
@@ -64,14 +64,8 @@ public class CommentApiController {
         return new Result(result);
     }
 
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private T data;
-    }
-
-    public CommentResponseDto convertResponseCommentToDto(Comment comment){
-        return new CommentResponseDto(
+    public CommentResponse convertResponseCommentToDto(Comment comment){
+        return new CommentResponse(
                 comment.getId(),
                 comment.getBoard().getId(),
                 comment.getContent(),
@@ -84,11 +78,13 @@ public class CommentApiController {
                 new ArrayList<>(),
                 comment.isDelete()
         );
-
     }
 
-
-
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private T data;
+    }
 }
 
 

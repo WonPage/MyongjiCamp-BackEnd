@@ -1,8 +1,7 @@
 package com.won.myongjiCamp.service;
 
-import com.won.myongjiCamp.dto.request.CompleteDto;
+import com.won.myongjiCamp.dto.request.BoardRequest;
 import com.won.myongjiCamp.model.Member;
-import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.CompleteBoard;
 import com.won.myongjiCamp.model.board.Image;
 import com.won.myongjiCamp.model.board.RecruitBoard;
@@ -29,7 +28,7 @@ public class CompleteService {
     final private RecruitRepository recruitRepository;
 
     @Transactional
-    public WriteCompleteResponseDto create(CompleteDto completeDto, Member member, Long id) {
+    public WriteCompleteResponseDto create(BoardRequest.CompleteDto completeDto, Member member, Long id) {
         // 이미지 개수 검사
         if (completeDto.getImages().size() > 5) {
             throw new IllegalArgumentException("최대 5개의 이미지만 업로드할 수 있습니다.");
@@ -73,7 +72,7 @@ public class CompleteService {
     }
 
     @Transactional
-    public WriteCompleteResponseDto update(Long id, CompleteDto completeDto) {
+    public WriteCompleteResponseDto update(Long id, BoardRequest.CompleteDto completeDto) {
         CompleteBoard completeBoard = completeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 

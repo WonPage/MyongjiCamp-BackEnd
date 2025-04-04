@@ -1,13 +1,12 @@
 package com.won.myongjiCamp.service;
 
-import com.won.myongjiCamp.dto.request.ScrapDto;
+import com.won.myongjiCamp.dto.request.ScrapRequest;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.Scrap;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.repository.BoardRepository;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.repository.ScrapRepository;
-import com.won.myongjiCamp.specification.BoardSpecification;
 import com.won.myongjiCamp.specification.ScrapSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -53,7 +52,7 @@ public class ScrapService  {
 
     }
 
-    public Page<Scrap> pullScraps(ScrapDto requestDto, Member member) {
+    public Page<Scrap> pullScraps(ScrapRequest requestDto, Member member) {
 
         Member findMember = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));

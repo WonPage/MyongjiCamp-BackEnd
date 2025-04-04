@@ -1,6 +1,6 @@
 package com.won.myongjiCamp.service;
 
-import com.won.myongjiCamp.dto.request.ReportDto;
+import com.won.myongjiCamp.dto.request.ReportRequest;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.Comment;
@@ -23,13 +23,12 @@ public class ReportService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
-
-
+    
     // 신고 생성
    @Transactional
-    public void createReport(ReportDto reportDto, Member reporter,Long id){ //member는 reporter
+    public void createReport(ReportRequest reportRequest, Member reporter, Long id){ //member는 reporter
 
-       if(reportDto.getTargetType().equals(ReportTargetType.Post) ){ // 게시글 신고의 경우
+       if(reportRequest.getTargetType().equals(ReportTargetType.Post) ){ // 게시글 신고의 경우
            Board targetBoard = boardRepository.findById(id)
                    .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
            Report existingReport = reportRepository.findByReporterIdAndReportedBoardId(reporter.getId(), targetBoard.getId());
@@ -38,7 +37,7 @@ public class ReportService {
                report.setTargetType(ReportTargetType.Post);
                report.setReportedBoardId(targetBoard.getId());
                report.setReporterId(reporter.getId());
-               report.setReason(reportDto.getReason());
+               report.setReason(reportRequest.getReason());
                report.setStatus(ReportStatus.Reported);
 
 
@@ -47,7 +46,7 @@ public class ReportService {
                reportRepository.save(report);
            }
            else{       // 이전에 신고한 사람의 경우
-               existingReport.setReason(reportDto.getReason()); // 신고 사유만 갱신
+               existingReport.setReason(reportRequest.getReason()); // 신고 사유만 갱신
                reportRepository.save(existingReport);
 
 //               throw new IllegalStateException("이미 신고된 댓글입니다."); // 한 번 신고하면 다시는 신고 못하게
@@ -71,7 +70,7 @@ public class ReportService {
                report.setTargetType(ReportTargetType.Comment);
                report.setReportedCommentId(targetComment.getId());
                report.setReporterId(reporter.getId());
-               report.setReason(reportDto.getReason());
+               report.setReason(reportRequest.getReason());
                report.setStatus(ReportStatus.Reported);
                targetComment.setReportStatus(ReportStatus.Reported);
                //수정 : getReportCount가 기본 0 이면 null로 저장돼서 에러가 난다. if, else문 추가
@@ -84,7 +83,7 @@ public class ReportService {
                reportRepository.save(report);
            }
            else{
-               existingComment.setReason(reportDto.getReason()); // 신고 사유만 갱신
+               existingComment.setReason(reportRequest.getReason()); // 신고 사유만 갱신
                reportRepository.save(existingComment);
 
 //               throw new IllegalStateException("이미 신고된 댓글입니다.");

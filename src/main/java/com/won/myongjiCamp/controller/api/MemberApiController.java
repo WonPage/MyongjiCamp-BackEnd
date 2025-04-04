@@ -4,12 +4,9 @@ import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
 import com.won.myongjiCamp.config.security.auth.PrincipalDetailService;
 import com.won.myongjiCamp.config.jwt.JwtTokenUtil;
 import com.won.myongjiCamp.dto.request.MemberRequest;
-import com.won.myongjiCamp.dto.request.TokenDto;
-import com.won.myongjiCamp.dto.request.CreateMemberDto;
-import com.won.myongjiCamp.dto.request.EmailDto;
+import com.won.myongjiCamp.dto.TokenDto;
+import com.won.myongjiCamp.dto.response.MemberResponse;
 import com.won.myongjiCamp.dto.response.ResponseDto;
-import com.won.myongjiCamp.dto.request.PasswordDto;
-import com.won.myongjiCamp.dto.request.ProfileDto;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,7 +36,7 @@ public class MemberApiController {
     private final PrincipalDetailService detailService;
 
     @PostMapping("/api/members")
-    public ResponseDto saveMember(@RequestBody @Valid CreateMemberDto request) {
+    public ResponseDto saveMember(@RequestBody @Valid MemberRequest.CreateMemberDto request) {
         Long id = memberService.join(request.getEmail(),request.getPassword(), request.getNickname(),request.getProfileIcon());
         Map<String, Long> data = new HashMap<>();
         data.put("id", id);
@@ -67,7 +64,7 @@ public class MemberApiController {
 
     //이메일 전송
     @PostMapping("/api/email")
-    public ResponseDto sendEmail(@RequestBody EmailDto emailDto) {
+    public ResponseDto sendEmail(@RequestBody MemberRequest.EmailDto emailDto) {
 
         String subject = "회원가입 인증 메일입니다.";
         Random random = new Random();
@@ -79,7 +76,7 @@ public class MemberApiController {
 
     //이메일 인증
     @PostMapping("/api/email/verify")
-    public ResponseDto verifyEmail(@RequestBody EmailDto emailDto) {
+    public ResponseDto verifyEmail(@RequestBody MemberRequest.EmailDto emailDto) {
         String email = emailDto.getEmail();
         String code = emailDto.getCode(); //사용자가 입력한 코드
         String savedCode = memberService.getVerificationCode(email); //redis에 저장된 코드
@@ -139,7 +136,7 @@ public class MemberApiController {
 
     //비밀번호 찾기(임시 비밀번호 발급)
     @PostMapping("/api/email/password")
-    public ResponseDto findPassword(@RequestBody EmailDto emailDto) {
+    public ResponseDto findPassword(@RequestBody MemberRequest.EmailDto emailDto) {
 
         String subject = "임시 비밀번호 안내 이메일 입니다.";
         String password = generateRandomPassword();
@@ -164,28 +161,28 @@ public class MemberApiController {
 
     //비밀번호 변경 전 현재 비밀번호 인증
     @PostMapping("/api/auth/password/verify")
-    public ResponseDto verificationPassword(@RequestBody PasswordDto request, @AuthenticationPrincipal PrincipalDetail principal) {
+    public ResponseDto verificationPassword(@RequestBody MemberRequest.PasswordDto request, @AuthenticationPrincipal PrincipalDetail principal) {
         memberService.verificationPassword(request.getPassword(),principal.getPassword());
         return new ResponseDto(HttpStatus.OK.value(), "비밀번호 인증 성공");
     }
 
     //개인정보(비밀번호 변경)
     @PutMapping("/api/auth/password/update")
-    public ResponseDto updatePassword(@RequestBody PasswordDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
+    public ResponseDto updatePassword(@RequestBody MemberRequest.PasswordDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
         memberService.updatePassword(request,principal.getMember());
         return new ResponseDto<>(HttpStatus.OK.value(), "비밀번호 변경이 완료되었습니다.");
     }
 
     //닉네임 변경
     @PutMapping("/api/auth/nickname/update")
-    public ResponseDto updateNickname(@RequestBody ProfileDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
+    public ResponseDto updateNickname(@RequestBody MemberRequest.ProfileDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
         memberService.updateNickname(request,principal.getMember());
         return new ResponseDto<>(HttpStatus.OK.value(), "닉네임 변경이 완료되었습니다.");
     }
 
     //아이콘 변경
     @PutMapping("/api/auth/icon/update")
-    public ResponseDto updateIcon(@RequestBody ProfileIconRequestDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
+    public ResponseDto updateIcon(@RequestBody MemberRequest.ProfileIconRequestDto request, @AuthenticationPrincipal PrincipalDetail principal) throws Exception {
         memberService.updateIcon(request.getProfileIcon(),principal.getMember());
         return new ResponseDto<>(HttpStatus.OK.value(), "아이콘 변경이 완료되었습니다.");
     }
@@ -193,7 +190,7 @@ public class MemberApiController {
     //프로필
     @GetMapping("/api/auth/profile")
     public Result profile(@AuthenticationPrincipal PrincipalDetail principal) {
-        return new Result(new ProfileInformationResponseDto(principal.getUsername(),principal.getMember().getNickname(), principal.getMember().getProfileIcon()));
+        return new Result(new MemberResponse.ProfileInformationResponseDto(principal.getUsername(),principal.getMember().getNickname(), principal.getMember().getProfileIcon()));
     }
 
     @Data
@@ -202,16 +199,4 @@ public class MemberApiController {
         private T data;
     }
 
-    @Data
-    @AllArgsConstructor
-    static class ProfileInformationResponseDto {
-        private String email;
-        private String nickname;
-        private Integer profileIcon;
-    }
-
-    @Data
-    static class ProfileIconRequestDto {
-        private Integer profileIcon;
-    }
 }

@@ -2,8 +2,7 @@ package com.won.myongjiCamp.service;
 
 import com.won.myongjiCamp.config.jwt.JwtTokenUtil;
 import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
-import com.won.myongjiCamp.dto.request.PasswordDto;
-import com.won.myongjiCamp.dto.request.ProfileDto;
+import com.won.myongjiCamp.dto.request.MemberRequest;
 import com.won.myongjiCamp.exception.EmailDuplicatedException;
 import com.won.myongjiCamp.exception.NicknameDuplicatedException;
 import com.won.myongjiCamp.exception.VerificationFailureException;
@@ -16,7 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -144,7 +142,7 @@ public class MemberService {
     }
     //비밀번호 변경
     @Transactional
-    public void updatePassword(PasswordDto request, Member member) {
+    public void updatePassword(MemberRequest.PasswordDto request, Member member) {
         String encPassword = bCryptPasswordEncoder.encode(request.getPassword());
         Member findMember = memberRepository.findById(member.getId())
                 .orElseThrow(() -> new IllegalStateException("해당 유저가 존재하지 않습니다."));
@@ -153,7 +151,7 @@ public class MemberService {
     }
     //닉네임 변경
     @Transactional
-    public void updateNickname(ProfileDto request, Member member) {
+    public void updateNickname(MemberRequest.ProfileDto request, Member member) {
         if (isNicknameDuplicated(request.getNickname())) {
             throw new NicknameDuplicatedException("이미 사용중인 닉네임입니다.");
         }

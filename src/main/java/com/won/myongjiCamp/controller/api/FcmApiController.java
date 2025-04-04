@@ -2,10 +2,10 @@ package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
 import com.won.myongjiCamp.dto.Fcm.FcmSendDto;
-import com.won.myongjiCamp.dto.response.NotificationResponseDto;
-import com.won.myongjiCamp.dto.request.PageDto;
+import com.won.myongjiCamp.dto.response.NotificationResponse;
+import com.won.myongjiCamp.dto.PageDto;
 import com.won.myongjiCamp.dto.response.ResponseDto;
-import com.won.myongjiCamp.dto.request.TokenDto;
+import com.won.myongjiCamp.dto.TokenDto;
 import com.won.myongjiCamp.model.Notification;
 import com.won.myongjiCamp.service.FcmService;
 import jakarta.validation.Valid;
@@ -55,8 +55,8 @@ public class FcmApiController {
     public Result getNotifications(@AuthenticationPrincipal PrincipalDetail principalDetail,@ModelAttribute @Valid PageDto pageDto){
         Page<Notification> notificationPage = fcmService.findAllNotifications(principalDetail.getMember(),pageDto.getPageNum());
 
-        List<NotificationResponseDto> notificationList = notificationPage.stream()
-                .map(NotificationResponseDto::new)
+        List<NotificationResponse> notificationList = notificationPage.stream()
+                .map(NotificationResponse::new)
                 .collect(Collectors.toList());
 
         for(int i=0; i<notificationList.size(); i++){

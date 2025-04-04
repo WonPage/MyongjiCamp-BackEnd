@@ -6,7 +6,7 @@ import com.won.myongjiCamp.model.board.report.ReportTargetType;
 import lombok.Data;
 
 @Data
-public class ReportDto {
+public class ReportRequest {
 
 //    private Long id;
 

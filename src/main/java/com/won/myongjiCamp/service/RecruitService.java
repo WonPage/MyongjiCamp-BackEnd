@@ -1,7 +1,7 @@
 package com.won.myongjiCamp.service;
 
-import com.won.myongjiCamp.dto.request.RecruitDto;
-import com.won.myongjiCamp.dto.RoleAssignmentDto;
+import com.won.myongjiCamp.dto.request.BoardRequest;
+import com.won.myongjiCamp.dto.response.BoardResponse;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.CompleteBoard;
@@ -30,7 +30,7 @@ public class RecruitService {
 
     // 게시글 작성
     @Transactional
-    public void create(RecruitDto recruitDto, Member member){
+    public void create(BoardRequest.RecruitDto recruitDto, Member member){
 
         RecruitBoard recruitBoard = new RecruitBoard();
         recruitBoard.setTitle(recruitDto.getTitle()); // 제목
@@ -42,7 +42,7 @@ public class RecruitService {
 
         recruitRepository.save(recruitBoard);
 
-        for(RoleAssignmentDto roleAssignmentDto : recruitDto.getRoleAssignments()){
+        for(BoardResponse.RoleAssignmentDto roleAssignmentDto : recruitDto.getRoleAssignments()){
 
             // 구한 사람 수 == 구하는 사람 수 일 경우 RoleAssignment의 isFull값을 변경하기 위해 if문 사용
             if(roleAssignmentDto.getAppliedNumber().equals(roleAssignmentDto.getRequiredNumber())) {
@@ -74,7 +74,7 @@ public class RecruitService {
 
     // 게시글 수정
     @Transactional
-    public void update(RecruitDto recruitDto, Long id){
+    public void update(BoardRequest.RecruitDto recruitDto, Long id){
 
         RecruitBoard recruitBoard = recruitRepository.findById(id)
                         .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
@@ -87,7 +87,7 @@ public class RecruitService {
         if(recruitDto.getStatus().equals(RecruitStatus.RECRUIT_COMPLETE)){ // 프론트에서 모집 완료 버튼을 누르면
             recruitBoard.setStatus(RecruitStatus.RECRUIT_COMPLETE);
 
-            for(RoleAssignmentDto roleAssignmentDto : recruitDto.getRoleAssignments()) { // 모든 역할 다 차게 변환
+            for(BoardResponse.RoleAssignmentDto roleAssignmentDto : recruitDto.getRoleAssignments()) { // 모든 역할 다 차게 변환
                 RoleAssignment roleAssignment = roleAssignmentRepository.findByBoardAndRole(recruitBoard, roleAssignmentDto.getRole()).orElse(null);
 
                 if(roleAssignment != null && roleAssignmentDto.getAppliedNumber() == 0){
@@ -112,7 +112,7 @@ public class RecruitService {
                     .orElseThrow(()->new IllegalArgumentException("존재하지 않는 게시글 입니다."));
             for(RoleAssignment existRole : roleAssignmentRepository.findByBoard(board)){
                 boolean ishere = false;
-                for(RoleAssignmentDto checkRoleAssignmentDto : recruitDto.getRoleAssignments()){
+                for(BoardResponse.RoleAssignmentDto checkRoleAssignmentDto : recruitDto.getRoleAssignments()){
                     if(existRole.getRole().equals(checkRoleAssignmentDto.getRole())){
                         ishere = true;
                         break;
@@ -127,7 +127,7 @@ public class RecruitService {
             /*
             * 나머지 경우
             */
-            for (RoleAssignmentDto roleAssignmentDto : recruitDto.getRoleAssignments()) {
+            for (BoardResponse.RoleAssignmentDto roleAssignmentDto : recruitDto.getRoleAssignments()) {
 
                 RoleAssignment roleAssignment = roleAssignmentRepository.findByBoardAndRole(recruitBoard, roleAssignmentDto.getRole()).orElse(null);
                 if (roleAssignment != null && roleAssignmentDto.getRequiredNumber() == 0 && roleAssignmentDto.getAppliedNumber() == 0) {

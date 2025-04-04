@@ -1,6 +1,6 @@
 package com.won.myongjiCamp.service;
 
-import com.won.myongjiCamp.dto.request.BoardSearchDto;
+import com.won.myongjiCamp.dto.request.BoardRequest;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.CompleteBoard;
@@ -28,7 +28,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final CompleteRepository completeRepository;
 
-    public Page<Board> searchBoards(BoardSearchDto requestDto) {
+    public Page<Board> searchBoards(BoardRequest.BoardSearchDto requestDto) {
 
         Sort.Direction direction;
         if(requestDto.getDirection().equals("DESC")) {

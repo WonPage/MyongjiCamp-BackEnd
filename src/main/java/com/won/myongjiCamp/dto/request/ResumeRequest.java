@@ -5,7 +5,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 @Data
-public class ResumeDto {
+public class ResumeRequest {
 
     @NotEmpty
     @Length(max = 20)

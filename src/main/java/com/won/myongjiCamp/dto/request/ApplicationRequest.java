@@ -3,7 +3,7 @@ package com.won.myongjiCamp.dto.request;
 import lombok.Data;
 
 @Data
-public class ApplicationDto {
+public class ApplicationRequest {
 
     private String role;
 

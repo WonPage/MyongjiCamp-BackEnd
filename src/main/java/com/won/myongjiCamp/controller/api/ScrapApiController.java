@@ -1,9 +1,9 @@
 package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
-import com.won.myongjiCamp.dto.response.BoardListResponseDto;
 import com.won.myongjiCamp.dto.response.ResponseDto;
-import com.won.myongjiCamp.dto.request.ScrapDto;
+import com.won.myongjiCamp.dto.request.ScrapRequest;
+import com.won.myongjiCamp.dto.response.ScrapResponse;
 import com.won.myongjiCamp.model.Scrap;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.repository.MemberRepository;
@@ -36,7 +36,7 @@ public class ScrapApiController {
 
     //스크랩 가져오기
     @GetMapping("/api/auth/scrap")
-    public Result pullScraps(@ModelAttribute @Valid ScrapDto requestDto, @AuthenticationPrincipal PrincipalDetail principal) {
+    public Result pullScraps(@ModelAttribute @Valid ScrapRequest requestDto, @AuthenticationPrincipal PrincipalDetail principal) {
         log.info("Request param: {}", requestDto);
 
         Page<Scrap> scraps = scrapService.pullScraps(requestDto, principal.getMember());
@@ -45,8 +45,8 @@ public class ScrapApiController {
                 .map(Scrap::getBoard)
                 .collect(Collectors.toList());
 
-        List<BoardListResponseDto> collect = boards.stream()
-                .map(BoardListResponseDto::new)
+        List<ScrapResponse.BoardListResponse> collect = boards.stream()
+                .map(ScrapResponse.BoardListResponse::new)
                 .collect(Collectors.toList());
 
         return new Result(collect);

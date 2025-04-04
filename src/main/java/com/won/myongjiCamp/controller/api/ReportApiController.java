@@ -1,7 +1,7 @@
 package com.won.myongjiCamp.controller.api;
 
 import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
-import com.won.myongjiCamp.dto.request.ReportDto;
+import com.won.myongjiCamp.dto.request.ReportRequest;
 import com.won.myongjiCamp.dto.response.ResponseDto;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.repository.ReportRepository;
@@ -21,8 +21,8 @@ public class ReportApiController {
 
     // 신고 작성
     @PostMapping("/api/auth/report/{id}")
-    public ResponseDto<String> createReport(@RequestBody @Valid ReportDto reportDto, @AuthenticationPrincipal PrincipalDetail principal, @PathVariable Long id){
-        reportService.createReport(reportDto, principal.getMember(),id);
+    public ResponseDto<String> createReport(@RequestBody @Valid ReportRequest reportRequest, @AuthenticationPrincipal PrincipalDetail principal, @PathVariable Long id){
+        reportService.createReport(reportRequest, principal.getMember(),id);
 
         return new ResponseDto<String>(HttpStatus.OK.value(), "신고 완료되었습니다.");
     }
