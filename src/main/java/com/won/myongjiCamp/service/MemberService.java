@@ -7,6 +7,7 @@ import com.won.myongjiCamp.exception.EmailDuplicatedException;
 import com.won.myongjiCamp.exception.NicknameDuplicatedException;
 import com.won.myongjiCamp.exception.VerificationFailureException;
 import com.won.myongjiCamp.model.Member;
+import com.won.myongjiCamp.model.RoleType;
 import com.won.myongjiCamp.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -55,6 +56,7 @@ public class MemberService {
                 .password(encPassword)
                 .nickname(nickname)
                 .profileIcon(icon)
+                .role(RoleType.USER)
                 .build();
         memberRepository.save(member);
         redisTemplate.delete("email_request_count:" + email);

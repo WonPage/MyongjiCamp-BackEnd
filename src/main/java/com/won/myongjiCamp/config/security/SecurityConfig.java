@@ -21,6 +21,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Slf4j
 public class SecurityConfig {
     @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    @Autowired
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Autowired
@@ -57,10 +60,12 @@ public class SecurityConfig {
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler)
                 .and()
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests()
                     .requestMatchers("/api/auth/**").authenticated()
+                    .requestMatchers("/admin/**").hasAuthority("ADMIN")
                     .anyRequest().permitAll();
 
         return http.build();
