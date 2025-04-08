@@ -1,4 +1,4 @@
-package com.won.myongjiCamp.repository;
+package com.won.myongjiCamp.repository.board;
 
 import com.won.myongjiCamp.model.board.Board;
 import org.springframework.data.jpa.repository.JpaRepository;

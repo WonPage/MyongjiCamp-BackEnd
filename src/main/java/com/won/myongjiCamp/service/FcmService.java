@@ -12,6 +12,7 @@ import com.won.myongjiCamp.model.application.Application;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.Comment;
 import com.won.myongjiCamp.repository.*;
+import com.won.myongjiCamp.repository.board.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;

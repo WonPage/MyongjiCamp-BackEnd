@@ -7,6 +7,8 @@ import com.won.myongjiCamp.dto.response.ResponseDto;
 import com.won.myongjiCamp.model.board.*;
 import com.won.myongjiCamp.model.board.role.RoleAssignment;
 import com.won.myongjiCamp.repository.*;
+import com.won.myongjiCamp.repository.board.complete.CompleteRepository;
+import com.won.myongjiCamp.repository.board.recruit.RecruitRepository;
 import com.won.myongjiCamp.service.BoardService;
 import com.won.myongjiCamp.service.CompleteService;
 import com.won.myongjiCamp.service.RecruitService;
@@ -82,23 +84,26 @@ public class BoardApiController {
         return new ResponseDto<String>(HttpStatus.OK.value(), "게시글이 삭제되었습니다.");
     }
 
-    //recruit 글 조회(검색)
+    //글 조회(검색)
     @GetMapping("/api/board")
     public Result findAll(@ModelAttribute @Valid BoardRequest.BoardSearchDto requestDto) {
-        Page<Board> boards = boardService.searchBoards(requestDto);
-        List<BoardResponse.BoardListResponseDto> collect = boards.stream()
-                .map(BoardResponse.BoardListResponseDto::new)
-                .collect(Collectors.toList());
-        return new Result(collect);
-    }
+        if (requestDto.getBoardType().equals("recruit")) {
+            Page<RecruitBoard> recruitBoards = boardService.searchRecruitBoards(requestDto);
+            List<BoardResponse.RecruitBoardListResponseDto> collect = recruitBoards.stream()
+                    .map(BoardResponse.RecruitBoardListResponseDto::new)
+                    .collect(Collectors.toList());
+            return new Result(collect);
+        }
+        if (requestDto.getBoardType().equals("complete")) {
+            Page<CompleteBoard> completeBoards = boardService.searchCompleteBoards(requestDto);
+            List<BoardResponse.CompleteBoardListResponseDto> collect = completeBoards.stream()
+                    .map(BoardResponse.CompleteBoardListResponseDto::new)
+                    .collect(Collectors.toList());
+            return new Result(collect);
+        }
 
-    //get할 때는 그냥 Dto로 해주는 것보다는 Result에 담아서 주는 것이 좋다.
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private T data;
+        return new Result(List.of());
     }
-
 
     // 게시글 상세 읽기
     @GetMapping("/api/auth/recruit/{id}")
@@ -149,5 +154,11 @@ public class BoardApiController {
                 roleAssignment.getAppliedNumber(),
                 roleAssignment.getRequiredNumber()
         );
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private T data;
     }
 }

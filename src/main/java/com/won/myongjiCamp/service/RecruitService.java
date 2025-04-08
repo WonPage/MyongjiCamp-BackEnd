@@ -9,7 +9,7 @@ import com.won.myongjiCamp.model.board.RecruitBoard;
 import com.won.myongjiCamp.model.board.RecruitStatus;
 import com.won.myongjiCamp.model.board.role.RoleAssignment;
 import com.won.myongjiCamp.repository.ApplicationRepository;
-import com.won.myongjiCamp.repository.RecruitRepository;
+import com.won.myongjiCamp.repository.board.recruit.RecruitRepository;
 import com.won.myongjiCamp.repository.RoleAssignmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

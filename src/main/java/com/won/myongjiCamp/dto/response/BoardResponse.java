@@ -85,7 +85,28 @@ public class BoardResponse {
     }
 
     @Data
-    public static class BoardListResponseDto {
+    public static class CompleteBoardListResponseDto {
+        private Long boardId;
+        private String title;
+        private Timestamp modifiedDate;
+        private Timestamp createdDate;
+        private int commentCount;
+        private int scrapCount;
+        private String firstImage;
+
+        public CompleteBoardListResponseDto(CompleteBoard board) {
+            this.boardId = board.getId();
+            this.title = board.getTitle();
+            this.modifiedDate = board.getModifiedDate();
+            this.createdDate = board.getCreatedDate();
+            this.commentCount = board.getCommentCount();
+            this.scrapCount = board.getScrapCount();
+            this.firstImage = board.getImages().get(0).getUrl();
+        }
+    }
+
+    @Data
+    public static class RecruitBoardListResponseDto {
         private Long boardId;
         private String title;
         private Timestamp modifiedDate;
@@ -94,25 +115,18 @@ public class BoardResponse {
         private String expectedDuration;
         private int commentCount;
         private int scrapCount;
-        private String firstImage;
 
-        public BoardListResponseDto(Board board) {
-            this.boardId = board.getId();
-            this.title = board.getTitle();
-            this.modifiedDate = board.getModifiedDate();
-            this.createdDate = board.getCreatedDate();
-            this.commentCount = board.getCommentCount();
-            this.scrapCount = board.getScrapCount();
-
-            if (board instanceof RecruitBoard recruitBoard) {
-                this.roles = recruitBoard.getRoles().stream()
-                        .map(RoleAssignment::getRole)
-                        .collect(Collectors.toList());
-                this.expectedDuration = recruitBoard.getExpectedDuration();
-            }
-            else if (board instanceof CompleteBoard completeBoard) {
-                this.firstImage = completeBoard.getImages().get(0).getUrl();
-            }
+        public RecruitBoardListResponseDto(RecruitBoard recruitBoard) {
+            this.boardId = recruitBoard.getId();
+            this.title = recruitBoard.getTitle();
+            this.modifiedDate = recruitBoard.getModifiedDate();
+            this.createdDate = recruitBoard.getCreatedDate();
+            this.commentCount = recruitBoard.getCommentCount();
+            this.scrapCount = recruitBoard.getScrapCount();
+            this.roles = recruitBoard.getRoles().stream()
+                    .map(RoleAssignment::getRole)
+                    .collect(Collectors.toList());
+            this.expectedDuration = recruitBoard.getExpectedDuration();
         }
     }
 
