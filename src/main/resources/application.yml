@@ -13,10 +13,10 @@ spring:
   config:
     activate:
       on-profile: common
-  jpa:
-   properties:
-     hibernate:
-       default_batch_fetch_size: 1000
+#  jpa:
+#   properties:
+#     hibernate:
+#       default_batch_fetch_size: 100
 
   servlet:
     multipart:
