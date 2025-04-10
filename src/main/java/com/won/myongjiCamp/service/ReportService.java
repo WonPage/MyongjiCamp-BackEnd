@@ -7,7 +7,7 @@ import com.won.myongjiCamp.model.board.Comment;
 import com.won.myongjiCamp.model.board.report.Report;
 import com.won.myongjiCamp.model.board.report.ReportStatus;
 import com.won.myongjiCamp.model.board.report.ReportTargetType;
-import com.won.myongjiCamp.repository.board.BoardRepository;
+import com.won.myongjiCamp.repository.BoardRepository;
 import com.won.myongjiCamp.repository.CommentRepository;
 import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.repository.ReportRepository;

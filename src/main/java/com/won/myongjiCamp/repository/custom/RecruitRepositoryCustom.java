@@ -1,4 +1,4 @@
-package com.won.myongjiCamp.repository.board.recruit;
+package com.won.myongjiCamp.repository.custom;
 
 import com.won.myongjiCamp.dto.request.BoardRequest.BoardSearchDto;
 import com.won.myongjiCamp.model.board.RecruitBoard;

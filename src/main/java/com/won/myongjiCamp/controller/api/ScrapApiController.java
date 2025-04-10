@@ -28,6 +28,7 @@ public class ScrapApiController {
 
     final private ScrapService scrapService;
     final private MemberRepository memberRepository;
+
     @PostMapping("/api/auth/scrap/{id}")
     public ResponseDto<String> scrap(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetail principal) {
         String data = scrapService.scrap(id, principal.getMember());

@@ -1,4 +1,4 @@
-package com.won.myongjiCamp.repository.board.complete;
+package com.won.myongjiCamp.repository.custom;
 
 import com.won.myongjiCamp.dto.request.BoardRequest.BoardSearchDto;
 import com.won.myongjiCamp.model.board.CompleteBoard;

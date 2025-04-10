@@ -4,7 +4,7 @@ import com.won.myongjiCamp.dto.request.CommentRequest;
 import com.won.myongjiCamp.model.board.Comment;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.Board;
-import com.won.myongjiCamp.repository.board.BoardRepository;
+import com.won.myongjiCamp.repository.BoardRepository;
 import com.won.myongjiCamp.repository.CommentRepository;
 import com.won.myongjiCamp.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

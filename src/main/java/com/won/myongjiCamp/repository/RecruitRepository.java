@@ -1,7 +1,8 @@
-package com.won.myongjiCamp.repository.board.recruit;
+package com.won.myongjiCamp.repository;
 
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.RecruitBoard;
+import com.won.myongjiCamp.repository.custom.RecruitRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
