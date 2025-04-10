@@ -106,7 +106,7 @@ public class BoardApiController {
     }
 
     // 게시글 상세 읽기
-    @GetMapping("/api/auth/recruit/{id}")
+    @GetMapping("/api/recruit/{id}")
     public Result getRecruitDetail(@AuthenticationPrincipal PrincipalDetail principalDetail, @PathVariable Long id){
 
         RecruitBoard board = recruitRepository.findById(id)
@@ -128,8 +128,8 @@ public class BoardApiController {
     }
 
     // complete 게시글 상세보기
-    @GetMapping("/api/auth/complete/{id}")
-    public Result getCompleteDetail(@AuthenticationPrincipal PrincipalDetail principalDetail, @PathVariable Long id){
+    @GetMapping("/api/complete/{id}")
+    public Result getCompleteDetail(@PathVariable Long id){
 
         CompleteBoard board = completeRepository.findById(id)
                 .orElseThrow(()->new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
