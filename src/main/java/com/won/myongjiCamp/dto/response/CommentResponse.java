@@ -6,24 +6,22 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Data
-public class CommentResponse { //댓글 조회할 때
-    private Long id; //댓글 id
-    private Long boardId; //게시글 id
+public class CommentResponse {
+    private Long id;
+    private Long boardId;
     private String content;
-    private Timestamp commentCreateDate; //댓글 작성 시간
-    private Long writerId; // 작성자 id
+    private Timestamp commentCreateDate;
+    private Long writerId;
     private List<CommentResponse> children;
-
     private String nickname;
-
     private Integer profileIcon;
-
     private Integer isSecret;
-
     private boolean isDelete;
 
-    public CommentResponse(Long id, Long boardId, String content, Timestamp commentCreateDate, Long writerId, String nickname, Integer profileIcon, Integer isSecret, List<CommentResponse> children, boolean isDelete){
-        this.id=id;
+    public CommentResponse(Long id, Long boardId, String content, Timestamp commentCreateDate, Long writerId,
+                           String nickname, Integer profileIcon, Integer isSecret, List<CommentResponse> children,
+                           boolean isDelete) {
+        this.id = id;
         this.boardId = boardId;
         this.content = content;
         this.commentCreateDate = commentCreateDate;

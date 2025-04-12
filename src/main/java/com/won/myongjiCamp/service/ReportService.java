@@ -24,7 +24,6 @@ public class ReportService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     
-    // 신고 생성
    @Transactional
     public void createReport(ReportRequest reportRequest, Member reporter, Long id){ //member는 reporter
 

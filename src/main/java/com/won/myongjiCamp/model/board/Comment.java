@@ -54,7 +54,6 @@ public class Comment {
     @Column(name = "is_delete", nullable = false)
     private boolean isDelete = false; // 삭제된 상태인지 아닌지
 
-
     @OneToMany(mappedBy = "parent") // 대댓글 모음집
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Comment> children = new ArrayList<>(); //부모가 삭제돼도 자식은 남아있음
@@ -63,6 +62,5 @@ public class Comment {
 
     @Enumerated(EnumType.STRING)
     private ReportStatus reportStatus;
-
 }
 

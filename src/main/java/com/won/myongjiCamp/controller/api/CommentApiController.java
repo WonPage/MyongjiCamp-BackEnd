@@ -25,7 +25,6 @@ public class CommentApiController {
     private final CommentService commentService;
     private final FcmService fcmService;
 
-    //댓글 작성
     @PostMapping("/api/auth/recruit/{id}/comment")
     public ResponseDto<String> createComment(@RequestBody @Valid CommentRequest commentRequest, @AuthenticationPrincipal PrincipalDetail principal, @PathVariable Long id) throws IOException {
         commentService.create(commentRequest,principal.getMember(),id);
@@ -33,18 +32,14 @@ public class CommentApiController {
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성 완료");
     }
 
-    //댓글 삭제
-    @DeleteMapping("/api/auth/recruit/{board_id}/comment/{comment_id}")
-    public ResponseDto<String> deleteComment(@PathVariable("board_id") Long board_id, @PathVariable("comment_id") Long comment_id){
-        commentService.delete(board_id, comment_id);
+    @DeleteMapping("/api/auth/recruit/{boardId}/comment/{commentId}")
+    public ResponseDto<String> deleteComment(@PathVariable("boardId") Long boardId, @PathVariable("commentId") Long commentId){
+        commentService.delete(boardId, commentId);
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글이 삭제되었습니다.");
     }
 
-
-    //댓글 전체 조회
-    @GetMapping("/api/auth/recruit/{board_id}/comment")
-    private Result CommentList(@PathVariable("board_id") Long id,@AuthenticationPrincipal PrincipalDetail principalDetail){
-
+    @GetMapping("/api/auth/recruit/{boardId}/comment")
+    private Result getCommentList(@PathVariable("boardId") Long id){
         List<CommentResponse> result = new ArrayList<>();
         Map<Long, CommentResponse> map = new HashMap<>();
         List<Comment> commentList = commentService.commentAll(id);
@@ -58,7 +53,6 @@ public class CommentApiController {
             else{
                 result.add(rDto);
             }
-
         });
 
         return new Result(result);

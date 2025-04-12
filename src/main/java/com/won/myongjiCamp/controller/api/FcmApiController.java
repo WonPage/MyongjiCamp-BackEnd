@@ -27,13 +27,11 @@ import java.util.stream.Collectors;
 public class FcmApiController {
     private final FcmService fcmService;
 
-
     @PostMapping("/api/v1/fcm/send")
     public ResponseDto<String> pushMessage(@RequestBody @Validated FcmSendDto fcmSendDto) throws IOException {
         int result = fcmService.sendMessageTo(fcmSendDto);
         return new ResponseDto<String>(HttpStatus.OK.value(), "댓글 작성");
     }
-
 
     @PostMapping("/fcmToken")
     public ResponseDto<String> fcmToken(@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestBody @Validated TokenDto tokenDto){
@@ -73,8 +71,6 @@ public class FcmApiController {
         return new ResponseDto<String> (HttpStatus.OK.value(),"isread is true");
     }
 
-
-
     //한 달이 지난 알림은 삭제
 
     @Data
@@ -82,7 +78,4 @@ public class FcmApiController {
     static class Result<T> {
         private T data;
     }
-
-
-
 }

@@ -7,18 +7,10 @@ import lombok.Data;
 
 @Data
 public class ReportRequest {
-
-//    private Long id;
-
     private ReportTargetType targetType;
-
     private Long targetId;
     private Long targetNickname;
-
-
     private Long reporterId;
-
     private ReportReason reason;
-
     private ReportStatus status;
 }

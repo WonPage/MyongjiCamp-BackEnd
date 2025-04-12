@@ -13,17 +13,11 @@ import java.sql.Timestamp;
 @Data
 public class NotificationResponse {
     private Long id;
-
     private String content;
-
     private boolean isRead;
-
     private Long receiverId;
-
     private Long targetBoardId;
-
     private Timestamp createDate;
-
     private NotificationStatus notificationStatus;
 
     public NotificationResponse(Notification notification){

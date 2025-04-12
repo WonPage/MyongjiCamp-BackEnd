@@ -6,7 +6,6 @@ import org.hibernate.validator.constraints.Length;
 
 @Data
 public class ResumeRequest {
-
     @NotEmpty
     @Length(max = 20)
     private String title;

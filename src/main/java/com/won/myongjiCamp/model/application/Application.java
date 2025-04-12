@@ -18,7 +18,6 @@ import java.sql.Timestamp;
 @Builder
 @Entity
 public class Application {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,10 +46,10 @@ public class Application {
     private String ResultUrl;
 
     @Enumerated(EnumType.STRING)
-    private ApplicationStatus firstStatus; // 글쓴이의 승인 / 거절
+    private ApplicationStatus firstStatus;
 
     @Enumerated(EnumType.STRING)
-    private ApplicationFinalStatus finalStatus; // 지원자의 최종 승인 / 거절
+    private ApplicationFinalStatus finalStatus;
 
     @CreationTimestamp
     private Timestamp createdDate;

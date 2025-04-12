@@ -14,11 +14,9 @@ import java.util.List;
 @Entity
 @DiscriminatorValue("Complete")
 public class CompleteBoard extends Board {
-
     @OneToMany(mappedBy = "board", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Image> images = new ArrayList<>();
 
-    //모집완료 글
     @OneToOne
     @JoinColumn(name = "mapping_recruit_board_id")
     private Board writeRecruitBoard;

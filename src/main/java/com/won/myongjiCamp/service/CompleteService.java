@@ -66,6 +66,7 @@ public class CompleteService {
         for (Image image : saveImageList) {
             completeBoard.addImage(image);
         }
+
         return completeBoard;
     }
 
@@ -113,7 +114,6 @@ public class CompleteService {
     }
 
     private void deleteExistingImage(CompleteBoard completeBoard) {
-        // 기존 이미지 삭제
         List<Image> existingImages = imageRepository.findByBoard(completeBoard);
         for (Image image : existingImages) {
             try {
@@ -122,7 +122,7 @@ public class CompleteService {
                 throw new IllegalArgumentException("이미지 삭제 실패: " + image.getUrl());
             }
         }
-        completeBoard.getImages().clear(); // 이미지 리스트 클리어
+        completeBoard.getImages().clear();
     }
 
     @Transactional
@@ -130,6 +130,7 @@ public class CompleteService {
         CompleteBoard completeBoard = completeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
         List<Image> images = imageRepository.findByBoard(completeBoard);
+
         for (Image image : images) {
             try {
                 s3ImageService.deleteImageFromS3(image.getUrl());
@@ -137,10 +138,13 @@ public class CompleteService {
                 throw new IllegalArgumentException("이미지 삭제 실패: " + image.getUrl());
             }
         }
+
         RecruitBoard recruitBoard = (RecruitBoard) completeBoard.getWriteRecruitBoard();
+
         if (recruitBoard != null) {
             recruitBoard.setWriteCompleteBoard(null);
         }
+
         completeRepository.deleteById(id);
     }
 }

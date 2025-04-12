@@ -24,7 +24,7 @@ public class BoardRequest {
         private RecruitStatus status;
 
         @NotEmpty
-        private String preferredLocation; //활동 지역
+        private String preferredLocation;
 
         @NotEmpty
         private String expectedDuration;
@@ -57,5 +57,4 @@ public class BoardRequest {
         private String boardType;
         private String status;
     }
-
 }

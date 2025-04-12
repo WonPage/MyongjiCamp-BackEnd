@@ -12,31 +12,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 public class BoardResponse {
     @Data
     public static class DetailRecruitResponseDto {
-        private Long writerId; //글 쓴 사람 id
+        private Long writerId;
         private String title;
         private String content;
         private Integer scrapCount;
-        private RecruitStatus status; //모집 중 or 모집 완료
-        private String preferredLocation; //활동 지역
-        private String expectedDuration; //예상 기간
-        private List<RoleAssignmentDto> roleAssignments; //역할
-        private String nickname; // 글 쓴 사람 닉네임
-        private Integer profileIcon; // 글 쓴 사람 아이콘
-        private Timestamp modifiedDate;//수정한 날짜
-        private Timestamp createdDate; //만든 날짜
-        private Long completeBoardId; //개발 완료 글 id
+        private RecruitStatus status;
+        private String preferredLocation;
+        private String expectedDuration;
+        private List<RoleAssignmentDto> roleAssignments;
+        private String nickname;
+        private Integer profileIcon;
+        private Timestamp modifiedDate;
+        private Timestamp createdDate;
+        private Long completeBoardId;
 
-        public DetailRecruitResponseDto(RecruitBoard recruitBoard, List<RoleAssignmentDto> roleAssignmentDtoList){
+        public DetailRecruitResponseDto(RecruitBoard recruitBoard, List<RoleAssignmentDto> roleAssignmentDtoList) {
             this.writerId = recruitBoard.getMember().getId();
             this.title = recruitBoard.getTitle();
             this.content = recruitBoard.getContent();
@@ -49,29 +44,28 @@ public class BoardResponse {
             this.createdDate = recruitBoard.getCreatedDate();
             this.roleAssignments = roleAssignmentDtoList;
             this.scrapCount = recruitBoard.getScrapCount();
-            if(recruitBoard.getWriteCompleteBoard() != null) {
+            if (recruitBoard.getWriteCompleteBoard() != null) {
                 this.completeBoardId = recruitBoard.getWriteCompleteBoard().getId();
             }
         }
     }
 
     @Data
-    @AllArgsConstructor
     public static class NotDetailRecruitResponseDto {
-        private Long writerId; // 글 쓴 사람 id
+        private Long writerId;
         private String title;
         private String content;
         private Integer scrapCount;
-        private RecruitStatus status; //모집 중 or 모집 완료
-        private String preferredLocation; //활동 지역
-        private String expectedDuration; //예상 기간
-        private String nickname; // 글 쓴 사람 닉네임
-        private Integer profileIcon; // 글 쓴 사람 아이콘
-        private Timestamp modifiedDate;//수정한 날짜
-        private Timestamp createdDate; //만든 날짜
-        private Long completeBoardId; //개발 완료 글 id
+        private RecruitStatus status;
+        private String preferredLocation;
+        private String expectedDuration;
+        private String nickname;
+        private Integer profileIcon;
+        private Timestamp modifiedDate;
+        private Timestamp createdDate;
+        private Long completeBoardId;
 
-        public NotDetailRecruitResponseDto(RecruitBoard recruitBoard){
+        public NotDetailRecruitResponseDto(RecruitBoard recruitBoard) {
             this.writerId = recruitBoard.getMember().getId();
             this.title = recruitBoard.getTitle();
             this.content = recruitBoard.getContent();
@@ -83,7 +77,7 @@ public class BoardResponse {
             this.modifiedDate = recruitBoard.getModifiedDate();
             this.createdDate = recruitBoard.getCreatedDate();
             this.scrapCount = recruitBoard.getScrapCount();
-            if(recruitBoard.getWriteCompleteBoard() != null){
+            if (recruitBoard.getWriteCompleteBoard() != null) {
                 this.completeBoardId = recruitBoard.getWriteCompleteBoard().getId();
             }
         }
@@ -137,13 +131,13 @@ public class BoardResponse {
 
     @Data
     public static class DetailCompleteResponseDto {
-        private Long writerId; //글 쓴 사람 id
+        private Long writerId;
         private String title;
         private String content;
         private Integer scrapCount;
-        private String nickname; // 글 쓴 사람 닉네임
-        private Integer profileIcon; // 글 쓴 사람 아이콘
-        private Timestamp createdDate; //만든 날짜
+        private String nickname;
+        private Integer profileIcon;
+        private Timestamp createdDate;
         private List<String> imageUrls = new ArrayList<>();
         private Long recruitBoardId;
 
@@ -155,10 +149,10 @@ public class BoardResponse {
             this.profileIcon = completeBoard.getMember().getProfileIcon();
             this.createdDate = completeBoard.getCreatedDate();
             this.scrapCount = completeBoard.getScrapCount();
-            if (completeBoard.getWriteRecruitBoard() != null){
+            if (completeBoard.getWriteRecruitBoard() != null) {
                 this.recruitBoardId = completeBoard.getWriteRecruitBoard().getId();
             }
-            for(Image image : completeBoard.getImages()){
+            for (Image image : completeBoard.getImages()) {
                 this.imageUrls.add(image.getUrl());
             }
         }
@@ -189,7 +183,7 @@ public class BoardResponse {
         private Integer requiredNumber;
         private Integer appliedNumber;
 
-        public RoleAssignmentDto(Role role,Integer appliedNumber,Integer requiredNumber){
+        public RoleAssignmentDto(Role role, Integer appliedNumber, Integer requiredNumber) {
             this.role = role;
             this.requiredNumber = requiredNumber;
             this.appliedNumber = appliedNumber;
@@ -199,8 +193,8 @@ public class BoardResponse {
     @Data
     @AllArgsConstructor
     public static class WriteCompleteResponseDto {
-        private Long writerId; //글 쓴 사람 id
-        private Long boardId; //글 id
-        private List<String> imageUrls; //이미 url들
+        private Long writerId;
+        private Long boardId;
+        private List<String> imageUrls;
     }
 }

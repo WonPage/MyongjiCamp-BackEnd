@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-//import java.sql.Timestamp;
 import java.sql.Timestamp;
 
 @Service
@@ -26,9 +25,6 @@ public class RecruitService {
     private final RoleAssignmentRepository roleAssignmentRepository;
     private final ApplicationRepository applicationRepository;
 
-
-
-    // 게시글 작성
     @Transactional
     public void create(BoardRequest.RecruitDto recruitDto, Member member){
 
@@ -71,8 +67,6 @@ public class RecruitService {
 
     }
 
-
-    // 게시글 수정
     @Transactional
     public void update(BoardRequest.RecruitDto recruitDto, Long id){
 
@@ -199,13 +193,4 @@ public class RecruitService {
         }
         recruitRepository.delete(recruitBoard);
     }
-
-
-
-
-
-
-
-
-
 }

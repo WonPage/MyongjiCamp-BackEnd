@@ -14,7 +14,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,14 +39,14 @@ public class Board {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
-    @OneToMany(mappedBy = "board",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<Scrap> scraps = new ArrayList<>();
 
-    private Integer scrapCount=0; //스크랩 수
+    private Integer scrapCount = 0;
 
-    private Integer commentCount=0; //댓글 수
+    private Integer commentCount = 0;
 
-    private Integer reportCount=0 ; //신고 수
+    private Integer reportCount = 0;
 
 
     @Column(name = "created_date")

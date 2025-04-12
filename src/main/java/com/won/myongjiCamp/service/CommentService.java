@@ -21,7 +21,6 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
 
-    // 댓글 작성
     @Transactional
     public Comment create(CommentRequest commentRequest, Member member, Long id) {
         Board board = boardRepository.findById(id)
@@ -64,13 +63,12 @@ public class CommentService {
         }
     }
 
-    // 댓글 삭제
     @Transactional
-    public void delete(Long board_id, Long comment_id) {
-        Comment comment = commentRepository.findById(comment_id)
+    public void delete(Long boardId, Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재 하지 않습니다."));
 
-        Board board = boardRepository.findById(board_id)
+        Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
         if (comment.getCdepth() == 0) { // 부모 댓글
@@ -85,12 +83,9 @@ public class CommentService {
         board.setCommentCount(board.getCommentCount() - 1);
     }
 
-    // 댓글 조회
     public List<Comment> commentAll(Long id) { //여기서 id는 Board id
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
         return commentRepository.findByBoard(board);
     }
-
-
 }

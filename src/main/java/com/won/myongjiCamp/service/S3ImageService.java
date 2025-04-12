@@ -35,29 +35,29 @@ public class S3ImageService {
     private String bucketName;
 
     public String upload(MultipartFile image) {
-        //입력받은 이미지 파일이 빈 파일인지 검증
-        if(image.isEmpty() || Objects.isNull(image.getOriginalFilename())){
+        if (image.isEmpty() || Objects.isNull(image.getOriginalFilename())) {
             throw new IllegalArgumentException("이미지 파일이 빈 파일입니다.");
         }
-        //uploadImage 호출하여 S3에 저장된 이미지의 public url 반환받음
+
         return this.uploadImage(image);
     }
 
     private String uploadImage(MultipartFile image) {
         this.validateImageFileExtention(image.getOriginalFilename());
+
         try {
             return this.uploadImageToS3(image);
         } catch (IOException e) {
             throw new IllegalArgumentException("이미지 업로드 오류가 발생했습니다.");
         }
     }
-    //확장자 명 올바른지 확인
+
     private void validateImageFileExtention(String filename) {
         int lastDotIndex = filename.lastIndexOf(".");
         if (lastDotIndex == -1) {
             throw new IllegalArgumentException("확장자가 존재하지 않는 파일입니다.");
         }
-        //확장자를 소문자로 변환
+
         String extention = filename.substring(lastDotIndex + 1).toLowerCase();
         List<String> allowedExtentionList = Arrays.asList("jpg", "jpeg", "png");
 
@@ -65,12 +65,12 @@ public class S3ImageService {
             throw new IllegalArgumentException("허용되지 않는 파일 형식입니다.");
         }
     }
-    //S3에 저장된 imageAddress 반환받음
-    private String uploadImageToS3(MultipartFile image) throws IOException {
-        String originalFilename = image.getOriginalFilename(); //원본 파일 명
-        String extention = originalFilename.substring(originalFilename.lastIndexOf(".")); //확장자 명
 
-        String s3FileName = UUID.randomUUID().toString().substring(0, 10) + originalFilename; //변경된 파일 명
+    private String uploadImageToS3(MultipartFile image) throws IOException {
+        String originalFilename = image.getOriginalFilename();
+        String extention = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+        String s3FileName = UUID.randomUUID().toString().substring(0, 10) + originalFilename;
 
         InputStream is = image.getInputStream();
         byte[] bytes = IOUtils.toByteArray(is);
@@ -84,13 +84,13 @@ public class S3ImageService {
     }
 
     private void putObjectToS3(String s3FileName, ByteArrayInputStream byteArrayInputStream, ObjectMetadata metadata,
-                           InputStream is) throws IOException {
-        try{
+                               InputStream is) throws IOException {
+        try {
             PutObjectRequest putObjectRequest =
                     new PutObjectRequest(bucketName, s3FileName, byteArrayInputStream, metadata)
                             .withCannedAcl(CannedAccessControlList.PublicRead);
-            amazonS3.putObject(putObjectRequest); // put image to S3
-        } catch (Exception e){
+            amazonS3.putObject(putObjectRequest);
+        } catch (Exception e) {
             throw new IllegalArgumentException("이미지를 S3에 업로드하는 도중 오류가 발생했습니다.");
         } finally {
             byteArrayInputStream.close();
@@ -98,28 +98,28 @@ public class S3ImageService {
         }
     }
 
-    private static ObjectMetadata getObjectMetadata(String extention, byte[] bytes) {
+    private ObjectMetadata getObjectMetadata(String extention, byte[] bytes) {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType("image/" + extention);
         metadata.setContentLength(bytes.length);
         return metadata;
     }
 
-    public void deleteImageFromS3(String imageAddress){
+    public void deleteImageFromS3(String imageAddress) {
         String key = getKeyFromImageAddress(imageAddress);
-        try{
+        try {
             amazonS3.deleteObject(new DeleteObjectRequest(bucketName, key));
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new IllegalArgumentException("이미지를 S3에서 삭제하는 도중 오류가 발생했습니다.");
         }
     }
 
-    private String getKeyFromImageAddress(String imageAddress){
-        try{
+    private String getKeyFromImageAddress(String imageAddress) {
+        try {
             URL url = new URL(imageAddress);
             String decodingKey = URLDecoder.decode(url.getPath(), "UTF-8");
-            return decodingKey.substring(1); // 맨 앞의 '/' 제거
-        }catch (MalformedURLException | UnsupportedEncodingException e){
+            return decodingKey.substring(1);
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
             throw new IllegalArgumentException("이미지 주소로부터 키를 추출하는 도중 오류가 발생했습니다.");
         }
     }
