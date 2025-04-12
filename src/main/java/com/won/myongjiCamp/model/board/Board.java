@@ -21,7 +21,7 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "board_type")
-public abstract class Board {
+public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,5 +59,16 @@ public abstract class Board {
     @Enumerated(EnumType.STRING)
     private ReportStatus reportStatus;
 
+    public void updateModifiedDate() {
+        modifiedDate = new Timestamp(System.currentTimeMillis());
+    }
+
+    public void changeTitle(String title) {
+        this.title = title;
+    }
+
+    public void changeContent(String content) {
+        this.content = content;
+    }
 }
 

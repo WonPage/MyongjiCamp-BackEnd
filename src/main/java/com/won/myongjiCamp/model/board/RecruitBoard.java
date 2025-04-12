@@ -38,4 +38,7 @@ public class RecruitBoard extends Board {
     @JoinColumn(name = "mapping_complete_board_id")
     private Board writeCompleteBoard;
 
+    public void connectCompleteBoard(CompleteBoard completeBoard) {
+        writeCompleteBoard = completeBoard;
+    }
 }

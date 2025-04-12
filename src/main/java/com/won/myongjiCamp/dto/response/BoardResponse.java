@@ -12,7 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 public class BoardResponse {
     @Data
@@ -189,5 +194,13 @@ public class BoardResponse {
             this.requiredNumber = requiredNumber;
             this.appliedNumber = appliedNumber;
         }
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class WriteCompleteResponseDto {
+        private Long writerId; //글 쓴 사람 id
+        private Long boardId; //글 id
+        private List<String> imageUrls; //이미 url들
     }
 }

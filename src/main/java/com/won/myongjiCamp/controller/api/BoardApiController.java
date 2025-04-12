@@ -64,7 +64,7 @@ public class BoardApiController {
     @PostMapping("/api/auth/complete/{id}")
     public Result createComplete(@ModelAttribute @Valid BoardRequest.CompleteDto completeDto, @AuthenticationPrincipal PrincipalDetail principalDetail, @PathVariable long id) throws IOException {
 
-        CompleteService.WriteCompleteResponseDto writeCompleteResponseDto = completeService.create(completeDto, principalDetail.getMember(), id);
+        BoardResponse.WriteCompleteResponseDto writeCompleteResponseDto = completeService.create(completeDto, principalDetail.getMember(), id);
 
         return new Result(writeCompleteResponseDto);
     }
@@ -73,7 +73,7 @@ public class BoardApiController {
     // complete 게시글 수정, id는 게시글 id
     @PutMapping("/api/auth/complete/{id}")
     public Result updateComplete(@ModelAttribute @Valid BoardRequest.CompleteDto completeDto, @PathVariable long id) throws IOException {
-        CompleteService.WriteCompleteResponseDto writeCompleteResponseDto = completeService.update(id, completeDto);
+        BoardResponse.WriteCompleteResponseDto writeCompleteResponseDto = completeService.update(id, completeDto);
         return new Result(writeCompleteResponseDto);
     }
 

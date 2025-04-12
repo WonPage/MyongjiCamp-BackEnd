@@ -94,15 +94,15 @@ public class ApplicationService {
         RoleAssignment roleAssignment = roleAssignmentRepository.findByBoardAndRole(board, application.getRole())
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 모집분야가 존재하지 않습니다."));
 
-        // if 이미 해당 지원 분야가 꽉차면 있으면 예외 터지게
-        int appliedNumber = roleAssignment.getAppliedNumber();
-        int requiredNumber = roleAssignment.getRequiredNumber();
-        if (appliedNumber >= requiredNumber) {
-            throw new IllegalStateException("해당 분야의 모집이 마감되었습니다.");
-        }
+        int appliedNumber = checkIsFullAndGetAppliedNumber(roleAssignment);
         //최종 수락인지 거절인지 dto로 받아와서 담기
         ApplicationFinalStatus applicationFinalStatus = ApplicationFinalStatus.valueOf(request.getFinalStatus());
         application.setFinalStatus(applicationFinalStatus);
+        acceptanceProcess(applicationFinalStatus, roleAssignment, appliedNumber, board);
+    }
+
+    private void acceptanceProcess(ApplicationFinalStatus applicationFinalStatus, RoleAssignment roleAssignment,
+                           int appliedNumber, RecruitBoard board) {
         if(applicationFinalStatus.equals(ApplicationFinalStatus.ACCEPTED)){
             roleAssignment.setAppliedNumber(appliedNumber + 1);
             //해당 role이 다 찬다면
@@ -121,6 +121,16 @@ public class ApplicationService {
                 board.setStatus(RecruitStatus.RECRUIT_COMPLETE);
             }
         }
+    }
+
+    private static int checkIsFullAndGetAppliedNumber(RoleAssignment roleAssignment) {
+        // if 이미 해당 지원 분야가 꽉차면 있으면 예외 터지게
+        int appliedNumber = roleAssignment.getAppliedNumber();
+        int requiredNumber = roleAssignment.getRequiredNumber();
+        if (appliedNumber >= requiredNumber) {
+            throw new IllegalStateException("해당 분야의 모집이 마감되었습니다.");
+        }
+        return appliedNumber;
     }
 
     public List<RecruitBoard> listOfWriter(Member writer) {
