@@ -81,10 +81,10 @@ public class ApplicationApiController {
         return new Result(collect);
     }
 
-    //모집자 입장 지원서 목록 (id = 글 id)
+    //모집자 입장 지원서 목록 (id = 글 id) -> fetchJoin 적용
     @GetMapping("/api/auth/apply/list/{id}")
     public Result listOfApplications(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetail principal) {
-        List<Application> applications = applicationService.listApplication(id);
+        List<Application> applications = applicationService.listApplication(id, principal.getMember());
         List<ApplicationResponse.listOfApplicationsResponse> collect = applications.stream()
                 .map(b -> new ApplicationResponse.listOfApplicationsResponse(b.getId(), b.getApplicant().getNickname(),
                         b.getApplicant().getProfileIcon(), b.getRole(), b.getFirstStatus(), b.getFinalStatus(),

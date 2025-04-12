@@ -139,9 +139,13 @@ public class ApplicationService {
         return application;
     }
 
-    public List<Application> listApplication(Long id) {
-        RecruitBoard recruitBoard = recruitRepository.findById(id)
+    public List<Application> listApplication(Long boardId, Member member) {
+        RecruitBoard recruitBoard = recruitRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 글이 존재하지 않습니다."));
+
+        if (!recruitBoard.getMember().getId().equals(member.getId())) {
+            throw new IllegalStateException("해당 글에 접근 권한이 없는 사용자입니다.");
+        }
 
         List<Application> applications = applicationRepository.findByBoard(recruitBoard);
         return applications;
