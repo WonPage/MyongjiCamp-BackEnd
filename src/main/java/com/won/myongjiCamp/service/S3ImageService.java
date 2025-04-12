@@ -75,24 +75,34 @@ public class S3ImageService {
         InputStream is = image.getInputStream();
         byte[] bytes = IOUtils.toByteArray(is);
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("image/" + extention);
-        metadata.setContentLength(bytes.length);
+        ObjectMetadata metadata = getObjectMetadata(extention, bytes);
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
 
+        putObjectToS3(s3FileName, byteArrayInputStream, metadata, is);
+
+        return amazonS3.getUrl(bucketName, s3FileName).toString();
+    }
+
+    private void putObjectToS3(String s3FileName, ByteArrayInputStream byteArrayInputStream, ObjectMetadata metadata,
+                           InputStream is) throws IOException {
         try{
             PutObjectRequest putObjectRequest =
                     new PutObjectRequest(bucketName, s3FileName, byteArrayInputStream, metadata)
                             .withCannedAcl(CannedAccessControlList.PublicRead);
             amazonS3.putObject(putObjectRequest); // put image to S3
-        }catch (Exception e){
+        } catch (Exception e){
             throw new IllegalArgumentException("이미지를 S3에 업로드하는 도중 오류가 발생했습니다.");
-        }finally {
+        } finally {
             byteArrayInputStream.close();
             is.close();
         }
+    }
 
-        return amazonS3.getUrl(bucketName, s3FileName).toString();
+    private static ObjectMetadata getObjectMetadata(String extention, byte[] bytes) {
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType("image/" + extention);
+        metadata.setContentLength(bytes.length);
+        return metadata;
     }
 
     public void deleteImageFromS3(String imageAddress){
