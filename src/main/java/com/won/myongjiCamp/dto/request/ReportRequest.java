@@ -6,19 +6,11 @@ import com.won.myongjiCamp.model.board.report.ReportTargetType;
 import lombok.Data;
 
 @Data
-public class ReportDto {
-
-//    private Long id;
-
+public class ReportRequest {
     private ReportTargetType targetType;
-
     private Long targetId;
     private Long targetNickname;
-
-
     private Long reporterId;
-
     private ReportReason reason;
-
     private ReportStatus status;
 }

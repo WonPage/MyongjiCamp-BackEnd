@@ -3,15 +3,16 @@ package com.won.myongjiCamp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.won.myongjiCamp.dto.request.CommentDto;
+import com.won.myongjiCamp.dto.request.CommentRequest;
 import com.won.myongjiCamp.dto.Fcm.FcmMessageDto;
 import com.won.myongjiCamp.dto.Fcm.FcmSendDto;
-import com.won.myongjiCamp.dto.request.TokenDto;
+import com.won.myongjiCamp.dto.TokenDto;
 import com.won.myongjiCamp.model.*;
 import com.won.myongjiCamp.model.application.Application;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.model.board.Comment;
 import com.won.myongjiCamp.repository.*;
+import com.won.myongjiCamp.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
@@ -188,7 +189,7 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
     }
     //댓글 대댓글 알림
     @Transactional
-    public void sendNotification(Member mem, CommentDto commentDto, Long id) throws IOException {
+    public void sendNotification(Member mem, CommentRequest commentRequest, Long id) throws IOException {
         Member member = memberRepository.findById(mem.getId()) // 댓글 작성자
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         Board board = boardRepository.findById(id)
@@ -200,21 +201,21 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
         FcmSendDto fcmSendMessage = null; //fcm으로 보낼 알림
 
         ArrayList<Notification> notifications = new ArrayList<>(); // 알림 목록을 위해 sql에 저장시킬 알림들
-        if (commentDto.getCdepth() == 0) {// 댓글
+        if (commentRequest.getCdepth() == 0) {// 댓글
             if (!board.getMember().getId().equals(mem.getId())) {
                 if (boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
                     tos.addAll(boardWriterTokens);
                     fcmSendMessage = FcmSendDto.builder()
                             .to(tos)
                             .title("명지캠프")
-                            .body("댓글이 달렸습니다 : " + commentDto.getContent())
+                            .body("댓글이 달렸습니다 : " + commentRequest.getContent())
                             .build();
                     //모든 기기에 알림을 보냈지만 쌓이는 알림은 하나여야 한다.
                 }
-                notifications.add(createNotification(board.getMember(), board, "댓글이 달렸습니다 : " + commentDto.getContent(), NotificationStatus.COMMENT));
+                notifications.add(createNotification(board.getMember(), board, "댓글이 달렸습니다 : " + commentRequest.getContent(), NotificationStatus.COMMENT));
             }
         } else { // 대댓글
-            Comment comment = commentRepository.findById(commentDto.getParentId()) //부모 댓글
+            Comment comment = commentRepository.findById(commentRequest.getParentId()) //부모 댓글
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
             Member parentMember = memberRepository.findById(comment.getWriter().getId()) //부모 댓글 작성자
                     .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 회원입니다."));
@@ -225,18 +226,18 @@ public class FcmService { //Fcm과 통신해 client에서 받은 정보를 기�
 
                 if (boardWriterTokens != null && !boardWriterTokens.isEmpty()) {
                     tos.addAll(boardWriterTokens);
-                    notifications.add(createNotification(board.getMember(), board, "대댓글이 달렸습니다 : " + commentDto.getContent(), NotificationStatus.COMMENT));
+                    notifications.add(createNotification(board.getMember(), board, "대댓글이 달렸습니다 : " + commentRequest.getContent(), NotificationStatus.COMMENT));
                 }
                 if (commentWriterTokens != null && !commentWriterTokens.isEmpty()) {
                     tos.addAll(commentWriterTokens);
-                    notifications.add(createNotification(parentMember, board, "대댓글이 달렸습니다 : " + commentDto.getContent(), NotificationStatus.COMMENT));
+                    notifications.add(createNotification(parentMember, board, "대댓글이 달렸습니다 : " + commentRequest.getContent(), NotificationStatus.COMMENT));
                 }
 
                 if (!tos.isEmpty()) {
                     fcmSendMessage = FcmSendDto.builder()
                             .to(tos)
                             .title("명지캠프")
-                            .body("대댓글이 달렸습니다 : " + commentDto.getContent())
+                            .body("대댓글이 달렸습니다 : " + commentRequest.getContent())
                             .build();
                 }
             }

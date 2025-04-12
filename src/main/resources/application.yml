@@ -1,7 +1,7 @@
 # default
 spring:
   profiles:
-    active: dev # default
+    active: local # default
     group:
       local:  # local, common profile을 그룹지어 함께 어플리케이션 구동
         - common
@@ -13,6 +13,10 @@ spring:
   config:
     activate:
       on-profile: common
+  jpa:
+   properties:
+     hibernate:
+       default_batch_fetch_size: 100
 
   servlet:
     multipart:
@@ -65,7 +69,7 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: 127.0.0.1
       port: 6379
 
   datasource:
@@ -80,7 +84,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-        # show_sql: true
+#        show_sql: true
         format_sql: true
 
 ---

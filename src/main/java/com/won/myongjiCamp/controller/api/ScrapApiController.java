@@ -1,12 +1,11 @@
 package com.won.myongjiCamp.controller.api;
 
-import com.won.myongjiCamp.config.auth.PrincipalDetail;
-import com.won.myongjiCamp.dto.response.BoardListResponseDto;
+import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
 import com.won.myongjiCamp.dto.response.ResponseDto;
-import com.won.myongjiCamp.dto.request.ScrapDto;
+import com.won.myongjiCamp.dto.request.ScrapRequest;
+import com.won.myongjiCamp.dto.response.ScrapResponse;
 import com.won.myongjiCamp.model.Scrap;
 import com.won.myongjiCamp.model.board.Board;
-import com.won.myongjiCamp.repository.MemberRepository;
 import com.won.myongjiCamp.service.ScrapService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -27,35 +26,33 @@ import java.util.stream.Collectors;
 public class ScrapApiController {
 
     final private ScrapService scrapService;
-    final private MemberRepository memberRepository;
-    @PostMapping("/api/auth/scrap/{id}")
-    public ResponseDto<String> scrap(@PathVariable Long id, @AuthenticationPrincipal PrincipalDetail principal) {
-        String data = scrapService.scrap(id, principal.getMember());
+
+    @PostMapping("/api/auth/scrap/{boardId}")
+    public ResponseDto<String> scrap(@PathVariable Long boardId, @AuthenticationPrincipal PrincipalDetail principal) {
+        String data = scrapService.scrap(boardId, principal.getMember());
         return new ResponseDto<String>(HttpStatus.OK.value(), data);
     }
 
-    //스크랩 가져오기
     @GetMapping("/api/auth/scrap")
-    public Result pullScraps(@ModelAttribute @Valid ScrapDto requestDto, @AuthenticationPrincipal PrincipalDetail principal) {
+    public Result getScrapList(@ModelAttribute @Valid ScrapRequest requestDto, @AuthenticationPrincipal PrincipalDetail principal) {
         log.info("Request param: {}", requestDto);
 
-        Page<Scrap> scraps = scrapService.pullScraps(requestDto, principal.getMember());
+        Page<Scrap> scraps = scrapService.getScrapList(requestDto, principal.getMember());
 
         List<Board> boards = scraps.stream()
                 .map(Scrap::getBoard)
                 .collect(Collectors.toList());
 
-        List<BoardListResponseDto> collect = boards.stream()
-                .map(BoardListResponseDto::new)
+        List<ScrapResponse.BoardListResponse> collect = boards.stream()
+                .map(ScrapResponse.BoardListResponse::new)
                 .collect(Collectors.toList());
 
         return new Result(collect);
     }
 
-    //스크랩 여부
-    @GetMapping("/api/auth/scrap/{board_id}")
-    public Result isScrap(@PathVariable Long board_id, @AuthenticationPrincipal PrincipalDetail principal) {
-        boolean isScrap = scrapService.isScrap(board_id, principal.getMember());
+    @GetMapping("/api/auth/scrap/{boardId}")
+    public Result isScrap(@PathVariable Long boardId, @AuthenticationPrincipal PrincipalDetail principal) {
+        boolean isScrap = scrapService.isScrap(boardId, principal.getMember());
         return new Result(isScrap);
     }
 

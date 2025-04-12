@@ -1,7 +1,8 @@
 package com.won.myongjiCamp.config.jwt;
 
-import com.won.myongjiCamp.config.auth.PrincipalDetail;
+import com.won.myongjiCamp.config.security.auth.PrincipalDetail;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
@@ -48,7 +49,7 @@ public class JwtTokenUtil {
 
 
     public Boolean validateToken(String token, PrincipalDetail userDetails) {
-        return !isTokenExpired(token) && extractUsername(token).equals(userDetails.getUsername());
+        return extractUsername(token).equals(userDetails.getUsername());
     }
 
     public String extractUsername(String token) {
@@ -68,7 +69,12 @@ public class JwtTokenUtil {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public Boolean isTokenExpired(String token) {
+        try {
+            Date expiredDate = extractExpiration(token);
+            return expiredDate.before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true;
+        }
     }
 }

@@ -13,7 +13,6 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Entity
 public class Scrap {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

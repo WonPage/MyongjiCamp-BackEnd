@@ -1,16 +1,12 @@
 package com.won.myongjiCamp.model;
 
-import com.google.firebase.database.annotations.Nullable;
 import com.won.myongjiCamp.model.board.Board;
-import com.won.myongjiCamp.model.board.Comment;
 import jakarta.persistence.*;
 import lombok.*;
-import org.checkerframework.checker.units.qual.C;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.net.URL;
 import java.sql.Timestamp;
 
 @Getter
@@ -33,7 +29,6 @@ public class Notification {
     @JoinColumn(name = "member")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member receiver;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")

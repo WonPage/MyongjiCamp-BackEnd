@@ -5,7 +5,6 @@ import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.Resume;
 import com.won.myongjiCamp.repository.ResumeRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.FetchMode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +18,6 @@ public class ResumeService {
 
     private final ResumeRepository resumeRepository;
     
-    //이력서 작성
     @Transactional
     public void write(String title, String content, String url, Member member) {
         Resume resume = Resume.builder()
@@ -31,7 +29,7 @@ public class ResumeService {
 
         resumeRepository.save(resume);
     }
-    //이력서 수정
+
     @Transactional
     public void update(String title, String content, String url, long id) {
         Resume resume = resumeRepository.findById(id)
@@ -41,7 +39,7 @@ public class ResumeService {
         resume.setUrl(url);
         resume.setCreatedDate(new Timestamp(System.currentTimeMillis()));
     }
-    //이력서 삭제
+
     @Transactional
     public void delete(long id) {
         Resume resume = resumeRepository.findById(id)
@@ -49,13 +47,12 @@ public class ResumeService {
         resumeRepository.delete(resume);
     }
 
-    //이력서 목록조회
-    public List<Resume> resumeAll(Member member) {
+
+    public List<Resume> getListResume(Member member) {
         return resumeRepository.findByMember(member);
     }
 
-    //이력서 상세조회
-    public Resume resumeDetail(long id, Member member) throws MemberNoMatchException {
+    public Resume getDetailResume(long id, Member member) throws MemberNoMatchException {
         Resume resume = resumeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이력서가 존재하지 않습니다."));
         if(!member.getId().equals(resume.getMember().getId()))

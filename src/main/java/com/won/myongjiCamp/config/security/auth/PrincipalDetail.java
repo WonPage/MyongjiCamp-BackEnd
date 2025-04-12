@@ -1,4 +1,4 @@
-package com.won.myongjiCamp.config.auth;
+package com.won.myongjiCamp.config.security.auth;
 
 import com.won.myongjiCamp.model.Member;
 import lombok.Getter;
@@ -20,9 +20,12 @@ public class PrincipalDetail implements UserDetails {
     //계정이 갖고있는 권한 목록 리턴
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> collectors=new ArrayList<>();
-        collectors.add(()-> {return "ROLE_USER";});
-        return collectors;
+
+        Collection<GrantedAuthority> collections = new ArrayList<>();
+        collections.add(() -> {
+            return member.getRole().name();
+        });
+        return collections;
     }
 
     @Override

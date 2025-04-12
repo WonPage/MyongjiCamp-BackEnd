@@ -1,4 +1,4 @@
-package com.won.myongjiCamp.dto.request;
+package com.won.myongjiCamp.dto;
 
 import lombok.Data;
 import lombok.Getter;

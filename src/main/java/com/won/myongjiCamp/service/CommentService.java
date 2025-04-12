@@ -1,6 +1,6 @@
 package com.won.myongjiCamp.service;
 
-import com.won.myongjiCamp.dto.request.CommentDto;
+import com.won.myongjiCamp.dto.request.CommentRequest;
 import com.won.myongjiCamp.model.board.Comment;
 import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.model.board.Board;
@@ -21,36 +21,35 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
 
-    // 댓글 작성
     @Transactional
-    public Comment create(CommentDto commentDto, Member member, Long id) {
+    public Comment create(CommentRequest commentRequest, Member member, Long id) {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
         board.setCommentCount(board.getCommentCount() + 1);
 
-        if (commentDto.getCdepth() == 0) { //부모 댓글
+        if (commentRequest.getCdepth() == 0) { //부모 댓글
             Comment comment = Comment.builder()
                     .board(board)
-                    .content(commentDto.getContent())
+                    .content(commentRequest.getContent())
                     .writer(member)
                     .cdepth(0)
                     .isDelete(false)
-                    .isSecret(commentDto.getIsSecret())
+                    .isSecret(commentRequest.getIsSecret())
                     .build();
             commentRepository.save(comment);
             System.out.println("comment save"+comment);
 
             return comment;
         } else { // 대댓글
-            Comment parentComment = commentRepository.findById(commentDto.getParentId())
+            Comment parentComment = commentRepository.findById(commentRequest.getParentId())
                     .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
             Comment childComment = Comment.builder()
                     .board(board)
                     .parent(parentComment)
-                    .content(commentDto.getContent())
+                    .content(commentRequest.getContent())
                     .writer(member)
                     .cdepth(1)
-                    .isSecret(commentDto.getIsSecret())
+                    .isSecret(commentRequest.getIsSecret())
                     .isDelete(false)
                     .build();
             commentRepository.save(childComment);
@@ -64,13 +63,12 @@ public class CommentService {
         }
     }
 
-    // 댓글 삭제
     @Transactional
-    public void delete(Long board_id, Long comment_id) {
-        Comment comment = commentRepository.findById(comment_id)
+    public void delete(Long boardId, Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재 하지 않습니다."));
 
-        Board board = boardRepository.findById(board_id)
+        Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
         if (comment.getCdepth() == 0) { // 부모 댓글
@@ -85,12 +83,9 @@ public class CommentService {
         board.setCommentCount(board.getCommentCount() - 1);
     }
 
-    // 댓글 조회
     public List<Comment> commentAll(Long id) { //여기서 id는 Board id
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
         return commentRepository.findByBoard(board);
     }
-
-
 }

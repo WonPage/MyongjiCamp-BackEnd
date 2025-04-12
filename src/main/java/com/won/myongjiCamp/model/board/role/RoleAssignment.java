@@ -10,7 +10,6 @@ import lombok.*;
 @Builder
 @Entity
 public class RoleAssignment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,17 +18,20 @@ public class RoleAssignment {
     @JoinColumn(name = "board")
     private RecruitBoard board;
 
-    @Enumerated(EnumType.STRING) //엔티티의 필드가 열거형일 때 사용
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
 
     @Column(name = "requiredNumber", nullable = false)
-    private int requiredNumber; // 모집 하는 인원
+    private int requiredNumber;
 
     @Column(name = "appliedNumber", nullable = false)
-    private int appliedNumber; // 모집된 인원
+    private int appliedNumber;
 
     @Column(name = "isFull",nullable = false)
-    private boolean isFull; // 다 찾는지
+    private boolean isFull;
 
+    public void addAppliedNumber() {
+        appliedNumber += 1;
+    }
 }
