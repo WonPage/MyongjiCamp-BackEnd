@@ -54,16 +54,9 @@ public class ScrapService  {
 
     public Page<Scrap> pullScraps(ScrapRequest requestDto, Member member) {
 
-        Member findMember = memberRepository.findById(member.getId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-        String property = "createdDate";
-        Pageable pageable = PageRequest.of(requestDto.getPageNum(), 8, Sort.by(Sort.Direction.DESC, property));
+        Pageable pageable = PageRequest.of(requestDto.getPageNum(), 8);
 
-        Specification<Scrap> spec = Specification.where(ScrapSpecification.withStatus(requestDto.getStatus()))
-                .and(ScrapSpecification.withBoardType(requestDto.getBoardType()))
-                .and(ScrapSpecification.withMember(findMember));
-
-        return scrapRepository.findAll(spec, pageable);
+        return scrapRepository.searchScrapBoards(requestDto, pageable, member);
     }
 
     public boolean isScrap(Long board_id, Member member) {

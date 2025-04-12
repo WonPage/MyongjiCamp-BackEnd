@@ -13,10 +13,10 @@ spring:
   config:
     activate:
       on-profile: common
-#  jpa:
-#   properties:
-#     hibernate:
-#       default_batch_fetch_size: 100
+  jpa:
+   properties:
+     hibernate:
+       default_batch_fetch_size: 100
 
   servlet:
     multipart:
@@ -84,7 +84,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-        # show_sql: true
+#        show_sql: true
         format_sql: true
 
 ---
