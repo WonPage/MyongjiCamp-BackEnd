@@ -57,7 +57,7 @@ public class CompleteService {
     }
 
     private CompleteBoard getCompleteBoard(CompleteDto completeDto, Member member, List<Image> saveImageList) {
-        CompleteBoard completeBoard = (CompleteBoard) Board.builder()
+        CompleteBoard completeBoard = CompleteBoard.builder()
                 .title(completeDto.getTitle())
                 .content(completeDto.getContent())
                 .member(member)
