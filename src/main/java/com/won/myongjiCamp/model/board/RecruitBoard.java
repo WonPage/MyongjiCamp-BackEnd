@@ -3,16 +3,18 @@ package com.won.myongjiCamp.model.board;
 import com.won.myongjiCamp.model.board.role.RoleAssignment;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter
+@SuperBuilder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 @DiscriminatorValue("Recruit")
 public class RecruitBoard extends Board {
