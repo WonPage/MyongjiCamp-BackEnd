@@ -17,13 +17,13 @@ import java.util.function.Function;
 public class JwtTokenUtil {
 
     @Value("${jwt.secret}")
-    private String secret; // 비밀 키
+    private String secret;
 
     @Value("${jwt.expiration_time}")
-    private Long expirationTime; // 토큰 만료 시간
+    private Long expirationTime;
 
     @Value("${jwt.refresh_expiration_time}")
-    private Long refreshExpirationTime; // Refresh 토큰 만료 시간
+    private Long refreshExpirationTime;
 
     public JwtTokenUtil() {
     }

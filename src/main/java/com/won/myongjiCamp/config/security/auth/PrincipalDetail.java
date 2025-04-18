@@ -13,18 +13,15 @@ public class PrincipalDetail implements UserDetails {
 
     private Member member;
 
-    public PrincipalDetail(Member member){
-        this.member=member;
+    public PrincipalDetail(Member member) {
+        this.member = member;
     }
 
-    //계정이 갖고있는 권한 목록 리턴
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
         Collection<GrantedAuthority> collections = new ArrayList<>();
-        collections.add(() -> {
-            return member.getRole().name();
-        });
+        collections.add(() -> member.getRole().name());
         return collections;
     }
 
