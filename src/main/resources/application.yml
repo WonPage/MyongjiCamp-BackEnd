@@ -1,6 +1,119 @@
+# default
 spring:
+  profiles:
+    active: local # default
+    group:
+      local:  # local, common profile을 그룹지어 함께 어플리케이션 구동
+        - common
+      dev:   # prod, common profile을 그룹지어 함께 어플리케이션 구동
+        - common
+
+---
+spring:
+  config:
+    activate:
+      on-profile: common
+  jpa:
+   properties:
+     hibernate:
+       default_batch_fetch_size: 100
+
+  servlet:
+    multipart:
+      max-file-size: 1MB # 각 파일 최대 크기
+      max-request-size: 10MB # 전체 요청 최대 크기
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: teamwonpage@gmail.com
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+    server:
+      port: 8080
+      servlet:
+        context-path: /
+        encoding:
+          charset: UTF-8
+          enabled: true
+          force: true
+
+logging.level:
+  org.hibernate.SQL: debug
+
+jwt:
+  expiration_time: 43200000 #1일
+  refresh_expiration_time: 2592000000 #30일
+  secret: ${JWT_SECRET}
+
+cloud:
+  aws:
+    s3:
+      bucket: ${S3_BUCKET}
+    region:
+      static: ${S3_STATIC}
+    stack:
+      auto: false
+    credentials:
+      accessKey: ${S3_ACCESS_KEY}
+      secretKey: ${S3_SECRET_KEY}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/blog?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/camp?serverTimezone=Asia/Seoul
     username: won
-    password: won8804
+    password: ${MYSQL_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+#        show_sql: true
+        format_sql: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DEV_MYSQL_URL}
+    username: ${DEV_MYSQL_USERNAME}
+    password: ${DEV_MYSQL_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        # show_sql: true
+        format_sql: true
+
+  data:
+    redis:
+      host: ${AWS_REDIS_HOST} #로컬로 실행할 때에는 로컬 Redis 서버로만 테스트 가능. 연동 x
+      port: 6379
+
+  fcm:
+    key:
+      path: mjcamp-67915-firebase-adminsdk-ydkil-e1224a7415.json
+      scope: https://www.googleapis.com/auth/cloud-platform
