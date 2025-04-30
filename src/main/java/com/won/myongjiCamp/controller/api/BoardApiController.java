@@ -13,8 +13,6 @@ import com.won.myongjiCamp.service.BoardService;
 import com.won.myongjiCamp.service.CompleteService;
 import com.won.myongjiCamp.service.RecruitService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -58,32 +56,32 @@ public class BoardApiController {
     }
 
     @PostMapping("/api/auth/complete/{id}")
-    public Result createComplete(@ModelAttribute @Valid BoardRequest.CompleteDto completeDto, @AuthenticationPrincipal PrincipalDetail principalDetail, @PathVariable long id) throws IOException {
+    public ResponseDto<BoardResponse.WriteCompleteResponseDto> createComplete(@ModelAttribute @Valid BoardRequest.CompleteDto completeDto, @AuthenticationPrincipal PrincipalDetail principalDetail, @PathVariable long id) throws IOException {
         BoardResponse.WriteCompleteResponseDto writeCompleteResponseDto = completeService.create(completeDto, principalDetail.getMember(), id);
-        return new Result(writeCompleteResponseDto);
+        return new ResponseDto<>(HttpStatus.OK.value(), writeCompleteResponseDto);
     }
 
     @PutMapping("/api/auth/complete/{id}")
-    public Result updateComplete(@ModelAttribute @Valid BoardRequest.CompleteDto completeDto, @PathVariable long id) throws IOException {
+    public ResponseDto<BoardResponse.WriteCompleteResponseDto> updateComplete(@ModelAttribute @Valid BoardRequest.CompleteDto completeDto, @PathVariable long id) throws IOException {
         BoardResponse.WriteCompleteResponseDto writeCompleteResponseDto = completeService.update(id, completeDto);
-        return new Result(writeCompleteResponseDto);
+        return new ResponseDto<>(HttpStatus.OK.value(), writeCompleteResponseDto);
     }
 
     @DeleteMapping("/api/auth/complete/{id}")
     public ResponseDto<String> deleteComplete(@PathVariable long id){
         completeService.delete(id);
-        return new ResponseDto<String>(HttpStatus.OK.value(), "게시글이 삭제되었습니다.");
+        return new ResponseDto<>(HttpStatus.OK.value(), "게시글이 삭제되었습니다.");
     }
 
     @GetMapping("/api/board")
-    public Result searchBoards(@ModelAttribute @Valid BoardRequest.BoardSearchDto requestDto) {
+    public ResponseDto searchBoards(@ModelAttribute @Valid BoardRequest.BoardSearchDto requestDto) {
         if (requestDto.getBoardType().equals("recruit")) {
             Page<RecruitBoard> recruitBoards = boardService.searchRecruitBoards(requestDto);
             List<BoardResponse.RecruitBoardListResponseDto> collect = recruitBoards.stream()
                     .map(BoardResponse.RecruitBoardListResponseDto::new)
                     .collect(Collectors.toList());
 
-            return new Result(collect);
+            return new ResponseDto<>(HttpStatus.OK.value(), collect);
         }
 
         if (requestDto.getBoardType().equals("complete")) {
@@ -92,19 +90,19 @@ public class BoardApiController {
                     .map(BoardResponse.CompleteBoardListResponseDto::new)
                     .collect(Collectors.toList());
 
-            return new Result(collect);
+            return new ResponseDto<>(HttpStatus.OK.value(), collect);
         }
 
-        return new Result(List.of());
+        return new ResponseDto<>(HttpStatus.OK.value(), List.of());
     }
 
     @GetMapping("/api/recruit/{id}")
-    public Result getRecruitDetail(@AuthenticationPrincipal PrincipalDetail principalDetail, @PathVariable Long id){
+    public ResponseDto getRecruitDetail(@AuthenticationPrincipal PrincipalDetail principalDetail, @PathVariable Long id){
         RecruitBoard board = recruitRepository.findById(id)
                 .orElseThrow(()->new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
         if(principalDetail == null){
-            return new Result(new BoardResponse.NotDetailRecruitResponseDto(board));
+            return new ResponseDto<>(HttpStatus.OK.value(), new BoardResponse.NotDetailRecruitResponseDto(board));
         }
         else{
             List<RoleAssignment> roleAssignmentsList = roleAssignmentRepository.findByBoard(board);
@@ -113,26 +111,26 @@ public class BoardApiController {
                 roleDto.add(convertRoleToDto(r));
             });
 
-            return new Result(new BoardResponse.DetailRecruitResponseDto(board,roleDto));
+            return new ResponseDto<>(HttpStatus.OK.value(), new BoardResponse.DetailRecruitResponseDto(board,roleDto));
         }
     }
 
     @GetMapping("/api/complete/{id}")
-    public Result getCompleteDetail(@PathVariable Long id){
+    public ResponseDto<BoardResponse.DetailCompleteResponseDto> getCompleteDetail(@PathVariable Long id){
         CompleteBoard board = completeRepository.findById(id)
                 .orElseThrow(()->new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
-        return new Result(new BoardResponse.DetailCompleteResponseDto(board));
+        return new ResponseDto<>(HttpStatus.OK.value(), new BoardResponse.DetailCompleteResponseDto(board));
     }
 
     @GetMapping("/api/auth/complete/writer")
-    public Result getMemberComplete(@AuthenticationPrincipal PrincipalDetail principalDetail){
+    public ResponseDto<List<BoardResponse.MemberCompleteBoardListResponseDto>> getMemberComplete(@AuthenticationPrincipal PrincipalDetail principalDetail){
         List<CompleteBoard> boards = boardService.listMemberComplete(principalDetail.getMember());
         List<BoardResponse.MemberCompleteBoardListResponseDto> collect = boards.stream()
                 .map(b -> new BoardResponse.MemberCompleteBoardListResponseDto(b))
                 .collect(Collectors.toList());
 
-        return new Result(collect);
+        return new ResponseDto<>(HttpStatus.OK.value(), collect);
     }
 
     public BoardResponse.RoleAssignmentDto convertRoleToDto(RoleAssignment roleAssignment){
@@ -141,11 +139,5 @@ public class BoardApiController {
                 roleAssignment.getAppliedNumber(),
                 roleAssignment.getRequiredNumber()
         );
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private T data;
     }
 }

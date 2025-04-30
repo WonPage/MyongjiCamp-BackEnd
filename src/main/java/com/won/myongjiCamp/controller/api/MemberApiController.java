@@ -11,8 +11,6 @@ import com.won.myongjiCamp.model.Member;
 import com.won.myongjiCamp.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -185,14 +183,8 @@ public class MemberApiController {
     }
 
     @GetMapping("/api/auth/profile")
-    public Result profile(@AuthenticationPrincipal PrincipalDetail principal) {
-        return new Result(new MemberResponse.ProfileInformationResponseDto(principal.getUsername(),
+    public ResponseDto<MemberResponse.ProfileInformationResponseDto> profile(@AuthenticationPrincipal PrincipalDetail principal) {
+        return new ResponseDto<>(HttpStatus.OK.value(), new MemberResponse.ProfileInformationResponseDto(principal.getUsername(),
                 principal.getMember().getNickname(), principal.getMember().getProfileIcon()));
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private T data;
     }
 }
