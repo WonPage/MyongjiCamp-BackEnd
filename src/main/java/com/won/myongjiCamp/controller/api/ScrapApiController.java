@@ -8,8 +8,6 @@ import com.won.myongjiCamp.model.Scrap;
 import com.won.myongjiCamp.model.board.Board;
 import com.won.myongjiCamp.service.ScrapService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -34,31 +32,25 @@ public class ScrapApiController {
     }
 
     @GetMapping("/api/auth/scrap")
-    public Result getScrapList(@ModelAttribute @Valid ScrapRequest requestDto, @AuthenticationPrincipal PrincipalDetail principal) {
+    public ResponseDto<List<ScrapResponse.BoardListResponse>> getScrapList(@ModelAttribute @Valid ScrapRequest requestDto, @AuthenticationPrincipal PrincipalDetail principal) {
         log.info("Request param: {}", requestDto);
 
         Page<Scrap> scraps = scrapService.getScrapList(requestDto, principal.getMember());
 
         List<Board> boards = scraps.stream()
                 .map(Scrap::getBoard)
-                .collect(Collectors.toList());
+                .toList();
 
         List<ScrapResponse.BoardListResponse> collect = boards.stream()
                 .map(ScrapResponse.BoardListResponse::new)
                 .collect(Collectors.toList());
 
-        return new Result(collect);
+        return new ResponseDto<>(HttpStatus.OK.value(), collect);
     }
 
     @GetMapping("/api/auth/scrap/{boardId}")
-    public Result isScrap(@PathVariable Long boardId, @AuthenticationPrincipal PrincipalDetail principal) {
+    public ResponseDto<Boolean> isScrap(@PathVariable Long boardId, @AuthenticationPrincipal PrincipalDetail principal) {
         boolean isScrap = scrapService.isScrap(boardId, principal.getMember());
-        return new Result(isScrap);
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private T data;
+        return new ResponseDto<>(HttpStatus.OK.value(), isScrap);
     }
 }
