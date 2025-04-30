@@ -8,8 +8,6 @@ import com.won.myongjiCamp.model.board.Comment;
 import com.won.myongjiCamp.service.CommentService;
 import com.won.myongjiCamp.service.FcmService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -39,7 +37,7 @@ public class CommentApiController {
     }
 
     @GetMapping("/api/auth/recruit/{boardId}/comment")
-    private Result getCommentList(@PathVariable("boardId") Long id){
+    private ResponseDto<List<CommentResponse>> getCommentList(@PathVariable("boardId") Long id){
         List<CommentResponse> result = new ArrayList<>();
         Map<Long, CommentResponse> map = new HashMap<>();
         List<Comment> commentList = commentService.commentAll(id);
@@ -55,7 +53,7 @@ public class CommentApiController {
             }
         });
 
-        return new Result(result);
+        return new ResponseDto<>(HttpStatus.OK.value(), result);
     }
 
     public CommentResponse convertResponseCommentToDto(Comment comment){
@@ -72,12 +70,6 @@ public class CommentApiController {
                 new ArrayList<>(),
                 comment.isDelete()
         );
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private T data;
     }
 }
 

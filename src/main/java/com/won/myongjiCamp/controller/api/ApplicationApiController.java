@@ -13,8 +13,6 @@ import com.won.myongjiCamp.dto.request.ApplicationRequest;
 import com.won.myongjiCamp.dto.response.ResponseDto;
 import com.won.myongjiCamp.service.FcmService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,90 +31,90 @@ public class ApplicationApiController {
     private final FcmService fcmService;
 
     @PostMapping("/api/auth/apply/{boardId}")
-    public ResponseDto apply(@RequestBody @Valid ApplicationRequest request, @PathVariable Long boardId,
-                             @AuthenticationPrincipal PrincipalDetail principal) throws IOException {
+    public ResponseDto<String> apply(@RequestBody @Valid ApplicationRequest request, @PathVariable Long boardId,
+                                     @AuthenticationPrincipal PrincipalDetail principal) throws IOException {
         applicationService.apply(request, boardId, principal.getMember());
         fcmService.applyNotification(boardId);
-        return new ResponseDto(HttpStatus.OK.value(), "지원이 완료되었습니다.");
+        return new ResponseDto<>(HttpStatus.OK.value(), "지원이 완료되었습니다.");
     }
 
     @DeleteMapping("/api/auth/apply/{boardId}")
-    public ResponseDto cancel(@PathVariable Long boardId, @AuthenticationPrincipal PrincipalDetail principal) {
+    public ResponseDto<String> cancel(@PathVariable Long boardId, @AuthenticationPrincipal PrincipalDetail principal) {
         applicationService.cancel(boardId, principal.getMember());
-        return new ResponseDto(HttpStatus.OK.value(), "지원이 취소되었습니다.");
+        return new ResponseDto<>(HttpStatus.OK.value(), "지원이 취소되었습니다.");
     }
 
     @PutMapping("/api/auth/apply/first/{applicationId}")
-    public ResponseDto processFirstResult(@RequestBody @Valid ApplicationRequest request, @PathVariable Long applicationId)
+    public ResponseDto<String> processFirstResult(@RequestBody @Valid ApplicationRequest request,
+                                                  @PathVariable Long applicationId)
             throws IOException {
         applicationService.processFirstResult(request, applicationId);
         fcmService.firstResultNotification(applicationId);
-        return new ResponseDto(HttpStatus.OK.value(), "해당 지원 처리가 완료되었습니다.");
+        return new ResponseDto<>(HttpStatus.OK.value(), "해당 지원 처리가 완료되었습니다.");
     }
 
     @PutMapping("/api/auth/apply/final/{applicationId}")
-    public ResponseDto processFinalResult(@RequestBody @Valid ApplicationRequest request, @PathVariable Long applicationId)
+    public ResponseDto<String> processFinalResult(@RequestBody @Valid ApplicationRequest request,
+                                                  @PathVariable Long applicationId)
             throws IOException {
         applicationService.processFinalResult(request, applicationId);
         fcmService.finalResultNotification(applicationId);
-        return new ResponseDto(HttpStatus.OK.value(), "해당 지원 처리가 완료되었습니다.");
+        return new ResponseDto<>(HttpStatus.OK.value(), "해당 지원 처리가 완료되었습니다.");
     }
 
     @GetMapping("/api/auth/apply/writer")
-    public Result getRecruiterBoardList(@AuthenticationPrincipal PrincipalDetail principal) {
+    public ResponseDto<List<recruiterBoardListResponse>> getRecruiterBoardList(
+            @AuthenticationPrincipal PrincipalDetail principal) {
         List<RecruitBoard> boards = applicationService.getRecruiterBoardList(principal.getMember());
         List<recruiterBoardListResponse> collect = boards.stream()
                 .map(b -> new recruiterBoardListResponse((CompleteBoard) b.getWriteCompleteBoard(),
                         b.getId(), principal.getMember().getId(), applicationRepository.countByBoard(b), b.getTitle(),
                         b.getStatus(), b.getCreatedDate()))
                 .collect(Collectors.toList());
-        return new Result(collect);
+        return new ResponseDto<>(HttpStatus.OK.value(), collect);
     }
 
     @GetMapping("/api/auth/apply/list/{boardId}")
-    public Result getListOfApplicationsForBoard(@PathVariable Long boardId, @AuthenticationPrincipal PrincipalDetail principal) {
-        List<Application> applications = applicationService.getListOfApplicationsForBoard(boardId, principal.getMember());
+    public ResponseDto<List<listOfApplicationsForBoardResponse>> getListOfApplicationsForBoard(
+            @PathVariable Long boardId, @AuthenticationPrincipal PrincipalDetail principal) {
+        List<Application> applications = applicationService.getListOfApplicationsForBoard(boardId,
+                principal.getMember());
         List<listOfApplicationsForBoardResponse> collect = applications.stream()
                 .map(b -> new listOfApplicationsForBoardResponse(b.getId(), b.getApplicant().getNickname(),
                         b.getApplicant().getProfileIcon(), b.getRole(), b.getFirstStatus(), b.getFinalStatus(),
                         b.getCreatedDate()))
                 .collect(Collectors.toList());
-        return new Result(collect);
+        return new ResponseDto<>(HttpStatus.OK.value(), collect);
     }
 
     @GetMapping("/api/auth/apply/applicant")
-    public Result getListOfApplicant(@AuthenticationPrincipal PrincipalDetail principal) {
+    public ResponseDto<List<ApplicationResponse.listOfApplicantResponse>> getListOfApplicant(
+            @AuthenticationPrincipal PrincipalDetail principal) {
         List<Application> applications = applicationService.getListOfApplicant(principal.getMember());
         List<ApplicationResponse.listOfApplicantResponse> collect = applications.stream()
                 .map(a -> new ApplicationResponse.listOfApplicantResponse(a.getBoard().getId(), a.getId(),
                         principal.getMember().getId(),
                         a.getBoard().getTitle(), a.getFirstStatus(), a.getFinalStatus(), a.getCreatedDate()))
                 .collect(Collectors.toList());
-        return new Result(collect);
+        return new ResponseDto<>(HttpStatus.OK.value(), collect);
     }
 
     @GetMapping("/api/auth/apply/detail/{applicationId}")
-    public Result getDetailApplication(@PathVariable Long applicationId) {
+    public ResponseDto<ApplicationResponse.detailResponse> getDetailApplication(@PathVariable Long applicationId) {
         Application application = applicationService.getDetailApplication(applicationId);
         ApplicationResponse.detailResponse response = new ApplicationResponse.detailResponse(application.getId(),
                 application.getApplicant().getNickname(), application.getApplicant().getProfileIcon(),
                 application.getRole(), application.getUrl(), application.getContent(), application.getFirstStatus(),
                 application.getFinalStatus());
-        return new Result(response);
+        return new ResponseDto<>(HttpStatus.OK.value(), response);
     }
 
     @GetMapping("/api/auth/apply/result/{applicationId}")
-    public Result getResultMessage(@PathVariable Long applicationId) {
+    public ResponseDto<ApplicationResponse.resultMessageResponse> getResultMessage(@PathVariable Long applicationId) {
         Application application = applicationService.getResultMessage(applicationId);
         ApplicationResponse.resultMessageResponse response = new ApplicationResponse.resultMessageResponse(
                 application.getId(), application.getResultContent(),
                 application.getResultUrl(), application.getFirstStatus(), application.getFinalStatus());
-        return new Result(response);
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private T data;
+        return new ResponseDto<>(HttpStatus.OK.value(), response);
     }
 }

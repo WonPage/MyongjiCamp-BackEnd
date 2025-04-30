@@ -9,8 +9,6 @@ import com.won.myongjiCamp.dto.TokenDto;
 import com.won.myongjiCamp.model.Notification;
 import com.won.myongjiCamp.service.FcmService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -50,7 +48,7 @@ public class FcmApiController {
 
     //알림 목록
     @GetMapping("/get/notifications")
-    public Result getNotifications(@AuthenticationPrincipal PrincipalDetail principalDetail,@ModelAttribute @Valid PageDto pageDto){
+    public ResponseDto<List<NotificationResponse>> getNotifications(@AuthenticationPrincipal PrincipalDetail principalDetail,@ModelAttribute @Valid PageDto pageDto){
         Page<Notification> notificationPage = fcmService.findAllNotifications(principalDetail.getMember(),pageDto.getPageNum());
 
         List<NotificationResponse> notificationList = notificationPage.stream()
@@ -60,8 +58,8 @@ public class FcmApiController {
         for(int i=0; i<notificationList.size(); i++){
             System.out.println(notificationList.get(i).getNotificationStatus());
         }
+        return new ResponseDto<> (HttpStatus.OK.value(),notificationList);
 
-        return new Result(notificationList);
     }
     //알림 읽음
     @PostMapping("/read/notification/{notificationId}")
@@ -69,13 +67,5 @@ public class FcmApiController {
         System.out.println(principalDetail.getMember());
         fcmService.isRead(principalDetail.getMember(),notificationId);
         return new ResponseDto<String> (HttpStatus.OK.value(),"isread is true");
-    }
-
-    //한 달이 지난 알림은 삭제
-
-    @Data
-    @AllArgsConstructor
-    static class Result<T> {
-        private T data;
     }
 }
